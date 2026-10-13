@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" role="img" aria-label="Ilustración: pan de muerto">
+  <defs>
+    <radialGradient id="mas" cx=".5" cy=".35" r=".8">
+      <stop offset="0" stop-color="#eebd6a"/>
+      <stop offset="1" stop-color="#c47f2c"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="160" cy="222" rx="128" ry="16" fill="#000" opacity=".14"/>
+  <ellipse cx="160" cy="140" rx="132" ry="88" fill="url(#mas)" stroke="#a8691f" stroke-width="3"/>
+  <!-- huesitos -->
+  <g fill="none" stroke="#f6d493" stroke-width="16" stroke-linecap="round" opacity=".95">
+    <path d="M62 128 Q160 52 258 128"/>
+    <path d="M78 176 Q160 120 242 176"/>
+    <path d="M160 70 L160 206"/>
+  </g>
+  <g fill="none" stroke="#a8691f" stroke-width="2" stroke-linecap="round" opacity=".55">
+    <path d="M62 120 Q160 44 258 120"/>
+    <path d="M78 168 Q160 112 242 168"/>
+  </g>
+  <circle cx="160" cy="76" r="22" fill="#f6d493" stroke="#a8691f" stroke-width="2.5"/>
+  <!-- azúcar -->
+  <g fill="#fff6df" opacity=".9">
+    <circle cx="112" cy="150" r="3"/><circle cx="140" cy="168" r="3"/><circle cx="186" cy="160" r="3"/>
+    <circle cx="214" cy="148" r="3"/><circle cx="96" cy="122" r="3"/><circle cx="230" cy="124" r="3"/>
+    <circle cx="160" cy="132" r="3"/><circle cx="124" cy="104" r="3"/><circle cx="198" cy="104" r="3"/>
+  </g>
+</svg>

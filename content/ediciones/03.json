@@ -1,0 +1,16 @@
+{
+  "numero": "03",
+  "fecha": "2026-10-09",
+  "tema": "ewew",
+  "publicada": false,
+  "paginas": [
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Portada",
+      "fondo": "papel",
+      "alto": 1100,
+      "elementos": []
+    }
+  ]
+}

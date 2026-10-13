@@ -1,0 +1,16 @@
+{
+  "numero": "04",
+  "fecha": "2026-10-12",
+  "tema": "ciencia ",
+  "publicada": false,
+  "paginas": [
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Portada",
+      "fondo": "papel",
+      "alto": 1100,
+      "elementos": []
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import LienzoVista from "@/components/Lienzo";
+import { PLANTILLAS_BASE } from "@/lib/plantillas-base";
+import { ETIQUETAS_PLANTILLA, limpiar, type Pagina } from "@/lib/esquema";
+import { btnCls, inputCls } from "./campos";
+
+type Guardada = { id: string; nombre: string; creada: string; pagina: Pagina };
+
+export type ModoAplicar = "nueva" | "reemplazar";
+
+/** Miniatura en vivo de una página: el lienzo escala solo con el ancho de su caja. */
+function Miniatura({ pagina }: { pagina: Pagina }) {
+  if (pagina.plantilla === "lienzo") {
+    return (
+      <div className="pointer-events-none border border-ink/25 shadow-sm">
+        <LienzoVista elementos={pagina.elementos ?? []} fondo={pagina.fondo} alto={pagina.alto} edicionId="plantilla" miniatura />
+      </div>
+    );
+  }
+  return (
+    <div className="font-sans flex aspect-[800/1100] items-center justify-center border border-ink/25 bg-paper-deep text-center text-xs font-bold uppercase tracking-wider text-ink-soft">
+      {ETIQUETAS_PLANTILLA[pagina.plantilla]}
+    </div>
+  );
+}
+
+/**
+ * Plantillas de página: guardar la página actual como plantilla y reutilizar las iniciales o las propias.
+ * Las propias viven en content/plantillas y se comparten entre todas las ediciones.
+ */
+export default function PlantillasModal({
+  paginaActual,
+  numeroPagina,
+  onAplicar,
+  onCerrar,
+}: {
+  paginaActual: Pagina;
+  numeroPagina: number;
+  onAplicar: (pagina: Pagina, nombre: string, modo: ModoAplicar) => void;
+  onCerrar: () => void;
+}) {
+  const [pestana, setPestana] = useState<"iniciales" | "propias">("iniciales");
+  const [guardadas, setGuardadas] = useState<Guardada[] | null>(null);
+  const [nombre, setNombre] = useState("");
+  const [estado, setEstado] = useState<{ tipo: "ok" | "error" | "cargando"; texto: string } | null>(null);
+
+  const cargar = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/plantillas");
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? `Error ${res.status}`);
+      setGuardadas(json.plantillas);
+    } catch (e) {
+      setGuardadas([]);
+      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudieron cargar las plantillas" });
+    }
+  }, []);
+
+  useEffect(() => {
+    cargar();
+  }, [cargar]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCerrar();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onCerrar]);
+
+  async function llamar(url: string, init: RequestInit) {
+    const res = await fetch(url, { ...init, headers: { "Content-Type": "application/json" } });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.error ?? `Error ${res.status}`);
+    return json;
+  }
+
+  async function guardarActual() {
+    setEstado({ tipo: "cargando", texto: "Guardando plantilla…" });
+    try {
+      await llamar("/api/admin/plantillas", { method: "POST", body: JSON.stringify({ nombre, pagina: limpiar(paginaActual) }) });
+      setNombre("");
+      setEstado({ tipo: "ok", texto: "Plantilla guardada. Ya está en “Mis plantillas”." });
+      await cargar();
+      setPestana("propias");
+    } catch (e) {
+      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo guardar" });
+    }
+  }
+
+  async function renombrar(p: Guardada) {
+    const n = window.prompt("Nuevo nombre de la plantilla:", p.nombre);
+    if (!n || n === p.nombre) return;
+    try {
+      await llamar(`/api/admin/plantillas/${p.id}`, { method: "PUT", body: JSON.stringify({ nombre: n }) });
+      await cargar();
+    } catch (e) {
+      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo renombrar" });
+    }
+  }
+
+  async function borrar(p: Guardada) {
+    if (!window.confirm(`¿Eliminar la plantilla “${p.nombre}”? Las ediciones que ya la usaron no cambian.`)) return;
+    try {
+      await llamar(`/api/admin/plantillas/${p.id}`, { method: "DELETE" });
+      await cargar();
+    } catch (e) {
+      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo eliminar" });
+    }
+  }
+
+  const tarjeta = (id: string, titulo: string, detalle: string, pagina: Pagina, acciones?: React.ReactNode) => (
+    <li key={id} className="flex flex-col gap-2 border border-ink/25 bg-white/60 p-2.5">
+      <Miniatura pagina={pagina} />
+      <div className="min-w-0">
+        <p className="font-sans truncate text-sm font-bold" title={titulo}>{titulo}</p>
+        <p className="font-sans line-clamp-2 min-h-[2rem] text-[0.7rem] text-ink-soft">{detalle}</p>
+      </div>
+      <div className="mt-auto flex flex-wrap gap-1">
+        <button type="button" className={`${btnCls} !bg-ink !text-paper hover:!bg-terracota`} onClick={() => onAplicar(pagina, titulo, "nueva")}>
+          Agregar como página nueva
+        </button>
+        <button
+          type="button"
+          className={btnCls}
+          onClick={() => {
+            if (window.confirm(`Esto reemplaza el contenido de la página ${numeroPagina} por esta plantilla. ¿Continuar? (Se puede deshacer cerrando sin guardar.)`))
+              onAplicar(pagina, titulo, "reemplazar");
+          }}
+        >
+          Usar en esta página
+        </button>
+        {acciones}
+      </div>
+    </li>
+  );
+
+  const pest = (id: "iniciales" | "propias", texto: string) => (
+    <button
+      type="button"
+      onClick={() => setPestana(id)}
+      aria-pressed={pestana === id}
+      className={`${btnCls} ${pestana === id ? "!bg-ink !text-paper" : ""}`}
+    >
+      {texto}
+    </button>
+  );
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-ink/60 p-4 sm:p-8"
+      onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}
+    >
+      <div role="dialog" aria-modal="true" aria-label="Plantillas de página" className="w-full max-w-5xl border-2 border-ink bg-paper shadow-2xl">
+        <header className="flex items-center justify-between gap-3 border-b border-ink/30 bg-paper-deep px-5 py-3">
+          <h2 className="font-display text-2xl font-black">Plantillas de página</h2>
+          <button type="button" className={btnCls} onClick={onCerrar}>✕ Cerrar</button>
+        </header>
+
+        {/* Guardar la página actual */}
+        <section className="border-b border-ink/20 px-5 py-4">
+          <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Guardar la página {numeroPagina} como plantilla</h3>
+          <p className="font-sans mt-1 text-[0.72rem] text-ink-soft">
+            Se guarda con su diseño (y se copian sus imágenes) para reutilizarla en cualquier edición. Los enlaces a otras páginas de esta edición no se conservan.
+          </p>
+          <form
+            className="mt-2 flex flex-wrap gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              guardarActual();
+            }}
+          >
+            <input className={`${inputCls} max-w-sm`} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre de la plantilla, p. ej. Entrevista a dos columnas" maxLength={60} aria-label="Nombre de la plantilla" />
+            <button type="submit" className={`${btnCls} !px-4`} disabled={!nombre.trim() || estado?.tipo === "cargando"}>
+              ☆ Guardar plantilla
+            </button>
+          </form>
+          {estado && (
+            <p role="status" className={`font-sans mt-2 text-xs ${estado.tipo === "error" ? "font-bold text-terracota" : "text-ink-soft"}`}>
+              {estado.texto}
+            </p>
+          )}
+        </section>
+
+        {/* Galería */}
+        <section className="px-5 py-4">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            {pest("iniciales", `Iniciales (${PLANTILLAS_BASE.length})`)}
+            {pest("propias", `Mis plantillas${guardadas ? ` (${guardadas.length})` : ""}`)}
+          </div>
+
+          {pestana === "iniciales" ? (
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+              {PLANTILLAS_BASE.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
+            </ul>
+          ) : guardadas === null ? (
+            <p className="font-sans text-sm italic text-ink-soft">Cargando…</p>
+          ) : guardadas.length === 0 ? (
+            <p className="font-sans text-sm italic text-ink-soft">
+              Aún no guardas ninguna. Arma una página, ábrela aquí y usa “Guardar plantilla”.
+            </p>
+          ) : (
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+              {guardadas.map((p) =>
+                tarjeta(
+                  p.id,
+                  p.nombre,
+                  `Guardada el ${p.creada ? new Date(p.creada).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }) : "—"}`,
+                  p.pagina,
+                  <>
+                    <button type="button" className={btnCls} onClick={() => renombrar(p)} title="Cambiar el nombre">✎</button>
+                    <button type="button" className={btnCls} onClick={() => borrar(p)} title="Eliminar la plantilla" aria-label={`Eliminar ${p.nombre}`}>✕</button>
+                  </>,
+                ),
+              )}
+            </ul>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}

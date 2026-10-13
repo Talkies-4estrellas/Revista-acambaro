@@ -1,0 +1,20 @@
+{
+  "numero": "02",
+  "fecha": "2026-10-09",
+  "tema": "Naturaleza",
+  "publicada": false,
+  "paginas": [
+    {
+      "plantilla": "portada",
+      "transicion": "izquierda",
+      "titulo": "Título de la portada",
+      "tono": "terracota",
+      "destacados": []
+    },
+    {
+      "plantilla": "indice",
+      "transicion": "izquierda",
+      "titulo": "Índice"
+    }
+  ]
+}

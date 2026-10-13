@@ -1,0 +1,18 @@
+node_modules
+.next
+*.tsbuildinfo
+next-env.d.ts
+.next-build
+
+# Variables de entorno y claves: nunca se suben
+.env
+.env.*
+!.env.example
+
+# Datos privados: correos de suscriptores y ediciones borradas (papelera)
+content/suscriptores.json
+content/papelera/
+
+# Sistema
+.DS_Store
+Thumbs.db

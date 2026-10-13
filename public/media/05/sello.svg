@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sello: Edición especial, era del vapor, número 02">
+  <defs>
+    <path id="circulo" d="M100,100 m-70,0 a70,70 0 1,1 140,0 a70,70 0 1,1 -140,0"/>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="#b5472f"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#f3ede1" stroke-width="2" stroke-dasharray="3 5"/>
+  <circle cx="100" cy="100" r="50" fill="none" stroke="#f3ede1" stroke-width="2"/>
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700" letter-spacing="3.2" fill="#f3ede1">
+    <textPath href="#circulo" startOffset="0">EDICIÓN ESPECIAL ★ ERA DEL VAPOR ★ ACÁMBARO ★</textPath>
+  </text>
+  <text x="100" y="86" text-anchor="middle" font-family="Georgia, serif" font-size="13" letter-spacing="3" fill="#f3ede1">N.º</text>
+  <text x="100" y="128" text-anchor="middle" font-family="Georgia, serif" font-size="46" font-weight="700" font-style="italic" fill="#f3ede1">02</text>
+</svg>

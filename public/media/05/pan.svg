@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" role="img" aria-label="Canasta con pan recién horneado">
+  <defs>
+    <linearGradient id="bun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8b05a"/>
+      <stop offset="1" stop-color="#c47f2c"/>
+    </linearGradient>
+    <linearGradient id="cesta" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c8923f"/>
+      <stop offset="1" stop-color="#9c6a2a"/>
+    </linearGradient>
+  </defs>
+  <!-- vapor -->
+  <g fill="none" stroke="#e7c27a" stroke-width="7" stroke-linecap="round" opacity=".75">
+    <path d="M230 120 C205 95 255 80 232 52 C222 40 232 28 240 22"/>
+    <path d="M300 100 C275 75 325 60 302 32 C292 20 302 8 310 2"/>
+    <path d="M372 122 C347 97 397 82 374 54 C364 42 374 30 382 24"/>
+  </g>
+  <!-- sombra -->
+  <ellipse cx="300" cy="478" rx="236" ry="22" fill="#000" opacity=".14"/>
+  <!-- panes del fondo -->
+  <ellipse cx="238" cy="236" rx="74" ry="50" fill="url(#bun)" transform="rotate(-8 238 236)"/>
+  <ellipse cx="368" cy="226" rx="74" ry="50" fill="url(#bun)" transform="rotate(7 368 226)"/>
+  <!-- pan largo -->
+  <g transform="rotate(-14 300 250)">
+    <rect x="150" y="196" width="300" height="72" rx="36" fill="url(#bun)"/>
+    <g stroke="#a8691f" stroke-width="6" stroke-linecap="round" fill="none">
+      <path d="M200 214 L228 250"/><path d="M262 208 L290 250"/><path d="M324 208 L352 250"/><path d="M386 214 L414 250"/>
+    </g>
+  </g>
+  <!-- cesta -->
+  <path d="M82 292 L518 292 L476 452 Q300 486 124 452 Z" fill="url(#cesta)"/>
+  <g stroke="#7d5120" stroke-width="3" opacity=".55" fill="none">
+    <path d="M96 336 Q300 372 504 336"/>
+    <path d="M108 380 Q300 416 492 380"/>
+    <path d="M118 420 Q300 454 482 420"/>
+    <path d="M150 300 L172 456"/><path d="M210 304 L224 470"/><path d="M270 308 L274 474"/>
+    <path d="M330 308 L326 474"/><path d="M390 304 L376 470"/><path d="M450 300 L428 456"/>
+  </g>
+  <!-- paño -->
+  <path d="M96 286 Q300 340 504 286 L522 322 Q300 384 78 322 Z" fill="#b5472f"/>
+  <g fill="#f3ede1" opacity=".85">
+    <circle cx="150" cy="314" r="5"/><circle cx="210" cy="327" r="5"/><circle cx="270" cy="334" r="5"/>
+    <circle cx="330" cy="334" r="5"/><circle cx="390" cy="327" r="5"/><circle cx="450" cy="314" r="5"/>
+  </g>
+  <!-- borde -->
+  <ellipse cx="300" cy="292" rx="222" ry="30" fill="none" stroke="#8a5b22" stroke-width="10"/>
+  <!-- panes de frente -->
+  <ellipse cx="196" cy="282" rx="62" ry="40" fill="url(#bun)" transform="rotate(-6 196 282)"/>
+  <path d="M158 268 Q196 248 236 266" fill="none" stroke="#a8691f" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="300" cy="288" rx="66" ry="42" fill="url(#bun)"/>
+  <path d="M258 272 Q300 250 342 272" fill="none" stroke="#a8691f" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="404" cy="282" rx="62" ry="40" fill="url(#bun)" transform="rotate(6 404 282)"/>
+  <path d="M364 266 Q404 248 442 268" fill="none" stroke="#a8691f" stroke-width="6" stroke-linecap="round"/>
+</svg>

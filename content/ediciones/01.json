@@ -1,0 +1,184 @@
+{
+  "numero": "01",
+  "numeroFijo": true,
+  "fecha": "2026-10-09",
+  "tema": "El pueblo que sabe a pan",
+  "publicada": true,
+  "paginas": [
+    {
+      "plantilla": "portada",
+      "transicion": "izquierda",
+      "titulo": "Cuando el tren llegaba a Acámbaro",
+      "seccion": "Historia",
+      "bajada": "Un recorrido por la memoria ferrocarrilera de una ciudad que durante décadas fue punto de encuentro entre el centro y el occidente del país.",
+      "autor": "Redacción",
+      "lectura": 12,
+      "fecha": "08 oct 2026",
+      "tono": "terracota",
+      "enlace": 3,
+      "destacados": [
+        { "titulo": "El pan de la madrugada", "seccion": "Gastronomía", "pagina": 4, "tono": "ocre", "autor": "Ana Rentería", "lectura": 7 },
+        { "titulo": "Claustros y silencio", "seccion": "Cultura", "pagina": 6, "tono": "indigo", "autor": "Luis Mendoza", "lectura": 9 },
+        { "titulo": "La presa al amanecer", "seccion": "Naturaleza", "pagina": 7, "tono": "oliva", "autor": "Marisol Vega", "lectura": 6 }
+      ]
+    },
+    {
+      "plantilla": "indice",
+      "transicion": "izquierda",
+      "titulo": "Índice",
+      "agenda": [
+        { "dia": "17", "mes": "OCT", "titulo": "Noche de museos", "lugar": "Centro histórico" },
+        { "dia": "24", "mes": "OCT", "titulo": "Mercado de productores locales", "lugar": "Jardín principal" },
+        { "dia": "01", "mes": "NOV", "titulo": "Altares y ofrendas", "lugar": "Distintos barrios" },
+        { "dia": "08", "mes": "NOV", "titulo": "Concierto de música de cámara", "lugar": "Ex convento" }
+      ]
+    },
+    {
+      "plantilla": "reportaje",
+      "transicion": "izquierda",
+      "seccion": "Historia",
+      "titulo": "Cuando el tren llegaba a Acámbaro",
+      "bajada": "Un recorrido por la memoria ferrocarrilera de una ciudad que durante décadas fue punto de encuentro entre el centro y el occidente del país.",
+      "autor": "Redacción",
+      "lectura": 12,
+      "fecha": "08 oct 2026",
+      "imagen": { "alt": "La estación", "tono": "terracota", "proporcion": "16/9" },
+      "bloques": [
+        {
+          "tipo": "texto",
+          "parrafos": [
+            "Este es un párrafo de ejemplo. Aquí iría el arranque del reportaje: la escena de una estación al amanecer, el silbato que se oye antes de que el tren aparezca y las voces de quienes lo esperaban.",
+            "La crónica avanza por andenes, talleres y patios. Cada escena se cuenta con calma, porque una revista permite detenerse en lo que otros formatos pasan de largo."
+          ]
+        },
+        { "tipo": "subtitulo", "texto": "Los años del movimiento" },
+        {
+          "tipo": "texto",
+          "parrafos": [
+            "Los textos admiten **negritas** y *cursivas*. El contenido definitivo reemplazará este texto cuando la edición esté lista."
+          ]
+        },
+        { "tipo": "imagen", "alt": "Vías al atardecer", "tono": "ocre", "proporcion": "21/9", "ancho": "ancho", "pie": "Pie de foto: las vías al atardecer. Ejemplo de imagen a ancho de página." }
+      ]
+    },
+    {
+      "plantilla": "reportaje",
+      "transicion": "izquierda",
+      "seccion": "Gastronomía",
+      "titulo": "El pan de la madrugada",
+      "bajada": "Entramos a una panadería a las cuatro de la mañana para ver cómo se hornea una tradición.",
+      "autor": "Ana Rentería",
+      "lectura": 7,
+      "fecha": "06 oct 2026",
+      "imagen": { "alt": "El horno", "tono": "ocre", "proporcion": "16/9" },
+      "bloques": [
+        {
+          "tipo": "texto",
+          "parrafos": [
+            "Este es un párrafo de ejemplo. El horno ya está encendido cuando llega la primera persona del turno, y la masa lleva horas reposando bajo un paño.",
+            "Para el cierre se reserva una imagen: la luz de la tarde sobre las fachadas, o el vapor de un horno recién abierto."
+          ]
+        },
+        { "tipo": "cita", "texto": "El horno no perdona la prisa.", "autor": "Doña Lupe, panadera" },
+        { "tipo": "lista", "items": ["Harina, agua y sal", "Reposo de la masa", "Horno de leña a primera hora"] }
+      ]
+    },
+    {
+      "plantilla": "cita",
+      "transicion": "derecha",
+      "tono": "terracota",
+      "enIndice": false,
+      "texto": "Una ciudad se conoce mejor por lo que huele a las seis de la mañana que por lo que enseña a mediodía.",
+      "autor": "De la crónica «El pan de la madrugada»"
+    },
+    {
+      "plantilla": "reportaje",
+      "transicion": "izquierda",
+      "seccion": "Cultura",
+      "titulo": "Claustros y silencio",
+      "bajada": "Paseo por el antiguo convento franciscano y los rincones donde el tiempo se detiene.",
+      "autor": "Luis Mendoza",
+      "lectura": 9,
+      "fecha": "05 oct 2026",
+      "imagen": { "alt": "El claustro", "tono": "indigo", "proporcion": "16/9" },
+      "bloques": [
+        {
+          "tipo": "texto",
+          "parrafos": [
+            "Este es un párrafo de ejemplo sobre los claustros. Los muros guardan una temperatura distinta a la de la calle, y el ruido de la plaza llega apagado.",
+            "La visita se hace despacio, de arco en arco, con la mirada puesta en los detalles de la piedra."
+          ]
+        }
+      ]
+    },
+    {
+      "plantilla": "reportaje",
+      "transicion": "izquierda",
+      "seccion": "Naturaleza",
+      "titulo": "La presa al amanecer",
+      "bajada": "Garzas, pescadores y neblina: una mañana en el agua que alimenta la región.",
+      "autor": "Marisol Vega",
+      "lectura": 6,
+      "fecha": "03 oct 2026",
+      "imagen": { "alt": "La presa", "tono": "oliva", "proporcion": "16/9" },
+      "bloques": [
+        {
+          "tipo": "texto",
+          "parrafos": [
+            "Este es un párrafo de ejemplo. A esa hora la neblina todavía cubre el agua y las barcas parecen flotar en el aire."
+          ]
+        },
+        { "tipo": "gif", "alt": "Garza levantando el vuelo", "tono": "oliva", "proporcion": "16/9", "pie": "Un gif (o un .webp animado) va aquí: basta poner su ruta en \"src\"." }
+      ]
+    },
+    {
+      "plantilla": "galeria",
+      "transicion": "arriba",
+      "seccion": "Gente",
+      "titulo": "Manos que dan forma",
+      "bajada": "Cuatro artesanos, cuatro oficios y una misma obstinación: no dejar que se pierda lo hecho a mano.",
+      "autor": "Redacción",
+      "lectura": 10,
+      "fecha": "01 oct 2026",
+      "columnas": 2,
+      "imagenes": [
+        { "alt": "El alfarero", "tono": "terracota", "proporcion": "4/3", "pie": "El alfarero, en su taller." },
+        { "alt": "La tejedora", "tono": "indigo", "proporcion": "4/3", "pie": "La tejedora y su telar." },
+        { "alt": "El carpintero", "tono": "ocre", "proporcion": "4/3", "pie": "El carpintero." },
+        { "alt": "La bordadora", "tono": "oliva", "proporcion": "4/3", "pie": "La bordadora." }
+      ]
+    },
+    {
+      "plantilla": "video",
+      "transicion": "fundido",
+      "seccion": "Cultura",
+      "titulo": "Plaza y portales: una tarde de domingo",
+      "bajada": "Crónica en video de una tarde entre bancas, globos y conversaciones largas.",
+      "autor": "Luis Mendoza",
+      "lectura": 3,
+      "fecha": "28 sep 2026",
+      "video": { "pie": "Sin \"src\", \"youtube\" ni \"vimeo\" se muestra este marcador de posición." },
+      "bloques": [
+        { "tipo": "texto", "parrafos": ["Texto de acompañamiento del video. Puede ser tan largo o corto como haga falta."] }
+      ]
+    },
+    {
+      "plantilla": "libre",
+      "transicion": "izquierda",
+      "seccion": "Agenda",
+      "titulo": "Guía para un fin de semana largo",
+      "bajada": "Dónde comer, qué ver y cómo recorrer la ciudad sin prisa, en tres días.",
+      "autor": "Redacción",
+      "lectura": 5,
+      "fecha": "30 sep 2026",
+      "bloques": [
+        { "tipo": "subtitulo", "texto": "Viernes" },
+        { "tipo": "texto", "parrafos": ["Llegada, caminata por el centro y cena temprano."] },
+        { "tipo": "subtitulo", "texto": "Sábado" },
+        { "tipo": "texto", "parrafos": ["Mercado por la mañana, convento al mediodía y la presa al atardecer."] },
+        { "tipo": "separador" },
+        { "tipo": "suscripcion", "titulo": "Recibe la próxima edición", "texto": "Un correo con las historias, recetas y fechas de Acámbaro. Sin ruido." }
+      ]
+    }
+  ]
+}

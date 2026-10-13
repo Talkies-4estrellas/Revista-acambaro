@@ -1,0 +1,71 @@
+/**
+ * Animaciones de entrada de los elementos del lienzo. Sin dependencias del servidor: las usan el sitio
+ * publicado (al entrar el elemento en pantalla) y el panel (vista previa).
+ * Las distancias van en `cqw` (unidades del contenedor del lienzo) para que escalen con la hoja.
+ */
+
+export const EFECTOS = {
+  aparecer: { nombre: "Aparecer", easing: "ease-out" },
+  subir: { nombre: "Subir", easing: "cubic-bezier(.2,.7,.2,1)" },
+  bajar: { nombre: "Bajar", easing: "cubic-bezier(.2,.7,.2,1)" },
+  izquierda: { nombre: "Desde la izquierda", easing: "cubic-bezier(.2,.7,.2,1)" },
+  derecha: { nombre: "Desde la derecha", easing: "cubic-bezier(.2,.7,.2,1)" },
+  zoom: { nombre: "Zoom", easing: "cubic-bezier(.2,.7,.2,1)" },
+  girar: { nombre: "Girar", easing: "cubic-bezier(.2,.7,.2,1)" },
+  rebotar: { nombre: "Rebotar", easing: "ease-out" },
+  revelar: { nombre: "Revelar (de izquierda a derecha)", easing: "cubic-bezier(.7,0,.2,1)" },
+} as const;
+
+export type Efecto = keyof typeof EFECTOS;
+export const EFECTOS_IDS = Object.keys(EFECTOS) as Efecto[];
+
+export type AnimacionEl = {
+  efecto: Efecto;
+  /** Milisegundos (por defecto 700). */
+  duracion?: number;
+  /** Milisegundos de espera antes de empezar, desde que el elemento entra en pantalla (por defecto 0). */
+  retraso?: number;
+};
+
+export const DURACION_DEFECTO = 700;
+
+/** Fotogramas de cada efecto: del estado inicial al estado normal del elemento. */
+export function fotogramas(efecto: Efecto): Keyframe[] {
+  switch (efecto) {
+    case "aparecer":
+      return [{ opacity: 0 }, { opacity: 1 }];
+    case "subir":
+      return [{ opacity: 0, transform: "translateY(6cqw)" }, { opacity: 1, transform: "translateY(0)" }];
+    case "bajar":
+      return [{ opacity: 0, transform: "translateY(-6cqw)" }, { opacity: 1, transform: "translateY(0)" }];
+    case "izquierda":
+      return [{ opacity: 0, transform: "translateX(-8cqw)" }, { opacity: 1, transform: "translateX(0)" }];
+    case "derecha":
+      return [{ opacity: 0, transform: "translateX(8cqw)" }, { opacity: 1, transform: "translateX(0)" }];
+    case "zoom":
+      return [{ opacity: 0, transform: "scale(.82)" }, { opacity: 1, transform: "scale(1)" }];
+    case "girar":
+      return [{ opacity: 0, transform: "rotate(-10deg) scale(.9)" }, { opacity: 1, transform: "rotate(0) scale(1)" }];
+    case "rebotar":
+      return [
+        { opacity: 0, transform: "scale(.4)", offset: 0 },
+        { opacity: 1, transform: "scale(1.1)", offset: 0.6 },
+        { opacity: 1, transform: "scale(1)", offset: 1 },
+      ];
+    case "revelar":
+      return [
+        { opacity: 1, clipPath: "inset(0 100% 0 0)" },
+        { opacity: 1, clipPath: "inset(0 0 0 0)" },
+      ];
+  }
+}
+
+/** Opciones de `Element.animate` para una animación del modelo. */
+export function opcionesAnimacion(a: AnimacionEl, relleno: FillMode = "backwards"): KeyframeAnimationOptions {
+  return {
+    duration: a.duracion ?? DURACION_DEFECTO,
+    delay: a.retraso ?? 0,
+    easing: EFECTOS[a.efecto].easing,
+    fill: relleno,
+  };
+}
