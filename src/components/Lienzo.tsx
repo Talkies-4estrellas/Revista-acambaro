@@ -402,7 +402,7 @@ export function bloquesMovil(elementos: Elemento[], orden: string[] = []): Bloqu
   const fondos = elementos.filter(esFondo);
   // Las barras verticales finas (adornos al lado de un texto) no tienen sentido en una columna: se omiten salvo que
   // se pida "mostrar". Una regla horizontal sí se conserva como separador.
-  const barraVertical = (e: Elemento) => e.tipo === "forma" && e.w <= 14 && e.h >= e.w * 3 && e.movil !== "mostrar";
+  const barraVertical = (e: Elemento) => e.tipo === "forma" && e.w <= 14 && e.h >= e.w * 2 && e.movil !== "mostrar";
   const resto = elementos.filter((e) => !esFondo(e) && e.movil !== "ocultar" && !barraVertical(e));
 
   // Cada elemento pertenece a la forma más pequeña que contenga su centro.
