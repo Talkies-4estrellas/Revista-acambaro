@@ -155,7 +155,7 @@ export default function Proyecto() {
             <div>
               <h3 className="kicker text-oliva">Ya está</h3>
               <ul className="font-sans mt-3 space-y-2 text-sm">
-                {["Lectura con giro de página y modo celular", "Editor de lienzo con plantillas, animaciones y orden en el celular", "Numeración y publicación programada", "Newsletter: alta, baja, exportación y correo de cada edición", "Búsqueda en todas las ediciones", "Cuatro ediciones de muestra"].map((x) => (
+                {["Lectura con giro de página y modo celular", "Editor de lienzo con plantillas, animaciones y orden en el celular", "Numeración y publicación programada", "Newsletter: alta, baja, exportación y correo de cada edición", "Búsqueda en todas las ediciones", "Siete ediciones de muestra, más de 90 páginas"].map((x) => (
                   <li key={x} className="flex gap-2">
                     <span aria-hidden className="text-oliva">✓</span>
                     {x}
