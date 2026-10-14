@@ -876,13 +876,13 @@
           "y": 904,
           "w": 90,
           "h": 64,
-          "texto": "15",
+          "texto": "12",
           "fuente": "display",
           "tam": 52,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 15,
+          "enlace": 12,
           "animacion": {
             "efecto": "subir",
             "duracion": 700,
@@ -902,7 +902,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 15
+          "enlace": 12
         },
         {
           "tipo": "texto",
@@ -916,7 +916,7 @@
           "tam": 15,
           "color": "tintaSuave",
           "interlineado": 1.4,
-          "enlace": 15
+          "enlace": 12
         },
         {
           "tipo": "forma",
@@ -5148,6 +5148,325 @@
     },
     {
       "plantilla": "lienzo",
+      "transicion": "fundido",
+      "titulo": "Cupones",
+      "seccion": "Publicidad",
+      "enIndice": false,
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "p12a1",
+        "p12a2",
+        "p12a3",
+        "p12a4",
+        "p12a5",
+        "p12a6",
+        "p12a7",
+        "p12a8",
+        "p12a9",
+        "p12a10",
+        "p12a11",
+        "p12a12",
+        "p12a13",
+        "p12a14",
+        "p12a15",
+        "p12a16",
+        "p12a17",
+        "p12a18",
+        "p12a19",
+        "p12a20",
+        "p12a21",
+        "p12a22",
+        "p12a23"
+      ],
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 36,
+          "w": 680,
+          "h": 70,
+          "texto": "Cupones de la semana",
+          "fuente": "display",
+          "tam": 42,
+          "peso": 900,
+          "id": "p12a1"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 104,
+          "w": 300,
+          "h": 20,
+          "texto": "PUBLICIDAD",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.22,
+          "color": "tintaSuave",
+          "id": "p12a2"
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 150,
+          "w": 680,
+          "h": 280,
+          "color": "blanco",
+          "borde": 3,
+          "colorBorde": "terracota",
+          "radio": 14,
+          "id": "p12a3"
+        },
+        {
+          "tipo": "icono",
+          "icono": "scissors",
+          "x": 78,
+          "y": 162,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "p12a4"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 190,
+          "w": 280,
+          "h": 130,
+          "texto": "2×1",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "color": "terracota",
+          "alinear": "centro",
+          "vertical": "centro",
+          "id": "p12a5"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 190,
+          "w": 370,
+          "h": 110,
+          "texto": "Nombre del anunciante\nDescripción breve de la promoción",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "interlineado": 1.35,
+          "id": "p12a6"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 310,
+          "w": 370,
+          "h": 60,
+          "texto": "Válido hasta el DD/MM · Muestra esta página",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.4,
+          "id": "p12a7"
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 664,
+          "y": 368,
+          "w": 44,
+          "h": 44,
+          "color": "oliva",
+          "id": "p12a8"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 382,
+          "w": 500,
+          "h": 24,
+          "texto": "Dirección · Teléfono",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "p12a9"
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 460,
+          "w": 680,
+          "h": 280,
+          "color": "blanco",
+          "borde": 3,
+          "colorBorde": "terracota",
+          "radio": 14,
+          "id": "p12a10"
+        },
+        {
+          "tipo": "icono",
+          "icono": "scissors",
+          "x": 78,
+          "y": 472,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "p12a11"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 500,
+          "w": 280,
+          "h": 130,
+          "texto": "2×1",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "color": "terracota",
+          "alinear": "centro",
+          "vertical": "centro",
+          "id": "p12a12"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 500,
+          "w": 370,
+          "h": 110,
+          "texto": "Nombre del anunciante\nDescripción breve de la promoción",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "interlineado": 1.35,
+          "id": "p12a13"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 620,
+          "w": 370,
+          "h": 60,
+          "texto": "Válido hasta el DD/MM · Muestra esta página",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.4,
+          "id": "p12a14"
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 664,
+          "y": 678,
+          "w": 44,
+          "h": 44,
+          "color": "oliva",
+          "id": "p12a15"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 692,
+          "w": 500,
+          "h": 24,
+          "texto": "Dirección · Teléfono",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "p12a16"
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 770,
+          "w": 680,
+          "h": 280,
+          "color": "blanco",
+          "borde": 3,
+          "colorBorde": "terracota",
+          "radio": 14,
+          "id": "p12a17"
+        },
+        {
+          "tipo": "icono",
+          "icono": "scissors",
+          "x": 78,
+          "y": 782,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "p12a18"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 810,
+          "w": 280,
+          "h": 130,
+          "texto": "2×1",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "color": "terracota",
+          "alinear": "centro",
+          "vertical": "centro",
+          "id": "p12a19"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 810,
+          "w": 370,
+          "h": 110,
+          "texto": "Nombre del anunciante\nDescripción breve de la promoción",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "interlineado": 1.35,
+          "id": "p12a20"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 930,
+          "w": 370,
+          "h": 60,
+          "texto": "Válido hasta el DD/MM · Muestra esta página",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.4,
+          "id": "p12a21"
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 664,
+          "y": 988,
+          "w": 44,
+          "h": 44,
+          "color": "oliva",
+          "id": "p12a22"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 1002,
+          "w": 500,
+          "h": 24,
+          "texto": "Dirección · Teléfono",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "p12a23"
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
       "transicion": "izquierda",
       "titulo": "Sopa de letras",
       "seccion": "Relax",
@@ -7439,7 +7758,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición modelo · 12",
+          "texto": "Edición modelo · 13",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -7462,15 +7781,15 @@
       "alto": 1100,
       "movil": "apilar",
       "ordenMovil": [
-        "p13a1",
-        "p13a2",
-        "p13a3",
-        "p13a4",
-        "p13a5",
-        "p13a6",
-        "p13a7",
-        "p13a8",
-        "p13a9"
+        "p14a1",
+        "p14a2",
+        "p14a3",
+        "p14a4",
+        "p14a5",
+        "p14a6",
+        "p14a7",
+        "p14a8",
+        "p14a9"
       ],
       "elementos": [
         {
@@ -7486,7 +7805,7 @@
           "mayusculas": true,
           "espaciado": 0.22,
           "color": "tintaSuave",
-          "id": "p13a1"
+          "id": "p14a1"
         },
         {
           "tipo": "imagen",
@@ -7497,7 +7816,7 @@
           "tono": "ocre",
           "alt": "Foto del anunciante",
           "ajuste": "cubrir",
-          "id": "p13a2"
+          "id": "p14a2"
         },
         {
           "tipo": "texto",
@@ -7510,7 +7829,7 @@
           "tam": 42,
           "peso": 900,
           "interlineado": 1.08,
-          "id": "p13a3"
+          "id": "p14a3"
         },
         {
           "tipo": "forma",
@@ -7519,7 +7838,7 @@
           "w": 120,
           "h": 4,
           "color": "terracota",
-          "id": "p13a4"
+          "id": "p14a4"
         },
         {
           "tipo": "texto",
@@ -7531,7 +7850,7 @@
           "fuente": "serif",
           "tam": 19,
           "interlineado": 1.6,
-          "id": "p13a5"
+          "id": "p14a5"
         },
         {
           "tipo": "forma",
@@ -7541,7 +7860,7 @@
           "h": 130,
           "color": "papel2",
           "radio": 8,
-          "id": "p13a6"
+          "id": "p14a6"
         },
         {
           "tipo": "texto",
@@ -7553,7 +7872,7 @@
           "fuente": "display",
           "tam": 22,
           "peso": 800,
-          "id": "p13a7"
+          "id": "p14a7"
         },
         {
           "tipo": "texto",
@@ -7566,7 +7885,7 @@
           "tam": 14,
           "color": "tintaSuave",
           "interlineado": 1.5,
-          "id": "p13a8"
+          "id": "p14a8"
         },
         {
           "tipo": "icono",
@@ -7576,7 +7895,7 @@
           "w": 56,
           "h": 56,
           "color": "oliva",
-          "id": "p13a9"
+          "id": "p14a9"
         }
       ]
     },
@@ -7723,7 +8042,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición modelo · 14",
+          "texto": "Edición modelo · 15",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -7733,325 +8052,6 @@
           "espaciado": 0.14,
           "mayusculas": true,
           "movil": "ocultar"
-        }
-      ]
-    },
-    {
-      "plantilla": "lienzo",
-      "transicion": "fundido",
-      "titulo": "Cupones",
-      "seccion": "Publicidad",
-      "enIndice": false,
-      "fondo": "papel",
-      "alto": 1100,
-      "movil": "apilar",
-      "ordenMovil": [
-        "p15a1",
-        "p15a2",
-        "p15a3",
-        "p15a4",
-        "p15a5",
-        "p15a6",
-        "p15a7",
-        "p15a8",
-        "p15a9",
-        "p15a10",
-        "p15a11",
-        "p15a12",
-        "p15a13",
-        "p15a14",
-        "p15a15",
-        "p15a16",
-        "p15a17",
-        "p15a18",
-        "p15a19",
-        "p15a20",
-        "p15a21",
-        "p15a22",
-        "p15a23"
-      ],
-      "elementos": [
-        {
-          "tipo": "texto",
-          "x": 60,
-          "y": 36,
-          "w": 680,
-          "h": 70,
-          "texto": "Cupones de la semana",
-          "fuente": "display",
-          "tam": 42,
-          "peso": 900,
-          "id": "p15a1"
-        },
-        {
-          "tipo": "texto",
-          "x": 60,
-          "y": 104,
-          "w": 300,
-          "h": 20,
-          "texto": "PUBLICIDAD",
-          "fuente": "sans",
-          "tam": 12,
-          "peso": 700,
-          "mayusculas": true,
-          "espaciado": 0.22,
-          "color": "tintaSuave",
-          "id": "p15a2"
-        },
-        {
-          "tipo": "forma",
-          "x": 60,
-          "y": 150,
-          "w": 680,
-          "h": 280,
-          "color": "blanco",
-          "borde": 3,
-          "colorBorde": "terracota",
-          "radio": 14,
-          "id": "p15a3"
-        },
-        {
-          "tipo": "icono",
-          "icono": "scissors",
-          "x": 78,
-          "y": 162,
-          "w": 30,
-          "h": 30,
-          "color": "terracota",
-          "id": "p15a4"
-        },
-        {
-          "tipo": "texto",
-          "x": 60,
-          "y": 190,
-          "w": 280,
-          "h": 130,
-          "texto": "2×1",
-          "fuente": "display",
-          "tam": 84,
-          "peso": 900,
-          "color": "terracota",
-          "alinear": "centro",
-          "vertical": "centro",
-          "id": "p15a5"
-        },
-        {
-          "tipo": "texto",
-          "x": 350,
-          "y": 190,
-          "w": 370,
-          "h": 110,
-          "texto": "Nombre del anunciante\nDescripción breve de la promoción",
-          "fuente": "sans",
-          "tam": 20,
-          "peso": 700,
-          "interlineado": 1.35,
-          "id": "p15a6"
-        },
-        {
-          "tipo": "texto",
-          "x": 350,
-          "y": 310,
-          "w": 370,
-          "h": 60,
-          "texto": "Válido hasta el DD/MM · Muestra esta página",
-          "fuente": "sans",
-          "tam": 14,
-          "color": "tintaSuave",
-          "interlineado": 1.4,
-          "id": "p15a7"
-        },
-        {
-          "tipo": "icono",
-          "icono": "whatsapp",
-          "x": 664,
-          "y": 368,
-          "w": 44,
-          "h": 44,
-          "color": "oliva",
-          "id": "p15a8"
-        },
-        {
-          "tipo": "texto",
-          "x": 84,
-          "y": 382,
-          "w": 500,
-          "h": 24,
-          "texto": "Dirección · Teléfono",
-          "fuente": "sans",
-          "tam": 13,
-          "color": "tintaSuave",
-          "id": "p15a9"
-        },
-        {
-          "tipo": "forma",
-          "x": 60,
-          "y": 460,
-          "w": 680,
-          "h": 280,
-          "color": "blanco",
-          "borde": 3,
-          "colorBorde": "terracota",
-          "radio": 14,
-          "id": "p15a10"
-        },
-        {
-          "tipo": "icono",
-          "icono": "scissors",
-          "x": 78,
-          "y": 472,
-          "w": 30,
-          "h": 30,
-          "color": "terracota",
-          "id": "p15a11"
-        },
-        {
-          "tipo": "texto",
-          "x": 60,
-          "y": 500,
-          "w": 280,
-          "h": 130,
-          "texto": "2×1",
-          "fuente": "display",
-          "tam": 84,
-          "peso": 900,
-          "color": "terracota",
-          "alinear": "centro",
-          "vertical": "centro",
-          "id": "p15a12"
-        },
-        {
-          "tipo": "texto",
-          "x": 350,
-          "y": 500,
-          "w": 370,
-          "h": 110,
-          "texto": "Nombre del anunciante\nDescripción breve de la promoción",
-          "fuente": "sans",
-          "tam": 20,
-          "peso": 700,
-          "interlineado": 1.35,
-          "id": "p15a13"
-        },
-        {
-          "tipo": "texto",
-          "x": 350,
-          "y": 620,
-          "w": 370,
-          "h": 60,
-          "texto": "Válido hasta el DD/MM · Muestra esta página",
-          "fuente": "sans",
-          "tam": 14,
-          "color": "tintaSuave",
-          "interlineado": 1.4,
-          "id": "p15a14"
-        },
-        {
-          "tipo": "icono",
-          "icono": "whatsapp",
-          "x": 664,
-          "y": 678,
-          "w": 44,
-          "h": 44,
-          "color": "oliva",
-          "id": "p15a15"
-        },
-        {
-          "tipo": "texto",
-          "x": 84,
-          "y": 692,
-          "w": 500,
-          "h": 24,
-          "texto": "Dirección · Teléfono",
-          "fuente": "sans",
-          "tam": 13,
-          "color": "tintaSuave",
-          "id": "p15a16"
-        },
-        {
-          "tipo": "forma",
-          "x": 60,
-          "y": 770,
-          "w": 680,
-          "h": 280,
-          "color": "blanco",
-          "borde": 3,
-          "colorBorde": "terracota",
-          "radio": 14,
-          "id": "p15a17"
-        },
-        {
-          "tipo": "icono",
-          "icono": "scissors",
-          "x": 78,
-          "y": 782,
-          "w": 30,
-          "h": 30,
-          "color": "terracota",
-          "id": "p15a18"
-        },
-        {
-          "tipo": "texto",
-          "x": 60,
-          "y": 810,
-          "w": 280,
-          "h": 130,
-          "texto": "2×1",
-          "fuente": "display",
-          "tam": 84,
-          "peso": 900,
-          "color": "terracota",
-          "alinear": "centro",
-          "vertical": "centro",
-          "id": "p15a19"
-        },
-        {
-          "tipo": "texto",
-          "x": 350,
-          "y": 810,
-          "w": 370,
-          "h": 110,
-          "texto": "Nombre del anunciante\nDescripción breve de la promoción",
-          "fuente": "sans",
-          "tam": 20,
-          "peso": 700,
-          "interlineado": 1.35,
-          "id": "p15a20"
-        },
-        {
-          "tipo": "texto",
-          "x": 350,
-          "y": 930,
-          "w": 370,
-          "h": 60,
-          "texto": "Válido hasta el DD/MM · Muestra esta página",
-          "fuente": "sans",
-          "tam": 14,
-          "color": "tintaSuave",
-          "interlineado": 1.4,
-          "id": "p15a21"
-        },
-        {
-          "tipo": "icono",
-          "icono": "whatsapp",
-          "x": 664,
-          "y": 988,
-          "w": 44,
-          "h": 44,
-          "color": "oliva",
-          "id": "p15a22"
-        },
-        {
-          "tipo": "texto",
-          "x": 84,
-          "y": 1002,
-          "w": 500,
-          "h": 24,
-          "texto": "Dirección · Teléfono",
-          "fuente": "sans",
-          "tam": 13,
-          "color": "tintaSuave",
-          "id": "p15a23"
         }
       ]
     },
@@ -8153,7 +8153,7 @@
       "plantilla": "lienzo",
       "transicion": "fundido",
       "titulo": "Con el apoyo de",
-      "seccion": "Publicidad",
+      "seccion": "Patrocinadores",
       "enIndice": false,
       "fondo": "papel",
       "alto": 1100,

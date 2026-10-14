@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 36" preserveAspectRatio="none" role="img" aria-label="Franja decorativa de ondas de agua">
+  <rect width="800" height="36" fill="#068562"/>
+  <g fill="none" stroke="#49c59f" stroke-width="3" stroke-linecap="round">
+    <path d="M0 12 q25 -12 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0"/>
+    <path d="M0 26 q25 -12 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" opacity="0.7"/>
+  </g>
+</svg>

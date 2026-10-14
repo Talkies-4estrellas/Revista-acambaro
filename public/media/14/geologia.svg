@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 760" width="620" height="760" ><defs><linearGradient id="m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#d1483a"/></linearGradient></defs>
+<rect width="620" height="760" fill="#e8f7f3"/><rect width="620" height="200" fill="#cfe9ef"/>
+<path d="M70 200 l-35.2 0 l32 -72 l-22.400000000000002 0 l25.6 -64 l-16 0 l28.799999999999997 -48 l28.799999999999997 48 l-16 0 l25.6 64 l-22.400000000000002 0 l32 72 z" fill="#0f5b45"/><path d="M140 200 l-35.2 0 l32 -72 l-22.400000000000002 0 l25.6 -64 l-16 0 l28.799999999999997 -48 l28.799999999999997 48 l-16 0 l25.6 64 l-22.400000000000002 0 l32 72 z" fill="#1b7a5a"/><path d="M230 200 l-35.2 0 l32 -72 l-22.400000000000002 0 l25.6 -64 l-16 0 l28.799999999999997 -48 l28.799999999999997 48 l-16 0 l25.6 64 l-22.400000000000002 0 l32 72 z" fill="#0f5b45"/><path d="M470 200 l-35.2 0 l32 -72 l-22.400000000000002 0 l25.6 -64 l-16 0 l28.799999999999997 -48 l28.799999999999997 48 l-16 0 l25.6 64 l-22.400000000000002 0 l32 72 z" fill="#1b7a5a"/><path d="M540 200 l-35.2 0 l32 -72 l-22.400000000000002 0 l25.6 -64 l-16 0 l28.799999999999997 -48 l28.799999999999997 48 l-16 0 l25.6 64 l-22.400000000000002 0 l32 72 z" fill="#0f5b45"/>
+<path d="M0 200 L620 200 L620 760 L0 760Z" fill="#b9a98f"/><path d="M0 200 L620 200 L620 270 L0 270Z" fill="#7d6a4f"/>
+<rect y="270" width="620" height="170" fill="#a39176"/>
+<ellipse cx="310" cy="600" rx="260" ry="100" fill="url(#m)"/><ellipse cx="310" cy="590" rx="200" ry="62" fill="#ffb067" opacity="0.7"/>
+<path d="M150 440 Q310 400 470 440 L500 520 Q310 560 120 520Z" fill="#d97a4a" opacity="0.55"/>
+<path d="M60 300 Q120 340 200 330 L240 430 Q150 450 70 420Z" fill="#3fa5c2" opacity="0.85"/>
+<path d="M380 300 Q470 330 560 300 L550 410 Q470 440 400 420Z" fill="#3fa5c2" opacity="0.85"/>
+<path d="M300 200 L320 200 L330 560 L290 560Z" fill="#f3c87a" opacity="0.55"/>
+<g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"><path d="M140 345 v40"/><path d="M130 372 l10 14 l10 -14"/><path d="M470 340 v50"/><path d="M460 376 l10 14 l10 -14"/></g>
+<g fill="#fff" opacity="0.85"><circle cx="236" cy="160" r="26.4"/><circle cx="264.8" cy="148" r="33.6"/><circle cx="298.4" cy="160" r="26.4"/><circle cx="267.2" cy="169.6" r="28.799999999999997"/></g><g fill="#fff" opacity="0.8"><circle cx="306" cy="120" r="35.2"/><circle cx="344.4" cy="104" r="44.800000000000004"/><circle cx="389.2" cy="120" r="35.2"/><circle cx="347.6" cy="132.8" r="38.400000000000006"/></g>
+<rect x="505" y="150" width="9" height="330" fill="#31404a"/><rect x="498" y="140" width="24" height="14" fill="#31404a"/>
+<g font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#0b2e36">
+<text x="20" y="380">Agua de lluvia</text><text x="20" y="402">se infiltra</text>
+<text x="205" y="700" fill="#fff">Cámara de magma</text>
+<text x="330" y="470" fill="#0b2e36">Roca caliente</text>
+<text x="394" y="278" fill="#0b2e36">Pozo</text>
+<text x="330" y="86">Fumarola</text><text x="330" y="108">(vapor y gas)</text>
+<text x="380" y="520" fill="#fff" font-size="16">Falla: camino del vapor</text></g></svg>

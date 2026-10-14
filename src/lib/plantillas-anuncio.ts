@@ -7,6 +7,9 @@ import type { PlantillaBase } from "./plantillas-base";
  * o https://wa.me/52…). Los espacios sin foto muestran un color provisional hasta que se sube el arte.
  */
 
+/** Igual que SECCION_PUBLICIDAD de esquema.ts (aquí solo se importan tipos para poder usar este archivo desde scripts de Node). */
+const SECCION_PUBLICIDAD = "Publicidad";
+
 const texto = (x: number, y: number, w: number, h: number, t: string, o: Partial<ElementoTexto> = {}): Elemento => ({
   tipo: "texto",
   x,
@@ -33,14 +36,14 @@ const pie = (x: number, y: number, w: number, nombre = "Nombre del anunciante", 
   texto(x, y + 24, w, 22, contacto, { fuente: "sans", tam: 13, color: "tintaSuave" }),
 ];
 
-const pagina = (titulo: string, elementos: Elemento[], fondo = "papel"): Pagina => {
+const pagina = (titulo: string, elementos: Elemento[], seccion: string = SECCION_PUBLICIDAD, fondo = "papel"): Pagina => {
   // Ids propios y orden en el celular = orden en que se escribieron (si no, se ordena por altura y los pies de anuncio quedan al final).
   const conId = elementos.map((e, i) => ({ ...e, id: `a${i + 1}` }) as Elemento);
   return {
     plantilla: "lienzo",
     transicion: "fundido",
     titulo,
-    seccion: "Publicidad",
+    seccion,
     enIndice: false,
     fondo,
     alto: 1100,
@@ -157,6 +160,6 @@ export const PLANTILLAS_ANUNCIO: PlantillaBase[] = [
         [0, 1].map((c) => imagen(100 + c * 310, 310 + f * 160, 290, 130, { tono: "ocre", alt: `Logotipo patrocinador ${f * 2 + c + 1}`, ajuste: "contener", opacidad: 0.9 })),
       ),
       etiqueta(60, 1040, 680, { alinear: "centro" }),
-    ]),
+    ], "Patrocinadores"),
   },
 ];

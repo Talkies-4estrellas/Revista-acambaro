@@ -10,7 +10,7 @@ export default function Footer() {
           <a href="/proyecto" className="hover:underline">El proyecto</a>
         </nav>
         <p className="font-sans text-xs text-ink-soft">
-          Prototipo con contenido de ejemplo · © 2026 · Hecho en Guanajuato
+          © 2026 · Hecho en Guanajuato
         </p>
       </div>
     </footer>

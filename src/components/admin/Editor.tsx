@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ETIQUETAS_PLANTILLA,
   PLANTILLAS,
+  anunciosSeguidos,
   estadoEdicion,
   paginaDesdePlantilla,
   paginaNueva,
@@ -18,6 +19,18 @@ import FormPagina from "./FormPagina";
 import EditorLienzo from "./EditorLienzo";
 import PanelPaginas from "./PanelPaginas";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
+
+/** «las páginas 7 y 8» / «las páginas 4 a 6 y 10 y 11», a partir de los números de página que son anuncios pegados. */
+function textoSeguidos(paginas: number[]) {
+  const grupos: number[][] = [];
+  for (const n of paginas) {
+    const g = grupos[grupos.length - 1];
+    if (g && n === g[g.length - 1] + 1) g.push(n);
+    else grupos.push([n]);
+  }
+  const t = grupos.map((g) => (g.length === 2 ? `${g[0]} y ${g[1]}` : `${g[0]} a ${g[g.length - 1]}`));
+  return `páginas ${t.join("; ")}`;
+}
 
 /** Mantiene válidas las referencias a páginas (enlace y destacados) cuando cambia la numeración. */
 function remapRefs(paginas: Pagina[], map: (n: number) => number | null): Pagina[] {
@@ -71,6 +84,7 @@ export default function Editor({
   const sucio = JSON.stringify(datos) !== guardado;
   const pagina = datos.paginas[Math.min(sel, datos.paginas.length - 1)];
   const idx = datos.paginas.indexOf(pagina);
+  const seguidos = useMemo(() => anunciosSeguidos(datos.paginas), [datos.paginas]);
   const titulos = useMemo(() => datos.paginas.map(tituloPagina), [datos.paginas]);
   // En las páginas de lienzo la propia hoja es la vista previa.
   const esLienzo = pagina.plantilla === "lienzo";
@@ -330,6 +344,11 @@ export default function Editor({
 
           {/* Formulario */}
           <main className="min-h-0 overflow-y-auto px-5 py-4">
+            {seguidos.length > 0 && (
+              <p role="status" className="font-sans mb-3 border-l-4 border-ocre bg-ocre/15 px-3 py-2 text-xs">
+                <strong>Anuncios seguidos:</strong> {textoSeguidos(seguidos)}. Conviene intercalar contenido entre un anuncio y otro para que la publicidad no canse al lector.
+              </p>
+            )}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-2xl font-black">
                 Página {idx + 1} <span className="text-base font-bold italic text-ink-soft">· {ETIQUETAS_PLANTILLA[pagina.plantilla]}</span>

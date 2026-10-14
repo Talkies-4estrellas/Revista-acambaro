@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 760" width="620" height="760" ><defs><marker id="f" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#0b2e36"/></marker></defs>
+<rect width="620" height="760" fill="#e8f7f3"/>
+<rect x="40" y="30" width="540" height="76" rx="10" fill="#d1483a"/><text x="310" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="17" fill="#fff">1 · Pozo</text><text x="310" y="86" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#e8f7f3">Vapor y agua a 200–300 °C suben por tubería</text>
+<path d="M310 106 L310 150" stroke="#0b2e36" stroke-width="5" fill="none" marker-end="url(#f)"/>
+<rect x="40" y="150" width="540" height="76" rx="10" fill="#013f4a"/><text x="310" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="17" fill="#fff">2 · Separador</text><text x="310" y="206" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#e8f7f3">Aparta el vapor del agua caliente</text>
+<path d="M180 226 L180 270" stroke="#0b2e36" stroke-width="5" fill="none" marker-end="url(#f)"/><path d="M440 226 L440 270" stroke="#0b2e36" stroke-width="5" fill="none" marker-end="url(#f)"/>
+<rect x="40" y="270" width="260" height="90" rx="10" fill="#068562"/><text x="170" y="313" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="17" fill="#fff">3 · Turbina</text><text x="170" y="333" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#e8f7f3">El vapor mueve las aspas</text>
+<rect x="330" y="270" width="250" height="90" rx="10" fill="#3a7fa8"/><text x="455" y="313" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="17" fill="#fff">Agua separada</text><text x="455" y="333" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#e8f7f3">Se devuelve al subsuelo</text>
+<path d="M170 360 L170 410" stroke="#0b2e36" stroke-width="5" fill="none" marker-end="url(#f)"/>
+<rect x="40" y="410" width="260" height="90" rx="10" fill="#068562"/><text x="170" y="453" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="17" fill="#fff">4 · Generador</text><text x="170" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#e8f7f3">Convierte giro en electricidad</text>
+<path d="M300 455 L350 455" stroke="#0b2e36" stroke-width="5" fill="none" marker-end="url(#f)"/>
+<rect x="350" y="410" width="230" height="90" rx="10" fill="#0b2e36"/><text x="465" y="453" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="17" fill="#fff">5 · Red eléctrica</text><text x="465" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#e8f7f3">Hacia Morelia y la región</text>
+<path d="M455 360 L455 410" stroke="#3a7fa8" stroke-width="5" fill="none" marker-end="url(#f)"/>
+<g><rect x="40" y="540" width="540" height="170" rx="14" fill="#fff" stroke="#b7dad2" stroke-width="3"/>
+<text x="62" y="580" font-family="Arial, sans-serif" font-weight="700" font-size="19" fill="#0b2e36">Después de la turbina</text>
+<text x="62" y="612" font-family="Arial, sans-serif" font-size="16" fill="#31404a">El vapor se enfría en torres de condensación,</text>
+<text x="62" y="636" font-family="Arial, sans-serif" font-size="16" fill="#31404a">se vuelve agua y se reinyecta al yacimiento para</text>
+<text x="62" y="660" font-family="Arial, sans-serif" font-size="16" fill="#31404a">que el recurso se renueve. Lo que ves salir como</text>
+<text x="62" y="684" font-family="Arial, sans-serif" font-size="16" fill="#31404a">«humo» blanco es sobre todo vapor de agua.</text></g></svg>

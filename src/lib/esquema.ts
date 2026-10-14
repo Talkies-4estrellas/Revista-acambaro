@@ -70,6 +70,15 @@ export type Evento = { dia: string; mes: string; titulo: string; lugar?: string 
 export const ANCHO_LIENZO = 800;
 export const ALTO_LIENZO = 1100;
 
+/** Las páginas con esta sección son anuncios: no se indexan en el buscador y el editor avisa si hay dos seguidas. */
+export const SECCION_PUBLICIDAD = "Publicidad";
+
+/** Números de página (desde 1) que son anuncio y tienen otro anuncio pegado, antes o después. */
+export function anunciosSeguidos(paginas: { seccion?: string }[]): number[] {
+  const es = (i: number) => paginas[i]?.seccion === SECCION_PUBLICIDAD;
+  return paginas.flatMap((_, i) => (es(i) && (es(i - 1) || es(i + 1)) ? [i + 1] : []));
+}
+
 export const MODOS_MOVIL = ["escala", "apilar"] as const;
 export const VISIBILIDAD_MOVIL = ["mostrar", "ocultar"] as const;
 

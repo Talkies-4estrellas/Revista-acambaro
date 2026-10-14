@@ -1,4 +1,5 @@
 import { etiqueta, getPublicadas, hrefPagina, type Edicion, type Pagina } from "./ediciones";
+import { SECCION_PUBLICIDAD } from "./esquema";
 
 /**
  * Búsqueda en el sitio: recorre el texto de todas las páginas de las ediciones publicadas (títulos, textos de
@@ -112,6 +113,8 @@ export function buscar(consulta: string, ediciones: Edicion[] = getPublicadas(),
   const salida: Resultado[] = [];
   for (const ed of ediciones) {
     ed.paginas.forEach((p, i) => {
+      // Los anuncios no son contenido editorial: no aparecen entre los resultados.
+      if (p.seccion === SECCION_PUBLICIDAD) return;
       const textos = textosDePagina(p).map((x) => ({ ...x, norm: normalizar(x.texto) }));
       const todo = textos.map((x) => x.norm).join(" \n ");
       if (!palabras.every((w) => todo.includes(w))) return;
