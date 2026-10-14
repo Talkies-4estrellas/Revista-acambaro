@@ -1,8 +1,8 @@
 {
-  "numero": "14",
+  "numero": "10",
   "fecha": "2026-11-02",
   "tema": "Los Azufres, Michoacán",
-  "publicada": false,
+  "publicada": true,
   "paginas": [
     {
       "plantilla": "lienzo",
@@ -24250,5 +24250,6 @@
         }
       ]
     }
-  ]
+  ],
+  "numeroFijo": true
 }
