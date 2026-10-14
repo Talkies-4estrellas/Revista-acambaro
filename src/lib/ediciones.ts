@@ -141,7 +141,7 @@ function checkBloque(b: unknown, ctx: string) {
 function checkColor(v: unknown, ctx: string, campo: string) {
   if (v === undefined) return;
   if (typeof v !== "string" || !esColorValido(v))
-    fail(ctx, `"${campo}" vale "${String(v)}"; usa un color de la paleta (${COLORES.join(", ")}) o un hexadecimal como #b5472f`);
+    fail(ctx, `"${campo}" vale "${String(v)}"; usa un color de la paleta (${COLORES.join(", ")}) o un hexadecimal como #068562`);
 }
 
 function checkNum(v: unknown, ctx: string, campo: string, min = -Infinity, max = Infinity) {

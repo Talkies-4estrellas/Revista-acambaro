@@ -301,3 +301,11 @@ Van dentro de `reportaje`, `galeria`, `video` y `libre`, en el orden en que se e
 - Ignora mayúsculas y acentos; con varias palabras, la página debe contener todas. Los resultados salen ordenados por
   relevancia (un título pesa más que un párrafo) y muestran un fragmento con lo buscado resaltado.
 - Es una búsqueda en el servidor: no necesita configurar nada ni servicios externos.
+
+## Publicidad y conteo de clics
+
+- En el editor, **Plantillas → Publicidad** trae siete formatos de anuncio (página completa, dos medias, mosaico de 4, campaña de temporada, contenido patrocinado, cupones y «Con el apoyo de»). Todas llevan la etiqueta «Publicidad» y la sección «Publicidad».
+- Para que un anuncio cuente clics, selecciona su imagen o texto y escribe su dirección en **Enlace** (`https://…`, o `https://wa.me/52…` para WhatsApp).
+- **Reporte:** `/admin/clics` (botón «↗ Clics» del panel) muestra clics por edición y por enlace (últimos 7 días, últimos 30 y total) y se exporta a CSV.
+- Solo se cuentan enlaces externos de ediciones **publicadas**; un mismo visitante suma una vez cada 10 minutos por enlace. Tus propias pruebas en el sitio también suman.
+- Los datos se guardan en `content/clics.json` (no se sube a git). En Vercel el disco es de solo lectura: define la variable `CLICS_WEBHOOK_URL` y cada clic se enviará por POST (JSON: `fecha, edicion, pagina, elemento, url, etiqueta, anuncio`) a una hoja de cálculo o servicio (Zapier, Make, Google Apps Script…). Sin webhook, en Vercel los clics no se guardan.

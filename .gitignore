@@ -11,6 +11,7 @@ next-env.d.ts
 
 # Datos privados: correos de suscriptores y ediciones borradas (papelera)
 content/suscriptores.json
+content/clics.json
 content/papelera/
 
 # Sistema

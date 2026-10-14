@@ -84,7 +84,7 @@ export function CampoColor({
         <input
           type="color"
           aria-label="Color libre"
-          value={/^#[0-9a-fA-F]{6}$/.test(hex) ? hex : "#b5472f"}
+          value={/^#[0-9a-fA-F]{6}$/.test(hex) ? hex : "#068562"}
           onChange={(e) => onChange(e.target.value)}
           className="h-6 w-8 cursor-pointer border border-ink/40 bg-transparent p-0"
         />

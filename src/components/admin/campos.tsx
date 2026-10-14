@@ -183,7 +183,7 @@ export function Interruptor({
 }) {
   return (
     <label className="font-sans flex cursor-pointer items-center gap-2 text-sm">
-      <input type="checkbox" className="h-4 w-4 accent-[#b5472f]" checked={value} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className="h-4 w-4 accent-[#068562]" checked={value} onChange={(e) => onChange(e.target.checked)} />
       {label}
     </label>
   );

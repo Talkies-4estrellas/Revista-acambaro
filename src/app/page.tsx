@@ -83,7 +83,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-3">
             {FORMAS_DE_LEER.map((f) => (
               <div key={f.titulo} className="text-center md:text-left">
-                <IconoSvg icono={f.icono} color="#15857d" trazo={1.6} className="mx-auto h-10 w-10 md:mx-0" />
+                <IconoSvg icono={f.icono} color="#068562" trazo={1.6} className="mx-auto h-10 w-10 md:mx-0" />
                 <h3 className="font-display mt-3 text-2xl font-black">{f.titulo}</h3>
                 <p className="mt-2 text-ink-soft">{f.texto}</p>
               </div>

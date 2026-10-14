@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f3ede1;
-  --paper-deep: #e9e0cf;
-  --ink: #1c1814;
-  --ink-soft: #5b5248;
-  --terracota: #b5472f;
-  --ocre: #d09a3a;
-  --oliva: #6b7a3f;
-  --indigo: #2f4a6b;
+  --paper: #f1f5f9;
+  --paper-deep: #e2e8f0;
+  --ink: #1e293b;
+  --ink-soft: #475569;
+  --terracota: #068562;
+  --ocre: #49c59f;
+  --oliva: #046a4b;
+  --indigo: #013f4a;
 }
 
 @theme inline {

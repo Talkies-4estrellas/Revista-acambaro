@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import LienzoVista from "@/components/Lienzo";
 import { PLANTILLAS_BASE } from "@/lib/plantillas-base";
+import { PLANTILLAS_ANUNCIO } from "@/lib/plantillas-anuncio";
 import { ETIQUETAS_PLANTILLA, limpiar, type Pagina } from "@/lib/esquema";
 import { btnCls, inputCls } from "./campos";
 
@@ -41,7 +42,7 @@ export default function PlantillasModal({
   onAplicar: (pagina: Pagina, nombre: string, modo: ModoAplicar) => void;
   onCerrar: () => void;
 }) {
-  const [pestana, setPestana] = useState<"iniciales" | "propias">("iniciales");
+  const [pestana, setPestana] = useState<"iniciales" | "anuncios" | "propias">("iniciales");
   const [guardadas, setGuardadas] = useState<Guardada[] | null>(null);
   const [nombre, setNombre] = useState("");
   const [estado, setEstado] = useState<{ tipo: "ok" | "error" | "cargando"; texto: string } | null>(null);
@@ -137,7 +138,7 @@ export default function PlantillasModal({
     </li>
   );
 
-  const pest = (id: "iniciales" | "propias", texto: string) => (
+  const pest = (id: "iniciales" | "anuncios" | "propias", texto: string) => (
     <button
       type="button"
       onClick={() => setPestana(id)}
@@ -188,6 +189,7 @@ export default function PlantillasModal({
         <section className="px-5 py-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pest("iniciales", `Iniciales (${PLANTILLAS_BASE.length})`)}
+            {pest("anuncios", `Publicidad (${PLANTILLAS_ANUNCIO.length})`)}
             {pest("propias", `Mis plantillas${guardadas ? ` (${guardadas.length})` : ""}`)}
           </div>
 
@@ -195,6 +197,16 @@ export default function PlantillasModal({
             <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
               {PLANTILLAS_BASE.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
             </ul>
+          ) : pestana === "anuncios" ? (
+            <>
+              <p className="font-sans mb-3 text-[0.72rem] text-ink-soft">
+                Cada una lleva la etiqueta «Publicidad». Elige la imagen del anuncio y escribe su dirección en “Enlace” (https://… o https://wa.me/52…).
+                Procura no poner dos páginas de anuncio seguidas.
+              </p>
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+                {PLANTILLAS_ANUNCIO.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
+              </ul>
+            </>
           ) : guardadas === null ? (
             <p className="font-sans text-sm italic text-ink-soft">Cargando…</p>
           ) : guardadas.length === 0 ? (

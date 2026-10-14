@@ -1448,7 +1448,7 @@ export default function EditorLienzo({
           }`}
           style={{
             height: completa ? "calc(100vh - 12rem)" : "max(24rem, calc(100vh - 20rem))",
-            backgroundColor: "#d8d0bf",
+            backgroundColor: "#cbd5e1",
             backgroundImage: "radial-gradient(rgba(28,24,20,.2) 1px, transparent 1px)",
             backgroundSize: "18px 18px",
             cursor: arrastrandoVista ? "grabbing" : mano || espacio ? "grab" : "default",
@@ -1642,8 +1642,8 @@ export default function EditorLienzo({
                     className="pointer-events-none absolute z-10"
                     style={
                       guiaTemp.eje === "v"
-                        ? { left: `${(guiaTemp.pos / ANCHO_LIENZO) * 100}%`, top: 0, bottom: 0, width: 1, background: guiaTemp.borrar ? "#b5472f" : "#0ea5b7", opacity: guiaTemp.borrar ? 0.5 : 1 }
-                        : { top: `${(guiaTemp.pos / alto) * 100}%`, left: 0, right: 0, height: 1, background: guiaTemp.borrar ? "#b5472f" : "#0ea5b7", opacity: guiaTemp.borrar ? 0.5 : 1 }
+                        ? { left: `${(guiaTemp.pos / ANCHO_LIENZO) * 100}%`, top: 0, bottom: 0, width: 1, background: guiaTemp.borrar ? "#068562" : "#0ea5b7", opacity: guiaTemp.borrar ? 0.5 : 1 }
+                        : { top: `${(guiaTemp.pos / alto) * 100}%`, left: 0, right: 0, height: 1, background: guiaTemp.borrar ? "#068562" : "#0ea5b7", opacity: guiaTemp.borrar ? 0.5 : 1 }
                     }
                   />
                   <span

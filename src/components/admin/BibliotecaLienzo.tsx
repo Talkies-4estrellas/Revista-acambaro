@@ -148,7 +148,7 @@ export default function BibliotecaLienzo({
                 title={`Agregar: ${l.nombre}`}
                 className="flex cursor-grab flex-col items-center gap-1.5 border border-ink/20 bg-paper p-2 hover:border-terracota"
               >
-                <span className={`flex h-20 w-full items-center justify-center p-2 ${l.claro ? "bg-[#0a3331]" : "bg-white"}`}>
+                <span className={`flex h-20 w-full items-center justify-center p-2 ${l.claro ? "bg-[#013f4a]" : "bg-white"}`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={l.src} alt="" draggable={false} className="pointer-events-none max-h-full max-w-full object-contain" />
                 </span>
@@ -168,11 +168,11 @@ export default function BibliotecaLienzo({
           <div className="mb-2 flex flex-wrap items-center gap-3 font-sans text-[0.72rem]">
             <span className="font-bold uppercase tracking-wide text-ink-soft">Si no hay nada seleccionado, crear:</span>
             <label className="flex cursor-pointer items-center gap-1.5">
-              <input type="radio" name="crear-molde" checked={!comoForma} onChange={() => setComoForma(false)} className="accent-[#b5472f]" />
+              <input type="radio" name="crear-molde" checked={!comoForma} onChange={() => setComoForma(false)} className="accent-[#068562]" />
               Marco para foto
             </label>
             <label className="flex cursor-pointer items-center gap-1.5">
-              <input type="radio" name="crear-molde" checked={comoForma} onChange={() => setComoForma(true)} className="accent-[#b5472f]" />
+              <input type="radio" name="crear-molde" checked={comoForma} onChange={() => setComoForma(true)} className="accent-[#068562]" />
               Forma de color
             </label>
           </div>

@@ -256,7 +256,7 @@ export default function EditorTexto({
                   <input
                     type="color"
                     aria-label="Color libre"
-                    defaultValue={actual && actual.startsWith("#") ? actual : "#b5472f"}
+                    defaultValue={actual && actual.startsWith("#") ? actual : "#068562"}
                     onChange={(e) => aplicar(e.target.value)}
                     className="h-6 w-8 cursor-pointer border border-ink/40 bg-transparent p-0"
                   />

@@ -71,9 +71,14 @@ export default function Admin() {
       <p className="font-sans text-xs font-bold uppercase tracking-wider text-terracota">Panel de la revista</p>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="font-display mt-1 text-5xl font-black italic">Ediciones</h1>
-        <Link href="/admin/newsletter" className="font-sans border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
-          ✉ Newsletter
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/clics" className="font-sans border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
+            ↗ Clics
+          </Link>
+          <Link href="/admin/newsletter" className="font-sans border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
+            ✉ Newsletter
+          </Link>
+        </div>
       </div>
       <p className="font-sans mt-2 max-w-2xl text-sm text-ink-soft">
         Los cambios se guardan como archivos en <code>content/ediciones</code> y los medios en <code>public/media</code>.

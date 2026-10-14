@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import EnlaceMedido from "@/components/EnlaceMedido";
 import {
   ANCHO_LIENZO,
   ALTO_LIENZO,
@@ -283,7 +284,7 @@ export function ElementoVista({
   }
 
   const marca: CSSProperties = editor
-    ? { outline: editor.seleccionado ? "2px solid #b5472f" : undefined, cursor: editor.editando ? "text" : "move", touchAction: "none" }
+    ? { outline: editor.seleccionado ? "2px solid #068562" : undefined, cursor: editor.editando ? "text" : "move", touchAction: "none" }
     : {};
 
   const interior = (
@@ -328,6 +329,13 @@ export function ElementoVista({
     const externo = typeof el.enlace === "string" && !el.enlace.startsWith("/");
     const href = typeof el.enlace === "string" ? el.enlace : `/ediciones/${edicionId}/${el.enlace}`;
     const props = externo ? { target: "_blank", rel: "noopener noreferrer" } : {};
+    // Los enlaces externos con id se cuentan (ver lib/clics.ts); el resto se comporta como antes.
+    if (externo && el.id && !editor)
+      return (
+        <EnlaceMedido href={href} edicion={edicionId} elemento={el.id} style={{ ...caja, display: "block", color: "inherit", textDecoration: "none" }}>
+          {animado}
+        </EnlaceMedido>
+      );
     return (
       <Link href={href} {...props} style={{ ...caja, display: "block", color: "inherit", textDecoration: "none" }}>
         {animado}

@@ -37,9 +37,9 @@ const DEMO = [
 ];
 
 const Seccion = ({ id, kicker, titulo, children, oscuro = false }: { id: string; kicker: string; titulo: string; children: React.ReactNode; oscuro?: boolean }) => (
-  <section id={id} aria-labelledby={`${id}-t`} className={oscuro ? "bg-[#0e3f3d] text-paper" : ""}>
+  <section id={id} aria-labelledby={`${id}-t`} className={oscuro ? "bg-[#035c40] text-paper" : ""}>
     <div className="mx-auto max-w-6xl px-5 py-16">
-      <p className={`kicker ${oscuro ? "text-[#e7c27a]" : "text-terracota"}`}>{kicker}</p>
+      <p className={`kicker ${oscuro ? "text-[#49c59f]" : "text-terracota"}`}>{kicker}</p>
       <h2 id={`${id}-t`} className="font-display mt-2 max-w-3xl text-4xl font-black italic leading-tight sm:text-5xl">
         {titulo}
       </h2>
@@ -52,7 +52,7 @@ const Tarjetas = ({ lista, oscuro = false }: { lista: { icono: string; titulo: s
   <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {lista.map((f) => (
       <li key={f.titulo} className={`border p-5 ${oscuro ? "border-paper/25 bg-white/5" : "border-ink/25 bg-white/40"}`}>
-        <IconoSvg icono={f.icono} color={oscuro ? "#e7c27a" : "#15857d"} trazo={1.6} className="h-9 w-9" />
+        <IconoSvg icono={f.icono} color={oscuro ? "#49c59f" : "#068562"} trazo={1.6} className="h-9 w-9" />
         <h3 className="font-display mt-3 text-xl font-black">{f.titulo}</h3>
         <p className={`mt-1 text-[0.95rem] leading-relaxed ${oscuro ? "text-paper/80" : "text-ink-soft"}`}>{f.texto}</p>
       </li>
@@ -67,17 +67,17 @@ export default function Proyecto() {
       <Masthead compact />
       <main>
         {/* Portada del proyecto */}
-        <section className="bg-[#0a3331] text-paper">
+        <section className="bg-[#013f4a] text-paper">
           <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-[1.3fr_1fr] md:py-24">
             <div>
-              <p className="kicker text-[#e7c27a]">El proyecto</p>
+              <p className="kicker text-[#49c59f]">El proyecto</p>
               <h1 className="font-display mt-3 text-5xl font-black italic leading-[1.02] sm:text-6xl lg:text-7xl">Una revista digital que se lee como una revista</h1>
               <p className="mt-5 max-w-xl text-lg text-paper/85">
                 ACOM-Di cuenta la historia, el sabor y la gente de Acámbaro cada semana. Una sola persona la arma, página por página, arrastrando y
                 soltando, sin escribir código.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/" className="kicker bg-[#e7c27a] px-6 py-3 text-ink hover:bg-paper">
+                <Link href="/" className="kicker bg-[#49c59f] px-6 py-3 text-ink hover:bg-paper">
                   Ver la revista →
                 </Link>
                 <a href="#demo" className="kicker border border-paper/60 px-6 py-3 hover:bg-paper hover:text-ink">
@@ -142,7 +142,7 @@ export default function Proyecto() {
               ["Tecnología actual", "Next.js 16, React 19, TypeScript y Tailwind. Se despliega en Vercel y las páginas se regeneran solas cada minuto."],
               ["Sin base de datos", "Para empezar no hace falta servidor de datos ni costos fijos: el panel guarda archivos y el sitio los publica."],
             ].map(([t, x]) => (
-              <div key={t} className="border-t-4 border-[#e7c27a] pt-3">
+              <div key={t} className="border-t-4 border-[#49c59f] pt-3">
                 <h3 className="font-display text-2xl font-black">{t}</h3>
                 <p className="mt-2 text-paper/80">{x}</p>
               </div>
@@ -155,7 +155,7 @@ export default function Proyecto() {
             <div>
               <h3 className="kicker text-oliva">Ya está</h3>
               <ul className="font-sans mt-3 space-y-2 text-sm">
-                {["Lectura con giro de página y modo celular", "Editor de lienzo con plantillas, animaciones y orden en el celular", "Numeración y publicación programada", "Newsletter: alta, baja, exportación y correo de cada edición", "Búsqueda en todas las ediciones", "Ocho ediciones de muestra, más de 100 páginas"].map((x) => (
+                {["Lectura con giro de página y modo celular", "Editor de lienzo con plantillas, animaciones y orden en el celular", "Numeración y publicación programada", "Newsletter: alta, baja, exportación y correo de cada edición", "Búsqueda en todas las ediciones", "Nueve ediciones de muestra, más de 120 páginas"].map((x) => (
                   <li key={x} className="flex gap-2">
                     <span aria-hidden className="text-oliva">✓</span>
                     {x}

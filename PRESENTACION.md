@@ -10,7 +10,7 @@ Una revista digital semanal sobre Acámbaro que se lee como una revista (página
 
 1. Abre una terminal en la carpeta del proyecto y ejecuta `npm run dev`. El sitio queda en **http://localhost:3000**.
 2. Ten abiertas dos pestañas: el sitio público y el panel (`/admin`, solo funciona en tu equipo).
-3. Revisa que haya ediciones publicadas (hoy: la 01 de ejemplo; la 02 «La era del vapor»; la 03 «500 años de Acámbaro»; la 04 «Pan, fiestas y sabores»; la 05 «Raíces del Bajío», de arqueología; la 06 «Leyendas y cultura»; la 07 «Rutas del Bajío», de ciudades y pueblos; y la 08 «Maravatío de Ocampo»).
+3. Revisa que haya ediciones publicadas (hoy: la 01 de ejemplo; la 02 «La era del vapor»; la 03 «500 años de Acámbaro»; la 04 «Pan, fiestas y sabores»; la 05 «Raíces del Bajío», de arqueología; la 06 «Leyendas y cultura»; la 07 «Rutas del Bajío», de ciudades y pueblos; la 08 «Maravatío de Ocampo»; y la 09 «Morelia, cantera rosa»).
 4. Si vas a proyectar, usa pantalla completa (F11) y un navegador sin extensiones visibles.
 
 ## Guion de 5 minutos
@@ -49,7 +49,7 @@ Una revista digital semanal sobre Acámbaro que se lee como una revista (página
 
 ## Cifras para mencionar
 
-- 8 ediciones de muestra (más de 100 páginas) · 18 tipografías · 197 iconos · 22 marcos para fotos · 9 animaciones de entrada · 5 formas de pasar la página.
+- 9 ediciones de muestra (más de 120 páginas) · 18 tipografías · 197 iconos · 22 marcos para fotos · 9 animaciones de entrada · 5 formas de pasar la página.
 - Tecnología: Next.js 16, React 19, TypeScript, Tailwind CSS.
 
 ## Hoja de ruta

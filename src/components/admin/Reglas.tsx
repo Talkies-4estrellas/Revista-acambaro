@@ -78,8 +78,8 @@ export default function Reglas({
   const horizontales = marcas((T - x) / s, (tam.w - x) / s);
   const verticales = marcas((T - y) / s, (tam.h - y) / s);
 
-  const fondo = "#efe8d8";
-  const tinta = "#1c1814";
+  const fondo = "#e2e8f0";
+  const tinta = "#1e293b";
   const suave = "rgba(28,24,20,.55)";
 
   return (
@@ -93,7 +93,7 @@ export default function Reglas({
         style={{ background: fondo, borderBottom: "1px solid rgba(28,24,20,.4)" }}
         onPointerDown={(e) => onGuia("v", e)}
       >
-        <rect x={x} y={0} width={ancho * s} height={T} fill="#fbf8f1" />
+        <rect x={x} y={0} width={ancho * s} height={T} fill="#f8fafc" />
         {seleccion && <rect x={x + seleccion.l * s} y={0} width={(seleccion.r - seleccion.l) * s} height={T} fill="rgba(181,71,47,.28)" />}
         {horizontales.map(({ u, mayor }) => {
           const px = x + u * s;
@@ -120,7 +120,7 @@ export default function Reglas({
         style={{ background: fondo, borderRight: "1px solid rgba(28,24,20,.4)" }}
         onPointerDown={(e) => onGuia("h", e)}
       >
-        <rect x={0} y={y} width={T} height={alto * s} fill="#fbf8f1" />
+        <rect x={0} y={y} width={T} height={alto * s} fill="#f8fafc" />
         {seleccion && <rect x={0} y={y + seleccion.t * s} width={T} height={(seleccion.b - seleccion.t) * s} fill="rgba(181,71,47,.28)" />}
         {verticales.map(({ u, mayor }) => {
           const py = y + u * s;

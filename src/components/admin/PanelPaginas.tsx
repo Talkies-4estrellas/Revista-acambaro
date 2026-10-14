@@ -171,7 +171,7 @@ export default function PanelPaginas({
                   aria-current={activa ? "page" : undefined}
                   title="Arrastra para reordenar (o Alt + ↑/↓)"
                   className={`font-sans w-full cursor-grab border-b border-ink/10 text-left hover:bg-paper ${
-                    activa ? "bg-paper shadow-[inset_3px_0_0_#b5472f]" : ""
+                    activa ? "bg-paper shadow-[inset_3px_0_0_#068562]" : ""
                   } ${vista === "lista" ? "flex items-baseline gap-2 px-3 py-2 text-sm" : vista === "miniaturas" ? "grid grid-cols-[4.5rem_1fr] gap-2.5 px-2.5 py-2" : "block px-3 py-2.5"}`}
                 >
                   {vista === "lista" ? (

@@ -89,7 +89,7 @@ export default function OrdenColumna({
           type="button"
           onClick={() => e.id && onSeleccionar([e.id])}
           title="Seleccionar en la hoja"
-          className={`font-sans flex min-w-0 flex-1 items-center gap-2 px-2 py-1.5 text-left text-xs hover:bg-paper ${activa ? "bg-paper font-bold shadow-[inset_3px_0_0_#b5472f]" : ""}`}
+          className={`font-sans flex min-w-0 flex-1 items-center gap-2 px-2 py-1.5 text-left text-xs hover:bg-paper ${activa ? "bg-paper font-bold shadow-[inset_3px_0_0_#068562]" : ""}`}
         >
           <span aria-hidden className="w-4 shrink-0 text-center text-ink-soft">{GLIFO[e.tipo]}</span>
           <span className="min-w-0 flex-1 truncate">{etiqueta(e)}</span>
