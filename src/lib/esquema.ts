@@ -80,7 +80,7 @@ export function anunciosSeguidos(paginas: { seccion?: string }[]): number[] {
 }
 
 export const MODOS_MOVIL = ["escala", "apilar"] as const;
-export const VISIBILIDAD_MOVIL = ["mostrar", "ocultar"] as const;
+export const VISIBILIDAD_MOVIL = ["mostrar", "ocultar", "solo"] as const;
 
 export const COLORES = [
   "papel",
@@ -322,8 +322,9 @@ type ElementoBase = {
   grupo?: string;
   /** Animación de entrada: se reproduce cuando el elemento entra en pantalla. */
   animacion?: AnimacionEl;
-  /** Con "apilar" en la página: fuerza mostrar u ocultar este elemento en el celular (si no, se decide solo). */
-  movil?: "mostrar" | "ocultar";
+  /** Con "apilar" en la página: fuerza mostrar u ocultar este elemento en el celular (si no, se decide solo).
+   *  "solo": el elemento existe únicamente en la columna del celular (no se dibuja en la hoja de escritorio). */
+  movil?: "mostrar" | "ocultar" | "solo";
 };
 
 export type ElementoTexto = ElementoBase & {

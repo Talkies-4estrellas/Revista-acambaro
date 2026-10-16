@@ -451,6 +451,7 @@ export function InspectorElemento({
           opciones={[
             { valor: "mostrar", etiqueta: "Siempre mostrar" },
             { valor: "ocultar", etiqueta: "Ocultar en el celular" },
+            { valor: "solo", etiqueta: "Solo en el celular (no se ve en la hoja de escritorio)" },
           ]}
           vacio="Automático (se ocultan fondos y formas gruesas)"
         />

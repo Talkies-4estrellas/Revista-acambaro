@@ -373,9 +373,9 @@ export default function LienzoVista({
         background: colorCss(fondo, "var(--paper)"),
       }}
     >
-      {elementos.map((el, i) => (
-        <ElementoVista key={el.id ?? i} el={el} edicionId={edicionId} animar={animar} miniatura={miniatura} />
-      ))}
+      {elementos.map((el, i) =>
+        el.movil === "solo" ? null : <ElementoVista key={el.id ?? i} el={el} edicionId={edicionId} animar={animar} miniatura={miniatura} />,
+      )}
     </div>
   );
 }

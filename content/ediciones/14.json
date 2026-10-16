@@ -2672,25 +2672,26 @@
           "tipo": "imagen",
           "id": "r002",
           "x": 40,
-          "y": 14,
-          "w": 200,
-          "h": 78,
-          "src": "/brand/logo-informa-insignia.svg",
+          "y": 26,
+          "w": 190,
+          "h": 73,
+          "src": "/brand/logo-informa-claro.svg",
           "alt": "ACOM-Di informa",
           "ajuste": "contener",
           "animacion": {
             "efecto": "zoom",
             "duracion": 800,
             "retraso": 60
-          }
+          },
+          "movil": "ocultar"
         },
         {
           "tipo": "texto",
           "id": "r003",
-          "x": 258,
-          "y": 36,
+          "x": 250,
+          "y": 38,
           "w": 200,
-          "h": 62,
+          "h": 50,
           "texto": "México hoy\nsegunda parte · 10 al 16 de octubre de 2026",
           "fuente": "sans",
           "tam": 12,
@@ -2699,8 +2700,7 @@
           "peso": 800,
           "espaciado": 0.16,
           "mayusculas": true,
-          "fondo": "#013f4a",
-          "relleno": 6
+          "movil": "ocultar"
         },
         {
           "tipo": "imagen",
@@ -3416,11 +3416,22 @@
           "espaciado": 0.14,
           "mayusculas": true,
           "movil": "ocultar"
+        },
+        {
+          "tipo": "imagen",
+          "id": "mcab",
+          "x": 40,
+          "y": 1120,
+          "w": 360,
+          "h": 250,
+          "src": "/brand/cabecera-informa-movil.svg",
+          "alt": "ACOM-Di informa. México hoy, segunda parte, del 10 al 16 de octubre de 2026",
+          "ajuste": "contener",
+          "movil": "solo"
         }
       ],
       "ordenMovil": [
-        "r002",
-        "r003",
+        "mcab",
         "r00d",
         "r00e",
         "r005",
