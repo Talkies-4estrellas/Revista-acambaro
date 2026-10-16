@@ -113,7 +113,7 @@ export default function PlantillasModal({
   }
 
   const tarjeta = (id: string, titulo: string, detalle: string, pagina: Pagina, acciones?: React.ReactNode) => (
-    <li key={id} className="flex flex-col gap-2 border border-ink/25 bg-white/60 p-2.5">
+    <li key={id} className="flex flex-col gap-2 border border-ink/25 bg-white/60 dark:bg-white/5 p-2.5">
       <Miniatura pagina={pagina} />
       <div className="min-w-0">
         <p className="font-sans truncate text-sm font-bold" title={titulo}>{titulo}</p>

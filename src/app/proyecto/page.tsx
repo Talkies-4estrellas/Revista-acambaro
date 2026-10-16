@@ -37,7 +37,7 @@ const DEMO = [
 ];
 
 const Seccion = ({ id, kicker, titulo, children, oscuro = false }: { id: string; kicker: string; titulo: string; children: React.ReactNode; oscuro?: boolean }) => (
-  <section id={id} aria-labelledby={`${id}-t`} className={oscuro ? "bg-[#035c40] text-paper" : ""}>
+  <section id={id} aria-labelledby={`${id}-t`} className={oscuro ? "paleta-clara bg-[#035c40] text-paper" : ""}>
     <div className="mx-auto max-w-6xl px-5 py-16">
       <p className={`kicker ${oscuro ? "text-[#49c59f]" : "text-terracota"}`}>{kicker}</p>
       <h2 id={`${id}-t`} className="font-display mt-2 max-w-3xl text-4xl font-black italic leading-tight sm:text-5xl">
@@ -67,7 +67,7 @@ export default function Proyecto() {
       <Masthead compact />
       <main>
         {/* Portada del proyecto */}
-        <section className="bg-[#013f4a] text-paper">
+        <section className="paleta-clara bg-[#013f4a] text-paper">
           <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-[1.3fr_1fr] md:py-24">
             <div>
               <p className="kicker text-[#49c59f]">El proyecto</p>

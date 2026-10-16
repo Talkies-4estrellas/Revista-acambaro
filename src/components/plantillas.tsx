@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Masthead from "@/components/Masthead";
 import Footer from "@/components/Footer";
+import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import PageTurner from "@/components/PageTurner";
 import Ticker from "@/components/Ticker";
 import AnimacionesLienzo from "@/components/AnimacionesLienzo";
@@ -25,7 +27,7 @@ const FONDO: Record<Tono, string> = {
   terracota: "bg-terracota text-paper",
   ocre: "bg-ocre text-ink",
   oliva: "bg-oliva text-paper",
-  indigo: "bg-indigo text-paper",
+  indigo: "bg-indigo text-paper dark:text-white",
   tinta: "bg-ink text-paper",
 };
 
@@ -317,12 +319,14 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
           <span>Ediciones</span>
         </Link>
         <Link href="/" aria-label="ACOM-Di, Revista de Acámbaro — inicio" className="block justify-self-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo.svg" alt="ACOM-Di, Revista de Acámbaro" className="h-7 w-auto sm:h-9" />
+          <Logo className="h-7 w-auto sm:h-9" />
         </Link>
-        <span className="justify-self-end whitespace-nowrap tabular-nums" title={`Edición N.º ${ed.numero}`}>
-          <span className="hidden sm:inline">N.º {ed.numero} · </span>
-          {n}/{ed.paginas.length}
+        <span className="flex items-center gap-1 justify-self-end whitespace-nowrap tabular-nums" title={`Edición N.º ${ed.numero}`}>
+          <span>
+            <span className="hidden sm:inline">N.º {ed.numero} · </span>
+            {n}/{ed.paginas.length}
+          </span>
+          <ThemeToggle className="-mr-2 sm:mr-0" />
         </span>
       </div>
       <main className="bg-paper-deep/60 py-6 sm:py-10">

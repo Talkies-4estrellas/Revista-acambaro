@@ -64,7 +64,7 @@ export default function VistaCelular({
 
   return (
     <div className="space-y-3">
-      <div className="space-y-2 border border-ink/30 bg-white/40 p-3">
+      <div className="space-y-2 border border-ink/30 bg-white/40 dark:bg-white/5 p-3">
         <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Vista del celular</h3>
         <select
           aria-label="Dispositivo"

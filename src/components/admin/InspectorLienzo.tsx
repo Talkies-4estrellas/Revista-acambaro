@@ -309,7 +309,7 @@ export function InspectorElemento({
       {el.tipo === "texto" && (
         <Panel titulo="Texto">
           {el.contenido ? (
-            <div className="space-y-2 border border-dashed border-ink/40 bg-white/40 p-3">
+            <div className="space-y-2 border border-dashed border-ink/40 bg-white/40 dark:bg-white/5 p-3">
               <p className="font-sans text-[0.72rem] leading-relaxed text-ink-soft">
                 Este texto tiene formato por partes (negritas, colores, tipografías…). Edítalo con doble clic sobre la hoja.
               </p>
@@ -409,7 +409,7 @@ export function InspectorElemento({
       {el.tipo === "icono" && (
         <Panel titulo="Icono">
           <div className="flex items-center gap-3">
-            <span className="block h-12 w-12 shrink-0 border border-ink/20 bg-white/60 p-2">
+            <span className="block h-12 w-12 shrink-0 border border-ink/20 bg-white/60 dark:bg-white/5 p-2">
               <IconoSvg icono={el.icono} color={el.color} trazo={el.trazo} />
             </span>
             <div className="min-w-0 flex-1">

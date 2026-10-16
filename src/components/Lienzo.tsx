@@ -366,7 +366,7 @@ export default function LienzoVista({
 }) {
   return (
     <div
-      className={`relative mx-auto w-full max-w-[900px] overflow-hidden ${className}`}
+      className={`paleta-clara relative mx-auto w-full max-w-[900px] overflow-hidden ${className}`}
       style={{
         containerType: "inline-size",
         aspectRatio: `${ANCHO_LIENZO} / ${alto}`,
@@ -531,7 +531,7 @@ export function LienzoApilado({
     );
   });
   return (
-    <div className="lienzo-movil" style={{ containerType: "inline-size", background: colorCss(fondo, "var(--paper)"), overflow: "hidden" }}>
+    <div className="lienzo-movil paleta-clara" style={{ containerType: "inline-size", background: colorCss(fondo, "var(--paper)"), overflow: "hidden" }}>
       <div
         style={{
           display: "flex",

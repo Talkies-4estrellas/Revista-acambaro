@@ -105,7 +105,7 @@ export function Video({ v, className = "" }: { v: VideoData; className?: string 
       />
     );
   return (
-    <div className={`${box} flex items-center justify-center text-paper`} role="img" aria-label="Video pendiente">
+    <div className={`${box} paleta-clara flex items-center justify-center bg-[#1e293b] text-paper`} role="img" aria-label="Video pendiente">
       <div className="text-center">
         <p className="font-display text-5xl">▶</p>
         <p className="kicker mt-2 opacity-70">Video pendiente</p>

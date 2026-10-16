@@ -62,7 +62,7 @@ export default function BibliotecaLienzo({
   );
 
   return (
-    <section aria-label="Biblioteca" className="mb-3 border border-ink/40 bg-white/50">
+    <section aria-label="Biblioteca" className="mb-3 border border-ink/40 bg-white/50 dark:bg-white/5">
       <header className="flex flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
         <h3 className="font-sans mr-1 text-xs font-bold uppercase tracking-wider">Biblioteca</h3>
         {pestana("iconos", `Iconos (${Object.keys(ICONOS).length})`)}

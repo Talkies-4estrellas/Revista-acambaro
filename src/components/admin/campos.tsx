@@ -12,7 +12,7 @@ import {
 /* ---------------------------- Estilos base --------------------------- */
 
 export const inputCls =
-  "w-full border border-ink/30 bg-white/70 px-3 py-2 font-sans text-sm text-ink outline-none focus:border-terracota focus:ring-1 focus:ring-terracota";
+  "w-full border border-ink/30 bg-white/70 dark:bg-white/5 px-3 py-2 font-sans text-sm text-ink outline-none focus:border-terracota focus:ring-1 focus:ring-terracota";
 export const btnCls =
   "font-sans border border-ink/40 bg-paper px-2.5 py-1 text-xs font-semibold text-ink hover:bg-ink hover:text-paper disabled:opacity-30 disabled:hover:bg-paper disabled:hover:text-ink";
 
@@ -417,7 +417,7 @@ export function ListaTextos({
 
 export function Panel({ titulo, children, ayuda }: { titulo: string; children: React.ReactNode; ayuda?: string }) {
   return (
-    <section className="border border-ink/30 bg-white/40">
+    <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
       <header className="border-b border-ink/20 bg-paper-deep px-4 py-2">
         <h3 className="font-sans text-xs font-bold uppercase tracking-wider">{titulo}</h3>
         {ayuda && <p className="font-sans mt-0.5 text-[0.7rem] text-ink-soft">{ayuda}</p>}

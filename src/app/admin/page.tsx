@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { listarEdicionesAdmin, type ResumenEdicion } from "@/lib/admin";
 import { estadoEdicion, fechaLarga } from "@/lib/ediciones";
+import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import BotonBorrar from "./BotonBorrar";
 import NuevaEdicion from "./NuevaEdicion";
 
@@ -66,8 +68,10 @@ export default function Admin() {
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-10">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/logo.svg" alt="ACOM-Di" className="mb-4 h-10 w-auto" />
+      <div className="mb-4 flex items-center justify-between">
+        <Logo alt="ACOM-Di" className="h-10 w-auto" />
+        <ThemeToggle />
+      </div>
       <p className="font-sans text-xs font-bold uppercase tracking-wider text-terracota">Panel de la revista</p>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="font-display mt-1 text-5xl font-black italic">Ediciones</h1>

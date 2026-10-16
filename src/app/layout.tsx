@@ -42,6 +42,14 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${playfair.variable} ${sourceSerif.variable} ${inter.variable} ${clasesFuentes}`}
     >
+      <head>
+        {/* Aplica el tema guardado (o el del sistema) antes de pintar, para evitar el destello claro. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(t==null&&d))document.documentElement.classList.add('dark');}catch(e){}})();`,
+          }}
+        />
+      </head>
       {/* Extensiones del navegador (p. ej. Katalon) añaden atributos a <body> antes de hidratar. */}
       <body suppressHydrationWarning>{children}</body>
     </html>

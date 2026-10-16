@@ -1743,7 +1743,7 @@ export default function EditorLienzo({
           <InspectorPagina pagina={pagina} onChange={onChange} onProbarTodo={() => reproducir()} />
         )}
 
-        <section className="border border-ink/30 bg-white/40">
+        <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
           <header className="border-b border-ink/20 bg-paper-deep px-4 py-2">
             <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Capas</h3>
             <p className="font-sans mt-0.5 text-[0.7rem] text-ink-soft">Arriba = al frente. Mayús/Ctrl + clic selecciona varias.</p>

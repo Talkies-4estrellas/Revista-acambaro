@@ -105,7 +105,7 @@ export default function OrdenColumna({
   const linea = <li aria-hidden className="mx-1 my-0.5 h-[3px] bg-terracota" />;
 
   return (
-    <section className="space-y-2 border border-ink/30 bg-white/40 p-3" aria-label="Orden en la columna">
+    <section className="space-y-2 border border-ink/30 bg-white/40 dark:bg-white/5 p-3" aria-label="Orden en la columna">
       <div className="flex items-center justify-between gap-2">
         <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Orden en la columna</h3>
         <button

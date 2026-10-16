@@ -22,7 +22,7 @@ export default function PortadaMini({ ed, className = "" }: { ed: Edicion; class
   return (
     <div
       aria-hidden
-      className={`flex aspect-[800/1100] flex-col justify-between p-[8%] text-paper ${className}`}
+      className={`paleta-clara flex aspect-[800/1100] flex-col justify-between p-[8%] text-paper ${className}`}
       style={{ background: TONO[p.tono ?? "terracota"] ?? TONO.terracota }}
     >
       <span className="kicker text-paper/80">{p.seccion ?? "Edición"}</span>

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { mesAnio, type Edicion } from "@/lib/ediciones";
+import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Masthead({
   edicion,
@@ -28,14 +30,16 @@ export default function Masthead({
               ⌕
             </button>
           </form>
-          <Link href="/ediciones" className="text-terracota hover:underline">Todas las ediciones</Link>
+          <span className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/ediciones" className="text-terracota hover:underline">Todas las ediciones</Link>
+          </span>
         </div>
 
         {compact ? (
           <div className="flex items-baseline justify-between py-4">
             <Link href="/" aria-label="ACOM-Di, Revista de Acámbaro — inicio" className="block self-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo.svg" alt="ACOM-Di, Revista de Acámbaro" className="h-12 w-auto sm:h-16" />
+              <Logo className="h-12 w-auto sm:h-16" />
             </Link>
             <p className="font-display hidden text-sm italic text-ink-soft sm:block">
               Revista de cultura, sabor y memoria
@@ -44,8 +48,7 @@ export default function Masthead({
         ) : (
           <div className="py-6 text-center sm:py-8">
             <h1 className="flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo.svg" alt="ACOM-Di, Revista de Acámbaro" className="h-auto w-[min(88vw,34rem)]" />
+              <Logo className="h-auto w-[min(88vw,34rem)]" />
             </h1>
             <p className="font-display mt-2 text-base italic text-ink-soft sm:text-xl">
               Revista de cultura, sabor y memoria
