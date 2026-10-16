@@ -29,11 +29,9 @@ export default function Masthead({
             <button type="submit" className="bg-ink px-2 py-1 text-paper hover:bg-terracota" aria-label="Buscar">
               ⌕
             </button>
+            <ThemeToggle className="h-[1.625rem] w-[1.625rem] border border-ink/50 text-sm" />
           </form>
-          <span className="flex items-center gap-2">
-            <ThemeToggle />
-            <Link href="/ediciones" className="text-terracota hover:underline">Todas las ediciones</Link>
-          </span>
+          <Link href="/ediciones" className="text-terracota hover:underline">Todas las ediciones</Link>
         </div>
 
         {compact ? (
