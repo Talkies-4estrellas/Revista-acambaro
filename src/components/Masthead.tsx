@@ -15,7 +15,7 @@ export default function Masthead({
       <div className="mx-auto max-w-6xl px-5">
         <div className="kicker flex flex-wrap items-center justify-between gap-2 border-b border-ink py-2 text-ink-soft">
           <span>{edicion ? `Edición N.º ${edicion.numero} · ${mesAnio(edicion.fecha)}` : "Revista digital"}</span>
-          <form action="/buscar" role="search" className="order-last flex w-full items-center gap-1 sm:order-none sm:w-auto">
+          <form action="/buscar" role="search" className="order-last flex w-full items-center gap-1 sm:order-none sm:mx-6 sm:w-auto sm:max-w-3xl sm:flex-1">
             <label htmlFor="busca-cabecera" className="sr-only">
               Buscar en la revista
             </label>
@@ -24,12 +24,15 @@ export default function Masthead({
               name="q"
               type="search"
               placeholder="Buscar…"
-              className="font-sans min-w-0 flex-1 border border-ink/50 bg-paper px-2 py-1 text-xs normal-case tracking-normal text-ink outline-none focus:border-ink focus:ring-1 focus:ring-terracota sm:w-44 sm:flex-none"
+              className="font-sans min-w-0 flex-1 border border-ink/50 bg-paper px-2 py-1 text-xs normal-case tracking-normal text-ink outline-none focus:border-ink focus:ring-1 focus:ring-terracota sm:px-3 sm:text-sm"
             />
-            <button type="submit" className="bg-ink px-2 py-1 text-paper hover:bg-terracota" aria-label="Buscar">
-              ⌕
+            <button type="submit" className="inline-flex items-center justify-center self-stretch bg-ink px-2.5 text-paper hover:bg-terracota sm:px-3.5" aria-label="Buscar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5" />
+                <path d="M15.5 15.5 21 21" />
+              </svg>
             </button>
-            <ThemeToggle className="h-[1.625rem] w-[1.625rem] border border-ink/50 text-sm" />
+            <ThemeToggle className="!h-auto w-8 self-stretch border border-ink/50" />
           </form>
           <Link href="/ediciones" className="text-terracota hover:underline">Todas las ediciones</Link>
         </div>

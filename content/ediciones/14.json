@@ -1528,7 +1528,7 @@
     {
       "plantilla": "lienzo",
       "transicion": "izquierda",
-      "titulo": "Noticias del día (1)",
+      "titulo": "Noticias del día",
       "seccion": "Noticias",
       "fondo": "papel",
       "alto": 1100,
@@ -1836,7 +1836,7 @@
     {
       "plantilla": "lienzo",
       "transicion": "izquierda",
-      "titulo": "ACOM-Di informa (1)",
+      "titulo": "ACOM-Di informa",
       "seccion": "Noticias",
       "fondo": "papel",
       "alto": 1100,
@@ -2651,7 +2651,7 @@
     {
       "plantilla": "lienzo",
       "transicion": "izquierda",
-      "titulo": "ACOM-Di informa (2)",
+      "titulo": "Más noticias",
       "seccion": "Noticias",
       "fondo": "papel",
       "alto": 1100,
