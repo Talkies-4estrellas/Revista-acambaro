@@ -228,7 +228,7 @@ export default function Editor({
 
   return (
     <MediosContext.Provider value={{ medios, subir }}>
-      <div className="flex h-screen flex-col">
+      <div className="flex min-h-screen flex-col md:h-screen">
         {/* Barra superior */}
         <header className="border-b-2 border-ink bg-paper">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
@@ -315,9 +315,9 @@ export default function Editor({
         </header>
 
         {/* Cuerpo */}
-        <div className={`grid min-h-0 flex-1 grid-cols-[15rem_minmax(0,1fr)] ${conPrevia ? "xl:grid-cols-[15rem_minmax(0,1fr)_28rem]" : ""}`}>
+        <div className={`grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)] ${conPrevia ? "xl:grid-cols-[15rem_minmax(0,1fr)_28rem]" : ""}`}>
           {/* Páginas */}
-          <nav aria-label="Páginas" className="flex min-h-0 flex-col border-r border-ink/30 bg-paper-deep/50">
+          <nav aria-label="Páginas" className="flex max-h-[22rem] min-h-0 flex-col border-b border-ink/30 bg-paper-deep/50 md:max-h-none md:border-b-0 md:border-r">
             <PanelPaginas
               paginas={datos.paginas}
               seleccionada={idx}
@@ -343,7 +343,7 @@ export default function Editor({
           </nav>
 
           {/* Formulario */}
-          <main className="min-h-0 overflow-y-auto px-5 py-4">
+          <main className="min-h-0 px-3 py-4 md:overflow-y-auto md:px-5">
             {seguidos.length > 0 && (
               <p role="status" className="font-sans mb-3 border-l-4 border-ocre bg-ocre/15 px-3 py-2 text-xs">
                 <strong>Anuncios seguidos:</strong> {textoSeguidos(seguidos)}. Conviene intercalar contenido entre un anuncio y otro para que la publicidad no canse al lector.
@@ -353,7 +353,7 @@ export default function Editor({
               <h2 className="font-display text-2xl font-black">
                 Página {idx + 1} <span className="text-base font-bold italic text-ink-soft">· {ETIQUETAS_PLANTILLA[pagina.plantilla]}</span>
               </h2>
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1">
                 <button type="button" className={btnCls} disabled={idx === 0} onClick={() => moverPagina(-1)}>↑ Subir</button>
                 <button type="button" className={btnCls} disabled={idx === datos.paginas.length - 1} onClick={() => moverPagina(1)}>↓ Bajar</button>
                 <button type="button" className={btnCls} onClick={() => setVerPlantillas(true)} title="Guardar esta página como plantilla o usar una">▤ Plantillas</button>

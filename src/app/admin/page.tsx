@@ -23,7 +23,7 @@ export default function Admin() {
     const desactivada = !e.publicada && e.fijo;
     return (
       <li key={e.id} className="border-t border-ink py-4">
-        <div className="grid grid-cols-[3.5rem_1fr_auto] items-baseline gap-4">
+        <div className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-3 gap-y-3 sm:grid-cols-[3.5rem_1fr_auto] sm:gap-4">
           <span
             className={`font-display text-3xl font-black ${e.provisional || e.error ? "text-ink/30" : desactivada ? "text-terracota/50" : "text-terracota"}`}
             title={e.provisional ? "Número previsto: aún no cuenta como edición hasta que se publique" : undefined}
@@ -31,7 +31,7 @@ export default function Admin() {
             {e.error ? "—" : (e.numero ?? "?")}
           </span>
           <div className="min-w-0">
-            <p className="font-display truncate text-xl font-bold">{e.tema ?? `Edición “${e.id}”`}</p>
+            <p className="font-display text-xl font-bold leading-snug sm:truncate">{e.tema ?? `Edición “${e.id}”`}</p>
             <p className="font-sans mt-0.5 text-xs text-ink-soft">
               {e.fecha && fechaLarga(e.fecha)} · {e.paginas ?? "?"} páginas · archivo {e.id}.json ·{" "}
               {e.error ? (
@@ -47,7 +47,7 @@ export default function Admin() {
               )}
             </p>
           </div>
-          <div className="font-sans flex flex-wrap justify-end gap-2 text-xs font-bold uppercase tracking-wider">
+          <div className="font-sans col-span-2 flex flex-wrap justify-start gap-2 text-xs sm:col-span-1 sm:justify-end font-bold uppercase tracking-wider">
             <Link href={`/admin/${e.id}`} className="bg-ink px-3 py-1.5 text-paper hover:bg-terracota">
               Editar
             </Link>
