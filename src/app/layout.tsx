@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Playfair_Display, Source_Serif_4, Inter } from "next/font/google";
 import { clasesFuentes } from "./fuentes";
 import "./globals.css";
@@ -42,16 +43,18 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${playfair.variable} ${sourceSerif.variable} ${inter.variable} ${clasesFuentes}`}
     >
-      <head>
+      {/* Extensiones del navegador (p. ej. Katalon) añaden atributos a <body> antes de hidratar. */}
+      <body suppressHydrationWarning>
         {/* Aplica el tema guardado (o el del sistema) antes de pintar, para evitar el destello claro. */}
-        <script
+        <Script
+          id="tema-inicial"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(t==null&&d))document.documentElement.classList.add('dark');}catch(e){}})();`,
           }}
         />
-      </head>
-      {/* Extensiones del navegador (p. ej. Katalon) añaden atributos a <body> antes de hidratar. */}
-      <body suppressHydrationWarning>{children}</body>
+        {children}
+      </body>
     </html>
   );
 }
