@@ -48,7 +48,7 @@ export default async function Buscar({ searchParams }: { searchParams: Promise<{
             <li key={r.href} className="border-t border-ink/60">
               <Link href={r.href} className="group block py-5">
                 <span className="kicker block text-terracota">
-                  Edición N.º {r.numero} · {r.tema} · pág. {r.pagina}
+                  Edición N.º {r.numero} · {r.tema} · <span className="whitespace-nowrap">pág. {r.pagina}</span>
                 </span>
                 <span className="font-display mt-1 block text-2xl font-bold leading-snug group-hover:underline decoration-terracota decoration-2 underline-offset-4">
                   {r.titulo}

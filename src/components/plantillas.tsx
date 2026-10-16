@@ -309,14 +309,20 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
   const next = ed.paginas[n];
   return (
     <>
-      <div className="kicker flex items-center justify-between gap-3 border-b border-ink/40 px-5 py-2 text-ink-soft">
-        <Link href="/ediciones" className="hover:text-terracota">← Ediciones</Link>
-        <Link href="/" aria-label="ACOM-Di, Revista de Acámbaro — inicio" className="block">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo.svg" alt="ACOM-Di, Revista de Acámbaro" className="h-8 w-auto sm:h-9" />
+      {/* Barra superior: tres zonas fijas (volver · logo · posición). Sin el estilo «kicker», cuyo espaciado de letras
+          es enorme en pantallas de 360 px y partía «← Ediciones» y «N.º 10 · 1/54» en dos líneas. */}
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-ink/40 px-4 py-2 font-sans text-[0.64rem] font-bold uppercase leading-none tracking-[0.06em] text-ink-soft sm:px-5 sm:text-[0.68rem] sm:tracking-[0.18em]">
+        <Link href="/ediciones" className="inline-flex items-center gap-1 justify-self-start whitespace-nowrap py-2 hover:text-terracota" aria-label="Volver a todas las ediciones">
+          <span aria-hidden>←</span>
+          <span>Ediciones</span>
         </Link>
-        <span>
-          N.º {ed.numero} · {n}/{ed.paginas.length}
+        <Link href="/" aria-label="ACOM-Di, Revista de Acámbaro — inicio" className="block justify-self-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo.svg" alt="ACOM-Di, Revista de Acámbaro" className="h-7 w-auto sm:h-9" />
+        </Link>
+        <span className="justify-self-end whitespace-nowrap tabular-nums" title={`Edición N.º ${ed.numero}`}>
+          <span className="hidden sm:inline">N.º {ed.numero} · </span>
+          {n}/{ed.paginas.length}
         </span>
       </div>
       <main className="bg-paper-deep/60 py-6 sm:py-10">

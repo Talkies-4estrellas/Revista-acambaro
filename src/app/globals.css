@@ -48,6 +48,12 @@ body {
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
+/* En pantallas de ~360 px el espaciado amplio partía los rótulos en varias líneas. */
+@media (max-width: 480px) {
+  .kicker {
+    letter-spacing: 0.09em;
+  }
+}
 
 .drop-cap::first-letter {
   font-family: var(--font-display);

@@ -463,11 +463,14 @@ export function LienzoApilado({
     const rel = el.w / ANCHO_LIENZO;
     const centro = (el.x + el.w / 2) / ANCHO_LIENZO;
     const linea = el.tipo === "forma" && el.h <= 14;
+    // Un logotipo ancho (imagen «contener», mucho más ancha que alta) va centrado y a poco más de la mitad de la columna:
+    // a todo el ancho, como la portada de ACOM-Di, resultaba enorme en el celular.
+    const logo = el.tipo === "imagen" && el.ajuste === "contener" && rel < 0.6 && el.w / el.h > 2.5;
     return {
       // Fotos y formas medianas (un tercio de la hoja o más) ocupan toda la columna: con menos ancho quedaban a medias,
       // pegadas a un lado y desalineadas con el texto. Solo los elementos pequeños (logos, iconos) conservan su tamaño.
-      ancho: el.tipo === "texto" || rel >= 0.3 ? 100 : Math.min(100, Math.max(18, rel * 170)),
-      alinear: centro < 0.38 ? "start" : centro > 0.62 ? "end" : "center",
+      ancho: logo ? 58 : el.tipo === "texto" || rel >= 0.3 ? 100 : Math.min(100, Math.max(18, rel * 170)),
+      alinear: logo ? "center" : centro < 0.38 ? "start" : centro > 0.62 ? "end" : "center",
       margenSuperior: primero ? 0 : Math.min(56, Math.max(14, hueco * 0.55)),
       altoFijo: linea ? Math.max(2, el.h) : undefined,
     };

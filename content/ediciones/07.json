@@ -65,7 +65,7 @@
           "color": "terracota",
           "interlineado": 1.5,
           "peso": 800,
-          "alinear": "derecha",
+          "alinear": "centro",
           "espaciado": 0.22,
           "mayusculas": true
         },
@@ -82,7 +82,7 @@
           "color": "tinta",
           "interlineado": 1.1,
           "peso": 800,
-          "alinear": "derecha"
+          "alinear": "centro"
         },
         {
           "tipo": "forma",
