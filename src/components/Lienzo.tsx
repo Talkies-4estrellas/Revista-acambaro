@@ -464,7 +464,9 @@ export function LienzoApilado({
     const centro = (el.x + el.w / 2) / ANCHO_LIENZO;
     const linea = el.tipo === "forma" && el.h <= 14;
     return {
-      ancho: el.tipo === "texto" || rel >= 0.6 || (linea && rel >= 0.3) ? 100 : Math.min(100, Math.max(18, rel * 170)),
+      // Fotos y formas medianas (un tercio de la hoja o más) ocupan toda la columna: con menos ancho quedaban a medias,
+      // pegadas a un lado y desalineadas con el texto. Solo los elementos pequeños (logos, iconos) conservan su tamaño.
+      ancho: el.tipo === "texto" || rel >= 0.3 ? 100 : Math.min(100, Math.max(18, rel * 170)),
       alinear: centro < 0.38 ? "start" : centro > 0.62 ? "end" : "center",
       margenSuperior: primero ? 0 : Math.min(56, Math.max(14, hueco * 0.55)),
       altoFijo: linea ? Math.max(2, el.h) : undefined,
