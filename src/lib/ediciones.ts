@@ -182,8 +182,8 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   if (e.enlace !== undefined) {
     const ok = Number.isInteger(e.enlace)
       ? (e.enlace as number) >= 1 && (e.enlace as number) <= total
-      : typeof e.enlace === "string" && /^(https?:\/\/|\/(?!\/))/.test(e.enlace);
-    if (!ok) fail(c, `"enlace" debe ser un número de página entre 1 y ${total}, una dirección https:// o una ruta del sitio (ej. "/suscribirse")`);
+      : typeof e.enlace === "string" && /^(https?:\/\/|\/(?!\/)|#[\w-]{1,40}$)/.test(e.enlace);
+    if (!ok) fail(c, `"enlace" debe ser un número de página entre 1 y ${total}, un "#identificador" de página, una dirección https:// o una ruta del sitio (ej. "/suscribirse")`);
   }
   checkUrl(e.src, c, "src");
   checkUrl(e.poster, c, "poster");
@@ -242,6 +242,8 @@ export function validarPagina(raw: unknown, ctx: string, total: number): Pagina 
     raw.bloques.forEach((b) => checkBloque(b, ctx));
   }
 
+  if (raw.ancla !== undefined && !(typeof raw.ancla === "string" && /^[\w-]{1,40}$/.test(raw.ancla)))
+    fail(ctx, '"ancla" debe ser un identificador corto (letras, números, - y _)');
   checkColor(raw.fondo, ctx, "fondo");
   checkEnum(raw.movil, MODOS_MOVIL, ctx, "movil");
   if (raw.ordenMovil !== undefined && (!Array.isArray(raw.ordenMovil) || raw.ordenMovil.length > 600 || raw.ordenMovil.some((x) => typeof x !== "string" || x.length > 60)))
@@ -287,6 +289,50 @@ export function validarPagina(raw: unknown, ctx: string, total: number): Pagina 
   return { ...(raw as unknown as Pagina), transicion: (raw.transicion as Transicion) ?? "izquierda" };
 }
 
+/* ------------------------------------------------------------------ */
+/* Referencias a páginas: números que se corrigen solos                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Sustituye, al leer la edición, las referencias a páginas por su número actual:
+ *  · enlaces "#ancla" de un elemento → número de esa página;
+ *  · en los textos: {n} (esta página), {p:ancla} (la página con ese identificador) y la variante con ceros a la izquierda,
+ *    {n:2} o {p:ancla:2} (por ejemplo «07»).
+ * El archivo guardado conserva las referencias: solo se resuelven en lo que se lee para el sitio. No modifica el original.
+ */
+function resolverReferencias(paginas: Pagina[], ctx: string): Pagina[] {
+  const mapa = new Map<string, number>();
+  paginas.forEach((p, i) => {
+    if (!p.ancla) return;
+    if (mapa.has(p.ancla)) fail(`${ctx}, página ${i + 1}`, `el identificador "${p.ancla}" ya lo usa la página ${mapa.get(p.ancla)}; cada identificador debe ser único`);
+    mapa.set(p.ancla, i + 1);
+  });
+  const numeroDe = (ancla: string, c: string) => {
+    const n = mapa.get(ancla);
+    if (n === undefined) fail(c, `no existe ninguna página con el identificador "${ancla}"${mapa.size ? ` (hay: ${[...mapa.keys()].join(", ")})` : " (ninguna página tiene identificador todavía)"}`);
+    return n;
+  };
+  const reemplazar = (texto: string, n: number, c: string) =>
+    texto.replace(/\{(?:(n)|p:([\w-]+))(?::(\d))?\}/g, (_m, esta, ancla, ceros) => {
+      const valor = esta ? n : numeroDe(ancla as string, c);
+      return ceros ? String(valor).padStart(Number(ceros), "0") : String(valor);
+    });
+  const hayAlgo = (p: Pagina) => (p.elementos ?? []).some((e) => (typeof e.enlace === "string" && e.enlace.startsWith("#")) || (e.tipo === "texto" && (e.texto.includes("{") || e.contenido?.some((par) => par.some((t) => t.texto.includes("{"))))));
+  return paginas.map((p, i) => {
+    if (!hayAlgo(p)) return p;
+    const c = `${ctx}, página ${i + 1}`;
+    const copia = structuredClone(p);
+    for (const e of copia.elementos ?? []) {
+      if (typeof e.enlace === "string" && e.enlace.startsWith("#")) e.enlace = numeroDe(e.enlace.slice(1), `${c} (enlace)`);
+      if (e.tipo === "texto") {
+        e.texto = reemplazar(e.texto, i + 1, c);
+        e.contenido?.forEach((par) => par.forEach((t) => (t.texto = reemplazar(t.texto, i + 1, c))));
+      }
+    }
+    return copia;
+  });
+}
+
 /** Valida el contenido de un archivo de edición. Lanza un error legible si algo está mal. */
 export function validarEdicion(raw: unknown, id: string): Edicion {
   const ctx = `Edición "${id}"`;
@@ -311,7 +357,10 @@ export function validarEdicion(raw: unknown, id: string): Edicion {
     publicada: raw.publicada !== false,
     ...(raw.publicarEn ? { publicarEn: raw.publicarEn as string } : {}),
     ...(raw.numeroFijo === true ? { numeroFijo: true } : {}),
-    paginas: raw.paginas.map((p, i) => validarPagina(p, `${ctx}, página ${i + 1}`, total)),
+    paginas: resolverReferencias(
+      raw.paginas.map((p, i) => validarPagina(p, `${ctx}, página ${i + 1}`, total)),
+      ctx,
+    ),
   };
 }
 

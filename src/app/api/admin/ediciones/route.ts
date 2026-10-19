@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
-import { ErrorAdmin, crearEdicion, verificarId, verificarPeticion } from "@/lib/admin";
+import { ErrorAdmin, crearEdicion, crearResumen, verificarId, verificarPeticion } from "@/lib/admin";
 
 export async function POST(req: Request) {
   try {
     verificarPeticion(req);
     const b = await req.json();
     const id = verificarId(String(b.id ?? ""));
+    if (b.resumen) {
+      const indices = Array.isArray(b.resumen.paginas) ? b.resumen.paginas.map(Number) : [];
+      const avisos = crearResumen(id, { fecha: String(b.fecha ?? ""), tema: String(b.tema ?? "") }, verificarId(String(b.resumen.origen ?? "")), indices);
+      return NextResponse.json({ ok: true, id, avisos });
+    }
     crearEdicion(
       id,
       { numero: "", fecha: String(b.fecha ?? ""), tema: String(b.tema ?? "") },

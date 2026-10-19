@@ -316,7 +316,7 @@ type ElementoBase = {
   rot?: number;
   /** 0 a 1. */
   opacidad?: number;
-  /** Número de página de esta edición, o una dirección https://. */
+  /** Número de página de esta edición, "#identificador" de una página (sigue a la página si se mueve) o una dirección https://. */
   enlace?: number | string;
   /** Los elementos con el mismo valor forman un grupo: se seleccionan y mueven juntos. */
   grupo?: string;
@@ -540,6 +540,9 @@ export type Pagina = {
   /** Cómo ENTRA esta página al avanzar (al retroceder se invierte). */
   transicion: Transicion;
   titulo?: string;
+  /** Identificador corto y único de la página ("editorial", "noticias"…). Permite enlazarla con "#editorial" y escribir
+   *  su número en un texto con {p:editorial}; así el índice y los enlaces se corrigen solos si se agregan o mueven páginas. */
+  ancla?: string;
   seccion?: string;
   bajada?: string;
   autor?: string;

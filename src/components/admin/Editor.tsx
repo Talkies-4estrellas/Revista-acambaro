@@ -19,6 +19,7 @@ import FormPagina from "./FormPagina";
 import EditorLienzo from "./EditorLienzo";
 import PanelPaginas from "./PanelPaginas";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
+import RevisorDiseno from "./RevisorDiseno";
 
 /** «las páginas 7 y 8» / «las páginas 4 a 6 y 10 y 11», a partir de los números de página que son anuncios pegados. */
 function textoSeguidos(paginas: number[]) {
@@ -80,12 +81,15 @@ export default function Editor({
   const [medios, setMedios] = useState(mediosIniciales);
   const [nuevaPlantilla, setNuevaPlantilla] = useState<Plantilla>("lienzo");
   const [verPlantillas, setVerPlantillas] = useState(false);
+  const [verRevisor, setVerRevisor] = useState(false);
 
   const sucio = JSON.stringify(datos) !== guardado;
   const pagina = datos.paginas[Math.min(sel, datos.paginas.length - 1)];
   const idx = datos.paginas.indexOf(pagina);
   const seguidos = useMemo(() => anunciosSeguidos(datos.paginas), [datos.paginas]);
   const titulos = useMemo(() => datos.paginas.map(tituloPagina), [datos.paginas]);
+  const anclas = useMemo(() => datos.paginas.map((p) => p.ancla), [datos.paginas]);
+  const anclaRepetida = !!pagina.ancla && datos.paginas.some((p, i) => i !== idx && p.ancla === pagina.ancla);
   // En las páginas de lienzo la propia hoja es la vista previa.
   const esLienzo = pagina.plantilla === "lienzo";
   const conPrevia = verPrevia && !esLienzo;
@@ -189,7 +193,10 @@ export default function Editor({
   function duplicarPagina() {
     const k = idx + 1;
     const copia = [...datos.paginas];
-    copia.splice(k, 0, structuredClone(pagina));
+    // El identificador (ancla) es único en la edición: la copia nace sin él.
+    const nueva = structuredClone(pagina);
+    delete nueva.ancla;
+    copia.splice(k, 0, nueva);
     setPaginas(copia, (n) => (n - 1 >= k ? n + 1 : n));
     setSel(k);
   }
@@ -253,6 +260,9 @@ export default function Editor({
               )}
               <button type="button" className={`${btnCls} hidden ${esLienzo ? "" : "xl:inline-block"}`} onClick={() => setVerPrevia((v) => !v)}>
                 {verPrevia ? "Ocultar vista previa" : "Vista previa"}
+              </button>
+              <button type="button" className={btnCls} onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica en el celular, anuncios seguidos y enlaces de ejemplo">
+                ✓ Revisar diseño
               </button>
               <a href={`/ediciones/${id}/1`} target="_blank" rel="noreferrer" className={btnCls}>
                 Abrir edición ↗
@@ -361,8 +371,27 @@ export default function Editor({
                 <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={quitarPagina}>✕ Quitar</button>
               </div>
             </div>
+            <div className="mb-4 border border-ink/20 bg-paper-deep/40 px-3 py-2">
+              <Texto
+                label="Identificador de la página (opcional)"
+                value={pagina.ancla ?? ""}
+                placeholder="editorial, noticias, cupones…"
+                onChange={(v) => {
+                  // Solo letras minúsculas, números, - y _ (sin acentos ni espacios), como los nombres de archivo
+                  const limpio = v.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-").replace(/[^\w-]/g, "").slice(0, 40);
+                  cambiarPagina({ ...pagina, ancla: limpio || undefined });
+                }}
+              />
+              <p className={`font-sans mt-1 text-[0.7rem] leading-snug ${anclaRepetida ? "font-bold text-terracota" : "text-ink-soft"}`}>
+                {anclaRepetida
+                  ? "Ese identificador ya lo usa otra página: cada uno debe ser único."
+                  : pagina.ancla
+                    ? `Para enlazar esta página usa «Lleva a» (queda como #${pagina.ancla} y sigue a la página si la mueves). Para escribir su número en un texto (índice, portada) pon {p:${pagina.ancla}}, o {p:${pagina.ancla}:2} para «07». En un pie de página, {n} es el número de la página donde está.`
+                    : "Si le pones un identificador, el índice y los enlaces con su número se corrigen solos al agregar, quitar o mover páginas."}
+              </p>
+            </div>
             {esLienzo ? (
-              <EditorLienzo key={idx} pagina={pagina} onChange={cambiarPagina} paginas={titulos} edicionId={id} />
+              <EditorLienzo key={idx} pagina={pagina} onChange={cambiarPagina} paginas={titulos} anclas={anclas} edicionId={id} />
             ) : (
               <FormPagina key={idx} pagina={pagina} onChange={cambiarPagina} titulos={titulos} />
             )}
@@ -392,6 +421,7 @@ export default function Editor({
           )}
         </div>
       </div>
+      {verRevisor && <RevisorDiseno edicionId={id} paginas={datos.paginas} sucio={sucio} paginaActual={idx} onIr={setSel} onCerrar={() => setVerRevisor(false)} />}
       {verPlantillas && (
         <PlantillasModal
           paginaActual={pagina}

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { DIR_EDICIONES, validarEdicion } from "./ediciones";
+import { construirResumen } from "./resumen";
 import { limpiar, paginaNueva, type EdicionDatos } from "./esquema";
 import { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
 
@@ -185,6 +186,29 @@ export function crearEdicion(
   } catch (e) {
     throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
   }
+}
+
+/**
+ * Crea una edición resumida (borrador) con las páginas elegidas de otra, en el orden dado (índices desde 0).
+ * Devuelve los avisos de lo que se ajustó (índice, portada, enlaces).
+ */
+export function crearResumen(id: string, base: { fecha: string; tema: string }, origenId: string, indices: number[]): string[] {
+  if (fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin(`Ya existe una edición con el id "${id}".`, 409);
+  const origen = leerCrudo(origenId);
+  if (!origen) throw new ErrorAdmin("La edición de origen no existe.", 404);
+  let resultado;
+  try {
+    resultado = construirResumen(origen.paginas, indices);
+  } catch (e) {
+    throw new ErrorAdmin(e instanceof Error ? e.message : String(e));
+  }
+  try {
+    const n = calcularNumeracion([...entradasNumeracion(), { id, fecha: base.fecha, publicada: false }]).get(id);
+    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, paginas: resultado.paginas });
+  } catch (e) {
+    throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^[ediciones] /, "") : String(e));
+  }
+  return resultado.avisos;
 }
 
 /**

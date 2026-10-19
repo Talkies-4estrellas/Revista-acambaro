@@ -53,14 +53,19 @@ function sinReferenciasDePagina(p: Pagina): Pagina {
   const copia = structuredClone(p) as Pagina;
   delete copia.enlace;
   delete copia.destacados;
+  // El identificador es único dentro de una edición: la plantilla no lo lleva.
+  delete copia.ancla;
   if (copia.elementos)
     copia.elementos = copia.elementos.map((e) => {
-      if (typeof e.enlace === "number") {
-        const { enlace, ...resto } = e;
+      let el = e;
+      if (typeof el.enlace === "number" || (typeof el.enlace === "string" && el.enlace.startsWith("#"))) {
+        const { enlace, ...resto } = el;
         void enlace;
-        return resto as typeof e;
+        el = resto as typeof e;
       }
-      return e;
+      // {p:identificador} apunta a una página de la edición de origen; {n} (el número de la propia página) sí sirve.
+      if (el.tipo === "texto" && el.texto.includes("{p:")) el = { ...el, texto: el.texto.replace(/\{p:[\w-]+(?::\d)?\}/g, "—") };
+      return el;
     });
   return copia;
 }

@@ -250,12 +250,15 @@ export function InspectorElemento({
   el,
   cambiar,
   paginas,
+  anclas,
   acciones,
 }: {
   el: Elemento;
   /** `clave` agrupa ediciones seguidas del mismo campo en un solo paso de deshacer. */
   cambiar: (patch: Partial<Elemento>, clave?: string) => void;
   paginas: string[];
+  /** Identificador de cada página (si lo tiene): el enlace por identificador sigue a la página si se mueve. */
+  anclas?: (string | undefined)[];
   acciones: {
     frente: () => void;
     atras: () => void;
@@ -485,23 +488,34 @@ export function InspectorElemento({
         <Campo label="Lleva a">
           <select
             className={inputCls}
-            value={typeof el.enlace === "number" ? String(el.enlace) : el.enlace === "/suscribirse" ? "suscribirse" : el.enlace ? "externo" : ""}
+            value={
+              typeof el.enlace === "number"
+                ? String(el.enlace)
+                : el.enlace === "/suscribirse"
+                  ? "suscribirse"
+                  : typeof el.enlace === "string" && el.enlace.startsWith("#")
+                    ? el.enlace
+                    : el.enlace
+                      ? "externo"
+                      : ""
+            }
             onChange={(e) => {
               const v = e.target.value;
-              set({ enlace: v === "" ? undefined : v === "externo" ? "https://" : v === "suscribirse" ? "/suscribirse" : Number(v) });
+              set({ enlace: v === "" ? undefined : v === "externo" ? "https://" : v === "suscribirse" ? "/suscribirse" : v.startsWith("#") ? v : Number(v) });
             }}
           >
             <option value="">Sin enlace</option>
             {paginas.map((t, i) => (
-              <option key={i} value={i + 1}>
+              <option key={i} value={anclas?.[i] ? `#${anclas[i]}` : i + 1}>
                 Página {i + 1}: {t}
+                {anclas?.[i] ? ` · #${anclas[i]}` : ""}
               </option>
             ))}
             <option value="suscribirse">Formulario de suscripción (newsletter)</option>
             <option value="externo">Dirección externa…</option>
           </select>
         </Campo>
-        {typeof el.enlace === "string" && el.enlace !== "/suscribirse" && (
+        {typeof el.enlace === "string" && el.enlace !== "/suscribirse" && !el.enlace.startsWith("#") && (
           <Texto label="Dirección" value={el.enlace} onChange={(v) => set({ enlace: v || undefined }, "enlace")} placeholder="https://…" />
         )}
       </Panel>

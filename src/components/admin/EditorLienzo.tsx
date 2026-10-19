@@ -115,6 +115,7 @@ export default function EditorLienzo({
   pagina,
   onChange,
   paginas,
+  anclas,
   edicionId,
 }: {
   pagina: Pagina;
@@ -123,6 +124,8 @@ export default function EditorLienzo({
   edicionId: string;
   /** Títulos de todas las páginas (para los enlaces). */
   paginas: string[];
+  /** Identificador de cada página, si lo tiene (para enlaces que siguen a la página). */
+  anclas?: (string | undefined)[];
 }) {
   const { subir } = useContext(MediosContext);
   const elementos = pagina.elementos ?? [];
@@ -1714,6 +1717,7 @@ export default function EditorLienzo({
             el={unico}
             cambiar={cambiar}
             paginas={paginas}
+            anclas={anclas}
             acciones={{
               frente: () => moverGrupo("frente"),
               atras: () => moverGrupo("atras"),

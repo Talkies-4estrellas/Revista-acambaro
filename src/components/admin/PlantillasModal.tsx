@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import LienzoVista from "@/components/Lienzo";
 import { PLANTILLAS_BASE } from "@/lib/plantillas-base";
 import { PLANTILLAS_ANUNCIO } from "@/lib/plantillas-anuncio";
+import { PLANTILLAS_COLLAGE, PLANTILLAS_EDITORIAL } from "@/lib/plantillas-editorial";
 import { ETIQUETAS_PLANTILLA, limpiar, type Pagina } from "@/lib/esquema";
 import { btnCls, inputCls } from "./campos";
 
@@ -42,7 +43,7 @@ export default function PlantillasModal({
   onAplicar: (pagina: Pagina, nombre: string, modo: ModoAplicar) => void;
   onCerrar: () => void;
 }) {
-  const [pestana, setPestana] = useState<"iniciales" | "anuncios" | "propias">("iniciales");
+  const [pestana, setPestana] = useState<"iniciales" | "anuncios" | "editorial" | "propias">("iniciales");
   const [guardadas, setGuardadas] = useState<Guardada[] | null>(null);
   const [nombre, setNombre] = useState("");
   const [estado, setEstado] = useState<{ tipo: "ok" | "error" | "cargando"; texto: string } | null>(null);
@@ -138,7 +139,7 @@ export default function PlantillasModal({
     </li>
   );
 
-  const pest = (id: "iniciales" | "anuncios" | "propias", texto: string) => (
+  const pest = (id: "iniciales" | "anuncios" | "editorial" | "propias", texto: string) => (
     <button
       type="button"
       onClick={() => setPestana(id)}
@@ -189,7 +190,8 @@ export default function PlantillasModal({
         <section className="px-5 py-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pest("iniciales", `Iniciales (${PLANTILLAS_BASE.length})`)}
-            {pest("anuncios", `Publicidad (${PLANTILLAS_ANUNCIO.length})`)}
+            {pest("anuncios", `Publicidad (${PLANTILLAS_ANUNCIO.length + PLANTILLAS_COLLAGE.length})`)}
+            {pest("editorial", `Noticias y cómic (${PLANTILLAS_EDITORIAL.length})`)}
             {pest("propias", `Mis plantillas${guardadas ? ` (${guardadas.length})` : ""}`)}
           </div>
 
@@ -204,7 +206,17 @@ export default function PlantillasModal({
                 Procura no poner dos páginas de anuncio seguidas.
               </p>
               <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
-                {PLANTILLAS_ANUNCIO.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
+                {[...PLANTILLAS_ANUNCIO, ...PLANTILLAS_COLLAGE].map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
+              </ul>
+            </>
+          ) : pestana === "editorial" ? (
+            <>
+              <p className="font-sans mb-3 text-[0.72rem] text-ink-soft">
+                Páginas de noticias con cifras y fotos, y cómic a página completa, listas para reemplazar textos e imágenes. Los pies de página usan {"{n:2}"}:
+                el número de la página se escribe solo y se corrige si agregas o mueves páginas.
+              </p>
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+                {PLANTILLAS_EDITORIAL.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
               </ul>
             </>
           ) : guardadas === null ? (

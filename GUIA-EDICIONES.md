@@ -153,6 +153,10 @@ Botón **▤ Plantillas** (en la barra lateral y junto a "Duplicar"). Abre un cu
 
 - **Iniciales** (6, de solo lectura): portada de revista, reportaje con foto grande, cita destacada, galería de 4 fotos, foto en
   marco redondo y contraportada con redes. Todas usan la hoja de 800 × 1100.
+- **Publicidad** (10): anuncios de página completa, mosaicos, campaña, patrocinado, cupones, patrocinadores y tres **collages de
+  varias marcas** (banner + dos cuadros + banner, columna alta + cuatro anuncios, tres bandas) con separaciones delgadas.
+- **Noticias y cómic** (3): noticias con cifra destacada, noticias con fotos y cómic a página completa (hoja más alta, 1640).
+  Sus pies de página usan `{n:2}` (ver «Números de página que se corrigen solos»).
 - **Mis plantillas**: las que guardas tú. Se guardan en `content/plantillas/` y se comparten entre **todas** las ediciones.
   Se pueden renombrar (✎) y eliminar (✕); eliminar una no cambia las ediciones que ya la usaron.
 - **Guardar la página actual como plantilla**: escribe un nombre y "Guardar plantilla". Se guarda con lo que ves en pantalla
@@ -164,6 +168,65 @@ Botón **▤ Plantillas** (en la barra lateral y junto a "Duplicar"). Abre un cu
   cerrando sin guardar). La copia es independiente: modificarla no altera la plantilla.
 
 Para respaldar o llevar tus plantillas a otro equipo, copia `content/plantillas/` y `public/media/_plantillas/`.
+
+## Números de página que se corrigen solos
+
+Al agregar, quitar o mover páginas, el índice, los pies de página y los enlaces a páginas dejan de coincidir si escribiste los
+números a mano. Para evitarlo:
+
+1. **Ponle un identificador a la página** (campo «Identificador de la página», arriba de la hoja): `editorial`, `noticias`,
+   `cupones`… Solo minúsculas, números, `-` y `_`. Cada uno debe ser único en la edición (al duplicar una página, la copia nace sin él).
+2. **Enlaces:** en «Lleva a» elige la página; si tiene identificador queda guardado como `#editorial` y sigue a la página aunque
+   la muevas. (Los enlaces por número, como `3`, también funcionan, pero el editor solo los corrige al arrastrar páginas.)
+3. **Números dentro de un texto:** escribe en cualquier texto
+   - `{p:editorial}` → el número de la página con ese identificador (por ejemplo `3`);
+   - `{p:editorial:2}` → el mismo con ceros a la izquierda (`03`), como en el índice;
+   - `{n}` / `{n:2}` → el número de la página donde está el texto (para los pies: `Edición Los Azufres · {n:2}`).
+
+El archivo guarda las referencias tal cual; el número real se calcula al leer la edición (sitio, búsqueda y vista previa). Si
+un texto o enlace apunta a un identificador que no existe, la edición muestra un error que dice cuál y cuáles hay. Las
+plantillas guardadas no conservan identificadores ni enlaces por identificador, y cambian `{p:…}` por «—».
+Las ediciones 14 y 15 ya usan esto en la portada, el índice y los pies de página.
+
+## Armar una edición resumida
+
+En la lista de ediciones del panel (`/admin`), sección **Armar edición resumida** (debajo de «Nueva edición»):
+
+1. Elige la edición de la que tomarás páginas.
+2. Marca las páginas, o usa los **atajos por sección** (por ejemplo «Publicidad» o «Noticias») para marcar o quitar todas.
+3. En la columna derecha ordénalas con ↑ ↓ o quítalas con ✕. Si quedan anuncios seguidos, el panel lo avisa.
+4. Escribe identificador, fecha y tema, y pulsa **Crear edición resumida**. Queda como borrador.
+
+Qué se ajusta solo:
+
+- **Índice** (página con filas «número + título» enlazadas): se quitan las entradas de páginas que no incluiste y las demás suben sin
+  dejar huecos. Los números salen bien si el índice usa identificadores (`{p:identificador:2}`; ver «Números de página que se corrigen solos»).
+- **Portada** (entradas «P. n · título · frase»): una entrada que apuntaba a una página quitada pasa a apuntar a otra página
+  incluida (la primera con contenido que no se repita).
+- **Enlaces** a páginas: se renumeran los que siguen y se quitan los que llevaban a páginas que ya no están.
+- **Textos con `{p:…}`** de páginas quitadas quedan como «—» (el panel lo avisa para que los revises).
+
+Al terminar el panel muestra qué se ajustó. Las ediciones antiguas con números escritos a mano en el índice también funcionan,
+pero conviene migrarlas a identificadores para que cualquier cambio posterior se corrija solo.
+
+## Revisor de diseño
+
+Botón **✓ Revisar diseño** (arriba, junto a «Abrir edición»). Busca problemas antes de publicar:
+
+- **Datos (al instante, con lo que ves en pantalla):** anuncios seguidos; enlaces a `example.com` y textos de relleno sin
+  reemplazar («Nombre y apellido», «000 000», «lorem ipsum»…); imágenes sin descripción (texto alternativo).
+- **Visual (unos segundos por página, sobre la última versión **guardada**):** abre cada página en un marco invisible con ancho de
+  computadora y con 360 px de celular y mide lo que se dibuja:
+  - posibles choques entre textos (*Revisar*): confírmalos a ojo con **Ir →**; la medición puede marcar textos que solo se tocan,
+    y en una prueba real dio algunos falsos avisos;
+  - páginas más anchas que la pantalla del celular (*Corregir*);
+  - letra menor de 9.5 px en el celular (*Revisar* si baja de 6.5 px, si no *Sugerencia*): sirve para decidir si una página
+    «escala» debe pasar a «apilar».
+- Cada hallazgo trae **Ir →**, que abre esa página. «Revisar solo la página N» repite la revisión visual de la página abierta
+  (más rápido al ir corrigiendo).
+
+Límites: compara texto con texto (no detecta texto encima de una foto ni texto cortado dentro de un cuadro) y las páginas que
+no son de lienzo solo pasan la revisión de datos. Si hay cambios sin guardar, guarda antes de la revisión visual.
 
 ## A mano
 

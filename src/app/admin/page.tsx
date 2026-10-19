@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { listarEdicionesAdmin, type ResumenEdicion } from "@/lib/admin";
+import { leerCrudo, listarEdicionesAdmin, type ResumenEdicion } from "@/lib/admin";
 import { estadoEdicion, fechaLarga } from "@/lib/ediciones";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import BotonBorrar from "./BotonBorrar";
 import NuevaEdicion from "./NuevaEdicion";
+import ArmarResumen from "./ResumenEdicion";
 
 export default function Admin() {
   const ediciones = listarEdicionesAdmin();
@@ -15,6 +16,15 @@ export default function Admin() {
     id: String(maxId + 1).padStart(2, "0"),
     fecha: new Date().toISOString().slice(0, 10),
   };
+
+  // Para «Armar edición resumida»: títulos y secciones de las páginas de cada edición (sin errores)
+  const origenes = ediciones
+    .filter((e) => !e.error)
+    .map((e) => ({
+      id: e.id,
+      tema: e.tema,
+      paginas: (leerCrudo(e.id)?.paginas ?? []).map((pg) => ({ titulo: pg.titulo, seccion: pg.seccion })),
+    }));
 
   const porNumero = (a: ResumenEdicion, b: ResumenEdicion) => Number(b.numero ?? 0) - Number(a.numero ?? 0);
   // "Ediciones": publicadas, programadas y desactivadas (ya tuvieron número). "Borradores": nunca publicadas.
@@ -108,6 +118,10 @@ export default function Admin() {
 
       <div className="mt-10">
         <NuevaEdicion sugerido={sugerido} existentes={ediciones.map((e) => ({ id: e.id, tema: e.tema }))} />
+      </div>
+
+      <div className="mt-10">
+        <ArmarResumen origenes={origenes} sugerido={sugerido} />
       </div>
     </main>
   );

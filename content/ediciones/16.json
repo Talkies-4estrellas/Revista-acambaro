@@ -1,0 +1,17 @@
+{
+  "numero": "15",
+  "fecha": "2026-10-19",
+  "tema": "las calabazas",
+  "publicada": false,
+  "paginas": [
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Portada",
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": []
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Pagina } from "@/lib/esquema";
+import { PESO_NIVEL, revisarDatos, type Aviso } from "@/lib/revision";
+import { btnCls } from "./campos";
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Revisor de diseño. Dos partes:
+ *  1) Datos (instantánea, sobre lo que hay en pantalla): anuncios seguidos, enlaces y textos de ejemplo, imágenes sin descripción.
+ *  2) Visual: abre cada página guardada en un marco invisible, con el ancho de una computadora y el de un celular (360 px),
+ *     y mide lo que realmente se dibuja: textos que se encimen y letra demasiado chica para leerse en el celular.
+ * --------------------------------------------------------------------------------------------------------------------- */
+
+const ESPERA_MS = 0; // (la espera real es hasta que terminen las animaciones; ver medirPagina)
+const MIN_LETRA_CELULAR = 9.5; // px reales en un celular de 360 px
+
+type Linea = { left: number; right: number; top: number; bottom: number };
+
+function medirPagina(edicionId: string, n: number, ancho: number, cancelado: () => boolean): Promise<Aviso[]> {
+  return new Promise((resolver) => {
+    const movil = ancho < 640;
+    const f = document.createElement("iframe");
+    f.setAttribute("aria-hidden", "true");
+    f.tabIndex = -1;
+    f.style.cssText = `position:fixed;left:0;top:0;width:${ancho}px;height:${movil ? 6000 : 1800}px;border:0;opacity:0;pointer-events:none;z-index:-1`;
+    const terminar = (avisos: Aviso[]) => {
+      f.remove();
+      resolver(avisos);
+    };
+    const medir = async () => {
+      const avisos: Aviso[] = [];
+      try {
+        const d = f.contentDocument;
+        if (!d || cancelado()) return terminar([]);
+        const raices = [...d.querySelectorAll<HTMLElement>(".lienzo-movil, .lienzo-escritorio")].filter((r) => r.getBoundingClientRect().width > 0 && getComputedStyle(r).display !== "none");
+        const raiz = raices[0];
+        if (!raiz) return terminar([]); // página que no es de lienzo
+        const donde = movil ? "en el celular" : "en computadora";
+
+        const leer = () => {
+          const textos = [...raiz.querySelectorAll<HTMLElement>('div[style*="white-space:pre-wrap"]')].map((t) => {
+            const r = d.createRange();
+            r.selectNodeContents(t);
+            const tam = parseFloat(getComputedStyle(t).fontSize) || 0;
+            // Range da la caja de la fuente (más alta que las letras); se encoge a la altura que realmente se ve para no marcar
+            // bloques que solo se tocan por su interlineado.
+            const lineas: Linea[] = [...r.getClientRects()]
+              .filter((q) => q.width > 2 && q.height > 2)
+              .map((q) => {
+                const alto = Math.min(q.height, tam * 0.78);
+                const centro = (q.top + q.bottom) / 2;
+                return { left: q.left, right: q.right, top: centro - alto / 2, bottom: centro + alto / 2 };
+              });
+            return { s: (t.textContent ?? "").trim().replace(/s+/g, " "), lineas, tam };
+          }).filter((t) => t.s);
+          // Textos que se encimen
+          const pares: string[] = [];
+          for (let a = 0; a < textos.length; a++) {
+            for (let b = a + 1; b < textos.length; b++) {
+              let peor = 0;
+              for (const p of textos[a].lineas) {
+                for (const q of textos[b].lineas) {
+                  const ix = Math.min(p.right, q.right) - Math.max(p.left, q.left);
+                  const iy = Math.min(p.bottom, q.bottom) - Math.max(p.top, q.top);
+                  const minimo = Math.min(p.bottom - p.top, q.bottom - q.top);
+                  if (ix > 6 && iy > Math.max(2.5, minimo * 0.3)) peor = Math.max(peor, iy);
+                }
+              }
+              if (peor > 0) pares.push(`«${textos[a].s.slice(0, 26)}» con «${textos[b].s.slice(0, 26)}»`);
+            }
+          }
+          return { textos, pares };
+        };
+
+        // Un choque solo se informa si sigue ahí en una segunda medición: así no se marcan textos que aún se estaban acomodando.
+        const primera = leer();
+        let choques = primera.pares;
+        if (choques.length) {
+          await new Promise((r) => setTimeout(r, 1500));
+          if (cancelado()) return terminar([]);
+          const confirmados = new Set(leer().pares);
+          choques = choques.filter((c) => confirmados.has(c));
+        }
+        const textos = primera.textos;
+
+        if (choques.length) {
+          avisos.push({
+            pagina: n,
+            nivel: "aviso",
+            tipo: `Posible choque de textos ${donde}`,
+            texto: `${choques.length} par(es): ${choques.slice(0, 3).join("; ")}${choques.length > 3 ? "…" : ""}. Abre la página y confírmalo a ojo: la medición puede marcar textos que apenas se tocan. Si es real, sepáralos o agranda su caja.`,
+          });
+        }
+
+        // 2) Letra demasiado chica en el celular
+        if (movil) {
+          const chicos = textos.filter((t) => t.tam > 0 && t.tam < MIN_LETRA_CELULAR).sort((x, y) => x.tam - y.tam);
+          if (chicos.length) {
+            avisos.push({
+              pagina: n,
+              nivel: chicos[0].tam < 6.5 ? "aviso" : "info",
+              tipo: "Letra chica en el celular",
+              texto: `${chicos.length} texto(s) miden menos de ${MIN_LETRA_CELULAR} px en un celular de 360 px (el menor, ${chicos[0].tam.toFixed(1)} px: «${chicos[0].s.slice(0, 30)}»). Si la página es "escala", considera pasarla a "apilar" o subir ese texto.`,
+            });
+          }
+          if (d.documentElement.scrollWidth > ancho + 1) {
+            avisos.push({ pagina: n, nivel: "error", tipo: "Se sale por los lados", texto: `La página es más ancha que la pantalla del celular (${d.documentElement.scrollWidth} px); hay que hacer scroll horizontal.` });
+          }
+        }
+        terminar(avisos);
+      } catch {
+        terminar([]);
+      }
+    };
+    // Espera a que las tipografías del sitio estén cargadas: con una fuente de respaldo los textos ocupan otro espacio
+    // y se marcarían choques que en el sitio real no existen.
+    f.onload = () => {
+      const fuentesListas = f.contentDocument?.fonts?.ready ?? Promise.resolve();
+      Promise.race([fuentesListas, new Promise((r) => setTimeout(r, 6000))]).then(async () => {
+        await new Promise((r) => setTimeout(r, 700)); // las animaciones arrancan al entrar en pantalla
+        // Mide con las animaciones de entrada ya terminadas (si no, los textos aún están desplazados)
+        const limite = Date.now() + 7000;
+        while (Date.now() < limite && !cancelado()) {
+          const vivas = f.contentDocument?.getAnimations?.().some((a) => a.playState === "running" || a.pending) ?? false;
+          if (!vivas) break;
+          await new Promise((r) => setTimeout(r, 250));
+        }
+        setTimeout(medir, 400);
+      });
+    };
+    f.onerror = () => terminar([]);
+    f.src = `/ediciones/${edicionId}/${n}`;
+    document.body.appendChild(f);
+    setTimeout(() => f.isConnected && medir(), 15000); // por si la carga no avisa
+  });
+}
+
+const ETIQUETA_NIVEL: Record<Aviso["nivel"], string> = { error: "Corregir", aviso: "Revisar", info: "Sugerencia" };
+const COLOR_NIVEL: Record<Aviso["nivel"], string> = {
+  error: "bg-terracota text-paper",
+  aviso: "bg-ocre/60 text-ink",
+  info: "bg-ink/10 text-ink-soft",
+};
+
+export default function RevisorDiseno({
+  edicionId,
+  paginas,
+  sucio,
+  paginaActual,
+  onIr,
+  onCerrar,
+}: {
+  edicionId: string;
+  paginas: Pagina[];
+  /** Hay cambios sin guardar: la revisión visual mira la última versión guardada. */
+  sucio: boolean;
+  /** Índice (desde 0) de la página abierta en el editor. */
+  paginaActual: number;
+  onIr: (indice: number) => void;
+  onCerrar: () => void;
+}) {
+  const datosAvisos = useMemo(() => revisarDatos(paginas), [paginas]);
+  const [visuales, setVisuales] = useState<Aviso[]>([]);
+  const [progreso, setProgreso] = useState<{ hecho: number; total: number } | null>(null);
+  const [terminado, setTerminado] = useState(false);
+  const cancelar = useRef(false);
+
+  useEffect(() => () => void (cancelar.current = true), []);
+
+  /** Revisa todas las páginas, o solo la indicada (índice desde 0): en ese caso sustituye los hallazgos visuales de esa página. */
+  async function revisarVisual(solo?: number) {
+    cancelar.current = false;
+    if (solo === undefined) setVisuales([]);
+    setTerminado(false);
+    const indices = solo === undefined ? paginas.map((_, i) => i) : [solo];
+    let acumulado: Aviso[] = solo === undefined ? [] : visuales.filter((a) => a.pagina !== solo + 1);
+    for (let k = 0; k < indices.length; k++) {
+      if (cancelar.current) return;
+      setProgreso({ hecho: k, total: indices.length });
+      for (const ancho of [900, 360]) {
+        const r = await medirPagina(edicionId, indices[k] + 1, ancho, () => cancelar.current);
+        acumulado = [...acumulado, ...r];
+      }
+      setVisuales(acumulado);
+    }
+    setProgreso(null);
+    setTerminado(true);
+  }
+
+  const todos = useMemo(
+    () => [...datosAvisos, ...visuales].sort((a, b) => a.pagina - b.pagina || PESO_NIVEL[a.nivel] - PESO_NIVEL[b.nivel]),
+    [datosAvisos, visuales],
+  );
+  const cuenta = (n: Aviso["nivel"]) => todos.filter((a) => a.nivel === n).length;
+  const corriendo = progreso !== null;
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-ink/60 p-4 sm:p-8" onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}>
+      <div role="dialog" aria-modal="true" aria-label="Revisor de diseño" className="w-full max-w-3xl border-2 border-ink bg-paper shadow-2xl">
+        <header className="flex items-center justify-between gap-3 border-b border-ink/30 bg-paper-deep px-5 py-3">
+          <h2 className="font-display text-2xl font-black">Revisor de diseño</h2>
+          <button type="button" className={btnCls} onClick={() => { cancelar.current = true; onCerrar(); }}>✕ Cerrar</button>
+        </header>
+
+        <section className="border-b border-ink/20 px-5 py-4">
+          <p className="font-sans text-xs leading-relaxed text-ink-soft">
+            Busca problemas antes de publicar. La revisión de <strong>datos</strong> es inmediata. La <strong>visual</strong> abre cada página guardada con ancho de
+            computadora y de celular y mide el resultado (textos encimados, letra muy chica, páginas que se salen de la pantalla); tarda unos segundos por página.
+          </p>
+          {sucio && (
+            <p className="font-sans mt-2 border-l-4 border-ocre bg-ocre/15 px-3 py-1.5 text-xs">
+              Hay cambios sin guardar: la revisión visual usa la <strong>última versión guardada</strong>. Guarda (Ctrl+S) para incluirlos.
+            </p>
+          )}
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button type="button" className={`${btnCls} !bg-ink !px-4 !text-paper`} onClick={() => revisarVisual()} disabled={corriendo}>
+              {terminado ? "↻ Revisar de nuevo todas" : "▶ Revisar el diseño de las páginas"}
+            </button>
+            <button type="button" className={btnCls} onClick={() => revisarVisual(paginaActual)} disabled={corriendo} title="Solo la página que tienes abierta (más rápido)">
+              Revisar solo la página {paginaActual + 1}
+            </button>
+            {corriendo && (
+              <>
+                <span role="status" className="font-sans text-xs text-ink-soft">
+                  Revisando la página {Math.min(progreso.hecho + 1, progreso.total)} de {progreso.total}…
+                </span>
+                <button type="button" className={btnCls} onClick={() => { cancelar.current = true; setProgreso(null); }}>
+                  Detener
+                </button>
+              </>
+            )}
+            {terminado && <span className="font-sans text-xs font-bold text-oliva">✓ Revisión visual terminada</span>}
+          </div>
+          {corriendo && (
+            <div className="mt-3 h-1.5 w-full bg-ink/10" aria-hidden>
+              <div className="h-full bg-terracota transition-all" style={{ width: `${(progreso.hecho / progreso.total) * 100}%` }} />
+            </div>
+          )}
+        </section>
+
+        <section className="px-5 py-4">
+          <p className="font-sans mb-3 text-xs font-bold uppercase tracking-wider text-ink-soft">
+            {todos.length === 0 ? "Sin hallazgos por ahora" : `${todos.length} hallazgo(s) · ${cuenta("error")} por corregir · ${cuenta("aviso")} por revisar · ${cuenta("info")} sugerencias`}
+          </p>
+          <ul className="space-y-2">
+            {todos.map((a, i) => (
+              <li key={i} className="flex items-start gap-3 border border-ink/20 bg-white/50 px-3 py-2 dark:bg-white/5">
+                <span className={`font-sans mt-0.5 shrink-0 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider ${COLOR_NIVEL[a.nivel]}`}>{ETIQUETA_NIVEL[a.nivel]}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-sans text-xs font-bold">
+                    Página {a.pagina}
+                    <span className="font-normal text-ink-soft"> · {paginas[a.pagina - 1]?.titulo ?? ""}</span> · {a.tipo}
+                  </p>
+                  <p className="font-sans mt-0.5 break-words text-xs text-ink-soft">{a.texto}</p>
+                </div>
+                <button type="button" className={`${btnCls} shrink-0`} onClick={() => { onIr(a.pagina - 1); onCerrar(); }}>
+                  Ir →
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}

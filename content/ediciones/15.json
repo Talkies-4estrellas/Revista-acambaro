@@ -179,14 +179,14 @@
           "y": 872,
           "w": 220,
           "h": 18,
-          "texto": "P. 4",
+          "texto": "P. {p:acom-di-informa}",
           "fuente": "sans",
           "tam": 13,
           "color": "#49c59f",
           "interlineado": 1.5,
           "peso": 800,
           "espaciado": 0.2,
-          "enlace": 4
+          "enlace": "#acom-di-informa"
         },
         {
           "tipo": "texto",
@@ -201,7 +201,7 @@
           "color": "papel",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 4,
+          "enlace": "#acom-di-informa",
           "animacion": {
             "efecto": "subir",
             "duracion": 700,
@@ -220,7 +220,7 @@
           "tam": 14,
           "color": "#e9d7bd",
           "interlineado": 1.4,
-          "enlace": 4
+          "enlace": "#acom-di-informa"
         },
         {
           "tipo": "texto",
@@ -229,14 +229,14 @@
           "y": 872,
           "w": 220,
           "h": 18,
-          "texto": "P. 13",
+          "texto": "P. {p:comic-1}",
           "fuente": "sans",
           "tam": 13,
           "color": "#49c59f",
           "interlineado": 1.5,
           "peso": 800,
           "espaciado": 0.2,
-          "enlace": 13
+          "enlace": "#comic-1"
         },
         {
           "tipo": "texto",
@@ -251,7 +251,7 @@
           "color": "papel",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 13,
+          "enlace": "#comic-1",
           "animacion": {
             "efecto": "subir",
             "duracion": 700,
@@ -270,7 +270,7 @@
           "tam": 14,
           "color": "#e9d7bd",
           "interlineado": 1.4,
-          "enlace": 13
+          "enlace": "#comic-1"
         },
         {
           "tipo": "texto",
@@ -279,14 +279,14 @@
           "y": 872,
           "w": 220,
           "h": 18,
-          "texto": "P. 16",
+          "texto": "P. {p:balnearios-y-aguas-termales}",
           "fuente": "sans",
           "tam": 13,
           "color": "#49c59f",
           "interlineado": 1.5,
           "peso": 800,
           "espaciado": 0.2,
-          "enlace": 16
+          "enlace": "#balnearios-y-aguas-termales"
         },
         {
           "tipo": "texto",
@@ -301,7 +301,7 @@
           "color": "papel",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 16,
+          "enlace": "#balnearios-y-aguas-termales",
           "animacion": {
             "efecto": "subir",
             "duracion": 700,
@@ -320,7 +320,7 @@
           "tam": 14,
           "color": "#e9d7bd",
           "interlineado": 1.4,
-          "enlace": 16
+          "enlace": "#balnearios-y-aguas-termales"
         },
         {
           "tipo": "imagen",
@@ -465,13 +465,13 @@
           "y": 176,
           "w": 70,
           "h": 54,
-          "texto": "03",
+          "texto": "{p:editorial:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 3
+          "enlace": "#editorial"
         },
         {
           "tipo": "texto",
@@ -486,7 +486,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 3
+          "enlace": "#editorial"
         },
         {
           "tipo": "forma",
@@ -505,13 +505,13 @@
           "y": 276,
           "w": 70,
           "h": 54,
-          "texto": "04",
+          "texto": "{p:acom-di-informa:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 4
+          "enlace": "#acom-di-informa"
         },
         {
           "tipo": "texto",
@@ -526,7 +526,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 4
+          "enlace": "#acom-di-informa"
         },
         {
           "tipo": "forma",
@@ -545,13 +545,13 @@
           "y": 376,
           "w": 70,
           "h": 54,
-          "texto": "05",
+          "texto": "{p:mas-noticias:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 5
+          "enlace": "#mas-noticias"
         },
         {
           "tipo": "texto",
@@ -566,7 +566,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 5
+          "enlace": "#mas-noticias"
         },
         {
           "tipo": "forma",
@@ -585,13 +585,13 @@
           "y": 476,
           "w": 70,
           "h": 54,
-          "texto": "07",
+          "texto": "{p:por-que-hierve-la-tierra:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 7
+          "enlace": "#por-que-hierve-la-tierra"
         },
         {
           "tipo": "texto",
@@ -606,7 +606,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 7
+          "enlace": "#por-que-hierve-la-tierra"
         },
         {
           "tipo": "forma",
@@ -625,13 +625,13 @@
           "y": 576,
           "w": 70,
           "h": 54,
-          "texto": "09",
+          "texto": "{p:trivia-preguntas:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 9
+          "enlace": "#trivia-preguntas"
         },
         {
           "tipo": "texto",
@@ -646,7 +646,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 9
+          "enlace": "#trivia-preguntas"
         },
         {
           "tipo": "forma",
@@ -665,13 +665,13 @@
           "y": 676,
           "w": 70,
           "h": 54,
-          "texto": "13",
+          "texto": "{p:comic-1:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 13
+          "enlace": "#comic-1"
         },
         {
           "tipo": "texto",
@@ -686,7 +686,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 13
+          "enlace": "#comic-1"
         },
         {
           "tipo": "forma",
@@ -705,13 +705,13 @@
           "y": 776,
           "w": 70,
           "h": 54,
-          "texto": "16",
+          "texto": "{p:balnearios-y-aguas-termales:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 16
+          "enlace": "#balnearios-y-aguas-termales"
         },
         {
           "tipo": "texto",
@@ -726,7 +726,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 16
+          "enlace": "#balnearios-y-aguas-termales"
         },
         {
           "tipo": "forma",
@@ -745,13 +745,13 @@
           "y": 876,
           "w": 70,
           "h": 54,
-          "texto": "18",
+          "texto": "{p:un-dato:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 18
+          "enlace": "#un-dato"
         },
         {
           "tipo": "texto",
@@ -766,7 +766,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 18
+          "enlace": "#un-dato"
         },
         {
           "tipo": "forma",
@@ -785,13 +785,13 @@
           "y": 176,
           "w": 70,
           "h": 54,
-          "texto": "08",
+          "texto": "{p:anuncios-burger-king-domino-s-y-tu-marca:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 8
+          "enlace": "#anuncios-burger-king-domino-s-y-tu-marca"
         },
         {
           "tipo": "texto",
@@ -806,7 +806,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 8
+          "enlace": "#anuncios-burger-king-domino-s-y-tu-marca"
         },
         {
           "tipo": "forma",
@@ -825,13 +825,13 @@
           "y": 276,
           "w": 70,
           "h": 54,
-          "texto": "12",
+          "texto": "{p:anuncios-sabritas-nissan-nike-y-mercado-:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 12
+          "enlace": "#anuncios-sabritas-nissan-nike-y-mercado-"
         },
         {
           "tipo": "texto",
@@ -846,7 +846,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 12
+          "enlace": "#anuncios-sabritas-nissan-nike-y-mercado-"
         },
         {
           "tipo": "forma",
@@ -865,13 +865,13 @@
           "y": 376,
           "w": 70,
           "h": 54,
-          "texto": "17",
+          "texto": "{p:anuncios-starbucks-telcel-oxxo-y-coca-co:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 17
+          "enlace": "#anuncios-starbucks-telcel-oxxo-y-coca-co"
         },
         {
           "tipo": "texto",
@@ -886,7 +886,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 17
+          "enlace": "#anuncios-starbucks-telcel-oxxo-y-coca-co"
         },
         {
           "tipo": "forma",
@@ -905,13 +905,13 @@
           "y": 476,
           "w": 70,
           "h": 54,
-          "texto": "19",
+          "texto": "{p:cupones:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 19
+          "enlace": "#cupones"
         },
         {
           "tipo": "texto",
@@ -926,7 +926,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 19
+          "enlace": "#cupones"
         },
         {
           "tipo": "forma",
@@ -945,13 +945,13 @@
           "y": 576,
           "w": 70,
           "h": 54,
-          "texto": "21",
+          "texto": "{p:guia-comercial:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 21
+          "enlace": "#guia-comercial"
         },
         {
           "tipo": "texto",
@@ -966,7 +966,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 21
+          "enlace": "#guia-comercial"
         },
         {
           "tipo": "forma",
@@ -985,13 +985,13 @@
           "y": 676,
           "w": 70,
           "h": 54,
-          "texto": "22",
+          "texto": "{p:creditos:2}",
           "fuente": "display",
           "tam": 44,
           "color": "#068562",
           "interlineado": 1,
           "peso": 900,
-          "enlace": 22
+          "enlace": "#creditos"
         },
         {
           "tipo": "texto",
@@ -1006,7 +1006,7 @@
           "color": "tinta",
           "interlineado": 1.15,
           "peso": 800,
-          "enlace": 22
+          "enlace": "#creditos"
         },
         {
           "tipo": "forma",
@@ -1053,7 +1053,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 02",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -1392,7 +1392,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 03",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -1403,7 +1403,8 @@
           "mayusculas": true,
           "movil": "ocultar"
         }
-      ]
+      ],
+      "ancla": "editorial"
     },
     {
       "plantilla": "lienzo",
@@ -2207,7 +2208,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 04",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -2218,7 +2219,8 @@
           "mayusculas": true,
           "movil": "ocultar"
         }
-      ]
+      ],
+      "ancla": "acom-di-informa"
     },
     {
       "plantilla": "lienzo",
@@ -2978,7 +2980,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 05",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -3039,7 +3041,8 @@
         "r015",
         "r016",
         "r017"
-      ]
+      ],
+      "ancla": "mas-noticias"
     },
     {
       "plantilla": "lienzo",
@@ -3557,7 +3560,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 07",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -3568,7 +3571,8 @@
           "mayusculas": true,
           "movil": "ocultar"
         }
-      ]
+      ],
+      "ancla": "por-que-hierve-la-tierra"
     },
     {
       "plantilla": "lienzo",
@@ -4135,7 +4139,8 @@
           "ajuste": "contener",
           "enlace": "https://www.dominos.com.mx/"
         }
-      ]
+      ],
+      "ancla": "anuncios-burger-king-domino-s-y-tu-marca"
     },
     {
       "plantilla": "lienzo",
@@ -4566,7 +4571,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 09",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -4598,7 +4603,8 @@
         "e0pe",
         "e0pg",
         "e0ph"
-      ]
+      ],
+      "ancla": "trivia-preguntas"
     },
     {
       "plantilla": "lienzo",
@@ -5593,7 +5599,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 11",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -6279,7 +6285,8 @@
             "retraso": 700
           }
         }
-      ]
+      ],
+      "ancla": "anuncios-sabritas-nissan-nike-y-mercado-"
     },
     {
       "plantilla": "lienzo",
@@ -6381,7 +6388,8 @@
         "c003",
         "c004",
         "c005"
-      ]
+      ],
+      "ancla": "comic-1"
     },
     {
       "plantilla": "lienzo",
@@ -6953,7 +6961,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 16",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -6964,7 +6972,8 @@
           "mayusculas": true,
           "movil": "ocultar"
         }
-      ]
+      ],
+      "ancla": "balnearios-y-aguas-termales"
     },
     {
       "plantilla": "lienzo",
@@ -7595,7 +7604,8 @@
             "retraso": 500
           }
         }
-      ]
+      ],
+      "ancla": "anuncios-starbucks-telcel-oxxo-y-coca-co"
     },
     {
       "plantilla": "lienzo",
@@ -7753,7 +7763,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 18",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "#d8c9a8",
@@ -7764,7 +7774,8 @@
           "mayusculas": true,
           "movil": "ocultar"
         }
-      ]
+      ],
+      "ancla": "un-dato"
     },
     {
       "plantilla": "lienzo",
@@ -9912,7 +9923,8 @@
           "interlineado": 1.5,
           "alinear": "derecha"
         }
-      ]
+      ],
+      "ancla": "cupones"
     },
     {
       "plantilla": "lienzo",
@@ -10247,7 +10259,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 20",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -11011,7 +11023,8 @@
           "color": "tintaSuave",
           "interlineado": 1.5
         }
-      ]
+      ],
+      "ancla": "guia-comercial"
     },
     {
       "plantilla": "lienzo",
@@ -11216,7 +11229,7 @@
           "y": 1062,
           "w": 300,
           "h": 18,
-          "texto": "Edición Los Azufres · 22",
+          "texto": "Edición Los Azufres · {n:2}",
           "fuente": "sans",
           "tam": 12,
           "color": "tintaSuave",
@@ -11227,7 +11240,8 @@
           "mayusculas": true,
           "movil": "ocultar"
         }
-      ]
+      ],
+      "ancla": "creditos"
     },
     {
       "plantilla": "lienzo",
