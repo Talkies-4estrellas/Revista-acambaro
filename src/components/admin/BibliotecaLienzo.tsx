@@ -1,14 +1,49 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { IconoSvg } from "@/components/Lienzo";
+import { ElementoVista, IconoSvg } from "@/components/Lienzo";
 import { CATEGORIAS_ICONO, ICONOS } from "@/lib/iconos-datos";
-import { LOGOS, MOLDES, MOLDES_IDS, estiloMolde, type LogoId, type MoldeId } from "@/lib/esquema";
+import { ANCHO_LIENZO, BOTONES, LOGOS, MOLDES, MOLDES_IDS, elementoBoton, estiloMolde, type GrupoBoton, type LogoId, type MoldeId } from "@/lib/esquema";
+import { BLOQUES, CATEGORIAS_BLOQUE } from "@/lib/bloques";
 import { btnCls, inputCls } from "./campos";
 
 export const TIPO_BIBLIOTECA = "application/x-lienzo";
 
-export type ModoBiblioteca = "iconos" | "moldes" | "logos";
+export type ModoBiblioteca = "iconos" | "moldes" | "logos" | "botones" | "bloques";
+
+const ANCHO_PREVIA_BLOQUE = 250;
+
+/** Vista previa de un bloque listo (la hoja de 800 se reduce con transform). */
+function PreviaBloque({ id }: { id: string }) {
+  const b = BLOQUES.find((x) => x.id === id)!;
+  const k = Math.min(1, ANCHO_PREVIA_BLOQUE / (b.w + 24));
+  return (
+    <span className="pointer-events-none block overflow-hidden" style={{ width: (b.w + 24) * k, height: (b.h + 24) * k }}>
+      <span className="block origin-top-left" style={{ width: ANCHO_LIENZO, height: ANCHO_LIENZO, position: "relative", containerType: "inline-size", transform: `scale(${k})` }}>
+        {b.elementos().map((e, i) => (
+          <ElementoVista key={i} el={{ ...e, x: e.x + 12, y: e.y + 12, id: `p${i}` }} />
+        ))}
+      </span>
+    </span>
+  );
+}
+
+const GRUPOS_BOTON: GrupoBoton[] = ["Básicos", "Redes y contacto", "Llamativos"];
+const ANCHO_PREVIA = 176; // px de cada vista previa de botón
+
+/** Vista previa viva de un botón (con su efecto al pasar el cursor y su movimiento): la hoja de 800 se reduce con transform. */
+function PreviaBoton({ id }: { id: string }) {
+  const b = BOTONES.find((x) => x.id === id)!;
+  const k = Math.min(1, ANCHO_PREVIA / (b.w + 24));
+  const el = { ...elementoBoton(id), x: 12, y: 12 };
+  return (
+    <span className="pointer-events-none block overflow-hidden" style={{ width: (b.w + 24) * k, height: (b.h + 24) * k }}>
+      <span className="block origin-top-left" style={{ width: ANCHO_LIENZO, height: ANCHO_LIENZO, position: "relative", containerType: "inline-size", transform: `scale(${k})` }}>
+        <ElementoVista el={el} />
+      </span>
+    </span>
+  );
+}
 
 const normalizar = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
@@ -24,6 +59,8 @@ export default function BibliotecaLienzo({
   onIcono,
   onMolde,
   onLogo,
+  onBoton,
+  onBloque,
   onCerrar,
 }: {
   modo: ModoBiblioteca;
@@ -35,6 +72,8 @@ export default function BibliotecaLienzo({
   onIcono: (id: string) => void;
   onMolde: (id: MoldeId, comoForma: boolean) => void;
   onLogo: (id: LogoId) => void;
+  onBoton: (id: string) => void;
+  onBloque: (id: string) => void;
   onCerrar: () => void;
 }) {
   const [busqueda, setBusqueda] = useState("");
@@ -65,6 +104,8 @@ export default function BibliotecaLienzo({
     <section aria-label="Biblioteca" className="mb-3 border border-ink/40 bg-white/50 dark:bg-white/5">
       <header className="flex flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
         <h3 className="font-sans mr-1 text-xs font-bold uppercase tracking-wider">Biblioteca</h3>
+        {pestana("bloques", `Bloques (${BLOQUES.length})`)}
+        {pestana("botones", `Botones (${BOTONES.length})`)}
         {pestana("iconos", `Iconos (${Object.keys(ICONOS).length})`)}
         {pestana("moldes", `Moldes (${MOLDES_IDS.length})`)}
         {pestana("logos", `Logos (${LOGOS.length})`)}
@@ -83,7 +124,75 @@ export default function BibliotecaLienzo({
         </button>
       </header>
 
-      {modo === "iconos" ? (
+      {modo === "bloques" ? (
+        <div className="p-3">
+          <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
+            Grupos de elementos ya compuestos. Clic para agregarlo al centro de la hoja o arrástralo a donde lo quieras; se mueve junto (doble clic para editar una pieza). Reemplaza
+            los textos de guía, y suelta tus fotos sobre los marcadores de color.
+          </p>
+          <div className="max-h-80 space-y-3 overflow-y-auto">
+            {CATEGORIAS_BLOQUE.map((c) => (
+              <div key={c}>
+                <p className="font-sans mb-1.5 text-[0.65rem] font-bold uppercase tracking-wider text-ink-soft">{c}</p>
+                <div className="flex flex-wrap gap-2">
+                  {BLOQUES.filter((b) => b.categoria === c).map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData(TIPO_BIBLIOTECA, `bloque:${b.id}`);
+                        e.dataTransfer.effectAllowed = "copy";
+                      }}
+                      onClick={() => onBloque(b.id)}
+                      title={b.descripcion}
+                      className="flex cursor-grab flex-col items-center gap-1 border border-ink/20 bg-white p-2 hover:border-terracota"
+                      style={{ width: ANCHO_PREVIA_BLOQUE + 20 }}
+                    >
+                      <PreviaBloque id={b.id} />
+                      <span className="font-sans w-full truncate text-center text-[0.62rem] font-semibold text-ink-soft">{b.nombre}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : modo === "botones" ? (
+        <div className="p-3">
+          <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
+            Haz clic para agregar el botón o arrástralo a la hoja. Pasa el cursor por encima para ver su efecto. Después escribe su texto (doble clic), pon a dónde lleva en
+            «Lleva a» y cambia colores y efectos en el panel de la derecha.
+          </p>
+          <div className="max-h-72 space-y-3 overflow-y-auto">
+            {GRUPOS_BOTON.map((g) => (
+              <div key={g}>
+                <p className="font-sans mb-1.5 text-[0.65rem] font-bold uppercase tracking-wider text-ink-soft">{g}</p>
+                <div className="flex flex-wrap gap-2">
+                  {BOTONES.filter((b) => b.grupo === g).map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData(TIPO_BIBLIOTECA, `boton:${b.id}`);
+                        e.dataTransfer.effectAllowed = "copy";
+                      }}
+                      onClick={() => onBoton(b.id)}
+                      title={`Agregar: ${b.nombre}`}
+                      className="flex cursor-grab flex-col items-center gap-1 border border-ink/20 bg-white p-2 hover:border-terracota"
+                      style={{ width: ANCHO_PREVIA + 20 }}
+                    >
+                      <PreviaBoton id={b.id} />
+                      <span className="font-sans w-full truncate text-center text-[0.62rem] font-semibold text-ink-soft">{b.nombre}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : modo === "iconos" ? (
         <div className="p-3">
           <div className="mb-2 flex flex-wrap gap-1">
             {["Todas", ...CATEGORIAS_ICONO].map((c) => (

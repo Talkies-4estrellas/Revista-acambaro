@@ -13,6 +13,7 @@ import { btnCls } from "./campos";
  * --------------------------------------------------------------------------------------------------------------------- */
 
 const ESPERA_MS = 0; // (la espera real es hasta que terminen las animaciones; ver medirPagina)
+const CONCURRENCIA = 3; // páginas medidas a la vez
 const MIN_LETRA_CELULAR = 9.5; // px reales en un celular de 360 px
 
 type Linea = { left: number; right: number; top: number; bottom: number };
@@ -33,13 +34,22 @@ function medirPagina(edicionId: string, n: number, ancho: number, cancelado: () 
       try {
         const d = f.contentDocument;
         if (!d || cancelado()) return terminar([]);
-        const raices = [...d.querySelectorAll<HTMLElement>(".lienzo-movil, .lienzo-escritorio")].filter((r) => r.getBoundingClientRect().width > 0 && getComputedStyle(r).display !== "none");
+        // La hoja que se ve: hijo directo de .pagina-lienzo (la de escritorio, que en páginas «escala» no lleva clase propia, o la columna del celular).
+        const raices = ([...(d.querySelector(".pagina-lienzo")?.children ?? [])] as HTMLElement[]).filter((r) => r.getBoundingClientRect().width > 0 && getComputedStyle(r).display !== "none");
         const raiz = raices[0];
         if (!raiz) return terminar([]); // página que no es de lienzo
         const donde = movil ? "en el celular" : "en computadora";
 
         const leer = () => {
-          const textos = [...raiz.querySelectorAll<HTMLElement>('div[style*="white-space:pre-wrap"]')].map((t) => {
+          // Un texto invisible (opacidad 0 o casi, display/visibility ocultos en él o en un ancestro) no puede chocar con nada.
+          const visible = (t: HTMLElement) => {
+            for (let e: HTMLElement | null = t; e && e !== raiz.parentElement; e = e.parentElement) {
+              const c = getComputedStyle(e);
+              if (c.display === "none" || c.visibility === "hidden" || parseFloat(c.opacity) < 0.05) return false;
+            }
+            return true;
+          };
+          const textos = [...raiz.querySelectorAll<HTMLElement>('div[style*="white-space:pre-wrap"]')].filter(visible).map((t) => {
             const r = d.createRange();
             r.selectNodeContents(t);
             const tam = parseFloat(getComputedStyle(t).fontSize) || 0;
@@ -52,12 +62,13 @@ function medirPagina(edicionId: string, n: number, ancho: number, cancelado: () 
                 const centro = (q.top + q.bottom) / 2;
                 return { left: q.left, right: q.right, top: centro - alto / 2, bottom: centro + alto / 2 };
               });
-            return { s: (t.textContent ?? "").trim().replace(/s+/g, " "), lineas, tam };
+            return { s: (t.textContent ?? "").trim().replace(/[\s ]+/g, " "), lineas, tam };
           }).filter((t) => t.s);
           // Textos que se encimen
           const pares: string[] = [];
           for (let a = 0; a < textos.length; a++) {
             for (let b = a + 1; b < textos.length; b++) {
+              if (textos[a].s === textos[b].s) continue; // el mismo texto repetido a propósito (sombra, eco)
               let peor = 0;
               for (const p of textos[a].lineas) {
                 for (const q of textos[b].lineas) {
@@ -175,15 +186,25 @@ export default function RevisorDiseno({
     setTerminado(false);
     const indices = solo === undefined ? paginas.map((_, i) => i) : [solo];
     let acumulado: Aviso[] = solo === undefined ? [] : visuales.filter((a) => a.pagina !== solo + 1);
-    for (let k = 0; k < indices.length; k++) {
-      if (cancelar.current) return;
-      setProgreso({ hecho: k, total: indices.length });
-      for (const ancho of [900, 360]) {
-        const r = await medirPagina(edicionId, indices[k] + 1, ancho, () => cancelar.current);
+    let siguiente = 0;
+    let hechas = 0;
+    setProgreso({ hecho: 0, total: indices.length });
+    // Varias páginas a la vez (cada una en su marco oculto) para que una edición larga no tarde minutos de más.
+    const trabajador = async () => {
+      while (!cancelar.current) {
+        const k = siguiente++;
+        if (k >= indices.length) return;
+        const r: Aviso[] = [];
+        for (const ancho of [900, 360]) r.push(...(await medirPagina(edicionId, indices[k] + 1, ancho, () => cancelar.current)));
+        if (cancelar.current) return;
         acumulado = [...acumulado, ...r];
+        hechas++;
+        setVisuales(acumulado);
+        setProgreso({ hecho: hechas, total: indices.length });
       }
-      setVisuales(acumulado);
-    }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCIA, indices.length) }, trabajador));
+    if (cancelar.current) return;
     setProgreso(null);
     setTerminado(true);
   }
@@ -223,7 +244,7 @@ export default function RevisorDiseno({
             {corriendo && (
               <>
                 <span role="status" className="font-sans text-xs text-ink-soft">
-                  Revisando la página {Math.min(progreso.hecho + 1, progreso.total)} de {progreso.total}…
+                  Revisadas {progreso.hecho} de {progreso.total} páginas…
                 </span>
                 <button type="button" className={btnCls} onClick={() => { cancelar.current = true; setProgreso(null); }}>
                   Detener

@@ -183,10 +183,105 @@ números a mano. Para evitarlo:
    - `{p:editorial:2}` → el mismo con ceros a la izquierda (`03`), como en el índice;
    - `{n}` / `{n:2}` → el número de la página donde está el texto (para los pies: `Edición Los Azufres · {n:2}`).
 
-El archivo guarda las referencias tal cual; el número real se calcula al leer la edición (sitio, búsqueda y vista previa). Si
+En la hoja del editor esos números se ven ya resueltos (un identificador que no existe se muestra como «?»). El archivo guarda las referencias tal cual; el número real se calcula al leer la edición (sitio, búsqueda y vista previa). Si
 un texto o enlace apunta a un identificador que no existe, la edición muestra un error que dice cuál y cuáles hay. Las
 plantillas guardadas no conservan identificadores ni enlaces por identificador, y cambian `{p:…}` por «—».
 Las ediciones 14 y 15 ya usan esto en la portada, el índice y los pies de página.
+
+## Créditos de las imágenes
+
+En el inspector de cada imagen, **Crédito (autor y licencia)**, por ejemplo «Foto: Ana Pérez, CC BY-SA 4.0». En la página de créditos escribe
+**`{creditos}`** en un texto y se reemplaza por todos los créditos de la edición, sin repetir y en orden de aparición, separados por «; ». Así no
+hay que armar a mano la lista cada vez. (El revisor avisa de fotos sin crédito solo en ediciones que ya usan créditos.)
+
+## Enfoque de las fotos
+
+Las fotos con ajuste «Cubrir» se recortan para llenar su caja. En **Enfoque horizontal / vertical (%)** eliges qué parte debe quedar a la vista
+(50 / 50 = centro; por ejemplo vertical 20 % para no cortar una cabeza que está arriba).
+
+## Bloques listos
+
+En la fila **Agregar**, **Bloques** abre 9 bloques ya compuestos con vista previa: **Comercio** (tarjeta de producto, cupón de descuento, llamada a la acción,
+datos de contacto con iconos), **Datos y citas** (cifra grande, testimonio), **Eventos y pasos** (evento con fecha, tres pasos) y **Estructura** (encabezado de
+sección). Clic para ponerlo al centro de la hoja o arrástralo a donde lo quieras. Salen **agrupados** (se mueven juntos; doble clic entra a una pieza, y el
+botón de agrupar del panel los separa). Cambia los textos de guía y suelta tus fotos sobre los marcadores de color; los botones traen su efecto y piden enlace.
+
+## Filtros y decoración de imágenes
+
+En el panel **Imagen**: **Filtro de color** (blanco y negro, sepia, cálido, frío, más brillante, más oscura, más contraste, desenfocada), **Capa encima**
+(oscura, clara o degradado oscuro arriba/abajo, útil para leer un texto puesto sobre la foto), **Sombra** (suave o marcada) y **Grosor / Color del borde**.
+Se combinan con los moldes y las esquinas redondas.
+
+## Botones prediseñados
+
+En la fila **Agregar**, **Botones** abre una biblioteca de 14 estilos con vista previa viva (pasa el cursor para ver su efecto): básicos (sólido,
+contorno, píldora, con flecha, enlace simple), redes y contacto (WhatsApp, Instagram, Facebook, Llamar, Cómo llegar, Escríbenos) y llamativos (oferta
+que late, suscríbete que brilla, etiqueta «Nuevo»). Clic o arrastre a la hoja. Después: doble clic para escribir el texto, **Lleva a** (panel Enlace)
+para decir a dónde va, y colores, esquinas redondas y borde en el panel **Texto**. Un botón nace sin enlace; el **revisor de diseño** avisa si te lo
+dejas así. (Cualquier texto con fondo se puede convertir en botón: esquinas redondas, borde y «Es un botón».)
+
+## Efectos de movimiento
+
+En el panel de cada elemento, **Efectos de movimiento** (se ven en el sitio publicado y en la vista previa, no mientras editas):
+- **Al pasar el cursor:** se levanta con sombra, acerca (en una foto, el zoom queda dentro de su marco), se inclina, se ilumina o se hunde.
+- **Movimiento continuo:** flota, late, se balancea o parpadea con un brillo. Se apaga solo si el lector pidió menos animaciones en su equipo.
+- Además, la **animación de entrada** suma **Cortina** (de arriba hacia abajo) y **Difuminar** (de borroso a nítido).
+
+## Editar con el dedo (tableta o celular)
+
+Con la pantalla táctil, un dedo mueve y redimensiona elementos (los tiradores se agrandan en pantallas táctiles); un dedo sobre el fondo gris desplaza la
+hoja, y **dos dedos hacen zoom y desplazan** (pellizco). Mientras haces el pellizco no se mueve ningún elemento.
+
+## Dónde está cada cosa en el editor
+
+De arriba abajo, la **hoja** es lo principal y lo demás se aparta para no estorbar:
+
+- **Barra de arriba:** guardar, revisar el diseño y abrir la edición. Debajo, una franja resume la edición (N.º, fecha, tema y si es borrador o
+  publicada); **✎ Datos de la edición** despliega los campos para cambiarlos (en una edición nueva sin tema ya salen abiertos).
+- **A la izquierda:** las páginas. Abajo, **Agregar una página** (elige el tipo y pulsa «+ Agregar después de la N»), más **Plantillas** e **Índice**.
+- **Sobre la hoja:** el título de la página con sus acciones (subir, bajar, plantillas, duplicar, quitar) y, plegado, el **⚙ Identificador** de la página.
+  Después, la fila **Agregar** (titular, párrafo, imagen…; clic o arrastrar a la hoja) y a la derecha copiar / cortar / pegar / deshacer.
+- **Debajo de la hoja** (siempre a la vista): zoom, ajustar, mano, reglas, cuadrícula e imán. Al abrir una página la hoja aparece **entera y centrada**
+  (como en Canva); cambia el zoom o pulsa **Ancho** / **Entera** / **100 %** cuando quieras. Si eliges «Ancho», se recuerda al cambiar de página.
+- **A la derecha:** propiedades del elemento (o de la hoja si no hay nada elegido) y la pestaña **Celular**.
+- Una página en blanco muestra una guía con los primeros pasos (+ Titular, + Párrafo, + Imagen, Usar una plantilla). **ⓘ Ayuda rápida** resume los atajos.
+
+## Generar el índice
+
+En la lista de páginas, el botón **☰ Generar índice** crea la página «Contenido» con una fila por página (número + título, los dos con enlace). Pone un
+identificador a las páginas que no lo tengan, y usa `{p:identificador:2}` y `#identificador`, así que si después mueves, agregas o quitas páginas los
+números y enlaces se corrigen solos. Entran las páginas con título y «Mostrar en el índice»; quedan fuera la portada, los anuncios y cualquier índice.
+Si hay más de 18 se hacen varias páginas. Se inserta después de la portada; si lo vuelves a pulsar, rehace el índice generado en el mismo lugar
+(pide confirmación). Un índice armado a mano (sección «Contenido») no se toca, pero tampoco se lista.
+
+## Texto sobre la imagen (globos, rótulos y traducciones)
+
+Selecciona una imagen y abre el panel **Texto sobre la imagen**. Con **+ Globo**, **+ Recuadro** o **+ Parche** pones texto con letra de verdad
+encima de la imagen (se puede editar, cambiar de tamaño y escala con la imagen, también en el celular).
+
+- **Globo de diálogo / pensamiento / recuadro (narración) / sonido:** con su cola, fondo, color y letra (por defecto Comic Neue).
+- **Parche liso:** un rectángulo del color que quieras para **tapar el texto original** de una imagen; encima pones un globo con la traducción.
+- Con la imagen seleccionada sola, arrastra cada globo en la hoja para moverlo y usa el cuadrito de su esquina para cambiar el tamaño.
+  También puedes escribir X, Y, ancho, alto (en % de la imagen) y el tamaño de letra (% del ancho de la imagen).
+- Los botones numerados eligen el globo; **Duplicar** y **Quitar** actúan sobre el seleccionado.
+
+## Muchas páginas
+
+- En «Lleva a» aparece un buscador (por número, título o identificador) cuando la edición tiene más de 12 páginas.
+- Si la edición no tiene identificadores, el botón **Poner identificador a las N páginas que no lo tienen** (arriba de la hoja) los genera a partir de los
+  títulos, sin tocar los que ya existen.
+- Los elementos marcados «Solo en el celular» aparecen en el editor con borde punteado y la etiqueta «Solo en el celular».
+
+## Espacio en la columna del celular
+
+En páginas «apilar», el hueco entre elementos sale de la distancia que tenían en la hoja. Si uno queda demasiado separado (o pegado), selecciónalo y
+en **En el celular → Espacio antes de este elemento** escribe un número (0–400; vacío = automático).
+
+## Si una página tiene un error
+
+En el sitio, una página con un dato inválido (por ejemplo un color mal escrito) se muestra como «Esta página no está disponible» y **no** tumba la edición
+(en desarrollo muestra el motivo; el panel sigue avisando al guardar). Una edición con errores generales (fecha, tema) se omite del sitio y
+el motivo se escribe en la consola del servidor.
 
 ## Armar una edición resumida
 
@@ -217,12 +312,13 @@ Botón **✓ Revisar diseño** (arriba, junto a «Abrir edición»). Busca probl
   reemplazar («Nombre y apellido», «000 000», «lorem ipsum»…); imágenes sin descripción (texto alternativo).
 - **Visual (unos segundos por página, sobre la última versión **guardada**):** abre cada página en un marco invisible con ancho de
   computadora y con 360 px de celular y mide lo que se dibuja:
+  - (Se miden también las páginas «escala», como los anuncios; los textos invisibles —opacidad 0— o repetidos a propósito se ignoran.)
   - posibles choques entre textos (*Revisar*): confírmalos a ojo con **Ir →**; la medición puede marcar textos que solo se tocan,
     y en una prueba real dio algunos falsos avisos;
   - páginas más anchas que la pantalla del celular (*Corregir*);
   - letra menor de 9.5 px en el celular (*Revisar* si baja de 6.5 px, si no *Sugerencia*): sirve para decidir si una página
     «escala» debe pasar a «apilar».
-- Cada hallazgo trae **Ir →**, que abre esa página. «Revisar solo la página N» repite la revisión visual de la página abierta
+- La revisión visual mide **3 páginas a la vez** (una edición de 24 páginas tarda unos 2 minutos). Cada hallazgo trae **Ir →**, que abre esa página. «Revisar solo la página N» repite la revisión visual de la página abierta
   (más rápido al ir corrigiendo).
 
 Límites: compara texto con texto (no detecta texto encima de una foto ni texto cortado dentro de un cuadro) y las páginas que

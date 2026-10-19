@@ -2,6 +2,7 @@ import {
   Abril_Fatface,
   Bebas_Neue,
   Caveat,
+  Comic_Neue,
   Cormorant_Garamond,
   DM_Serif_Display,
   IBM_Plex_Mono,
@@ -44,6 +45,7 @@ const raleway = Raleway({ subsets: ["latin"], display: "swap", preload: false, v
 const robotoslab = Roboto_Slab({ subsets: ["latin"], display: "swap", preload: false, variable: "--fuente-robotoslab" });
 const caveat = Caveat({ subsets: ["latin"], display: "swap", preload: false, variable: "--fuente-caveat" });
 const pacifico = Pacifico({ subsets: ["latin"], display: "swap", preload: false, variable: "--fuente-pacifico", weight: "400" });
+const comicneue = Comic_Neue({ subsets: ["latin"], display: "swap", preload: false, variable: "--fuente-comicneue", weight: ["300", "400", "700"], style: ["normal", "italic"] });
 const plexmono = IBM_Plex_Mono({
   subsets: ["latin"],
   display: "swap",
@@ -68,6 +70,7 @@ export const clasesFuentes = [
   robotoslab,
   caveat,
   pacifico,
+  comicneue,
   plexmono,
 ]
   .map((f) => f.variable)

@@ -2,7 +2,7 @@
  * Esquema de una edición: tipos, listas de opciones y fábricas de elementos nuevos.
  * Sin dependencias del servidor: lo usan tanto el sitio como el panel de administración.
  */
-import type { AnimacionEl } from "./animaciones";
+import type { AnimacionEl, Bucle, Hover } from "./animaciones";
 import type { Transicion } from "./transiciones";
 
 export const PLANTILLAS = [
@@ -40,6 +40,36 @@ export const TIPOS_BLOQUE = [
   "suscripcion",
 ] as const;
 export type TipoBloque = (typeof TIPOS_BLOQUE)[number];
+
+/** Formas de un globo de texto sobre una imagen. «tapa» es un parche liso para cubrir el texto original de la imagen. */
+export const FORMAS_GLOBO = ["globo", "pensamiento", "recuadro", "sonido", "tapa"] as const;
+export type FormaGlobo = (typeof FORMAS_GLOBO)[number];
+export const COLAS_GLOBO = ["ninguna", "abajo-izquierda", "abajo-derecha", "arriba-izquierda", "arriba-derecha"] as const;
+export type ColaGlobo = (typeof COLAS_GLOBO)[number];
+
+/**
+ * Texto escrito encima de una imagen (globos de un cómic, rótulos, traducciones). Se dibuja como vector sobre la foto, así que
+ * se ve nítido y escala con la imagen en escritorio y en el celular. Las medidas son porcentajes de la caja de la imagen.
+ */
+export type Globo = {
+  /** Posición y tamaño de la caja, en % de la imagen (0–100). */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  texto: string;
+  /** Tamaño de la letra, en % del ancho de la imagen (por defecto 3). */
+  tam?: number;
+  forma?: FormaGlobo;
+  /** Hacia dónde apunta la cola (solo «globo»). */
+  cola?: ColaGlobo;
+  /** Color del fondo del globo o parche (por defecto, blanco cálido) y del texto. */
+  fondo?: string;
+  color?: string;
+  fuente?: Fuente;
+  /** Letras mayúsculas (como en los cómics clásicos). */
+  mayusculas?: boolean;
+};
 
 /** Imagen o gif. Sin `src` se dibuja una ilustración provisional del color `tono`. */
 export type Medio = {
@@ -144,6 +174,7 @@ export const FUENTES = [
   "robotoslab",
   "caveat",
   "pacifico",
+  "comicneue",
   "plexmono",
 ] as const;
 export type Fuente = (typeof FUENTES)[number];
@@ -182,6 +213,7 @@ export const FUENTES_INFO: Record<Fuente, { nombre: string; categoria: Categoria
   oswald: { nombre: "Oswald", categoria: "Titulares", pesos: [300, 400, 500, 600, 700] },
   caveat: { nombre: "Caveat", categoria: "Manuscritas", pesos: [400, 500, 600, 700] },
   pacifico: { nombre: "Pacifico", categoria: "Manuscritas", pesos: [400] },
+  comicneue: { nombre: "Comic Neue (cómic)", categoria: "Manuscritas", pesos: [300, 400, 700] },
   plexmono: { nombre: "IBM Plex Mono", categoria: "Monoespaciada", pesos: [400, 500, 600, 700] },
 };
 
@@ -322,9 +354,16 @@ type ElementoBase = {
   grupo?: string;
   /** Animación de entrada: se reproduce cuando el elemento entra en pantalla. */
   animacion?: AnimacionEl;
+  /** Efecto al pasar el cursor por encima (se ve en el sitio publicado y en la vista previa, no al editar). */
+  hover?: Hover;
+  /** Movimiento continuo (flotar, latir…); se ve en el sitio publicado y en la vista previa. */
+  bucle?: Bucle;
   /** Con "apilar" en la página: fuerza mostrar u ocultar este elemento en el celular (si no, se decide solo).
    *  "solo": el elemento existe únicamente en la columna del celular (no se dibuja en la hoja de escritorio). */
   movil?: "mostrar" | "ocultar" | "solo";
+  /** Con "apilar": espacio que separa este elemento del anterior en la columna del celular (unidades de la columna, 0–400).
+   *  Si falta, se calcula a partir del hueco que tenían en la hoja. */
+  espacioMovil?: number;
 };
 
 export type ElementoTexto = ElementoBase & {
@@ -346,11 +385,61 @@ export type ElementoTexto = ElementoBase & {
   mayusculas?: boolean;
   fondo?: Color;
   relleno?: number;
+  /** Esquinas redondeadas del bloque de color (un botón en forma de píldora usa un valor alto). */
+  radio?: number;
+  /** Grosor del borde y su color (un botón «de contorno»). */
+  borde?: number;
+  colorBorde?: Color;
+  /** Este texto es un botón: el revisor avisa si no lleva enlace. */
+  boton?: boolean;
 };
+/** Filtros de color para una imagen (CSS `filter`). */
+export const FILTROS_IMAGEN = {
+  bn: { nombre: "Blanco y negro", css: "grayscale(1)" },
+  sepia: { nombre: "Sepia (foto antigua)", css: "sepia(.85)" },
+  calido: { nombre: "Cálido", css: "sepia(.35) saturate(1.3) hue-rotate(-10deg)" },
+  frio: { nombre: "Frío", css: "saturate(.9) hue-rotate(15deg) brightness(1.03)" },
+  brillante: { nombre: "Más brillante", css: "brightness(1.18) contrast(1.05)" },
+  oscuro: { nombre: "Más oscura", css: "brightness(.7)" },
+  contraste: { nombre: "Más contraste", css: "contrast(1.3) saturate(1.1)" },
+  desenfoque: { nombre: "Desenfocada", css: "blur(0.9cqw)" },
+} as const;
+export type FiltroImagen = keyof typeof FILTROS_IMAGEN;
+export const FILTROS_IMAGEN_IDS = Object.keys(FILTROS_IMAGEN) as FiltroImagen[];
+
+/** Capa translúcida sobre la imagen (por ejemplo, para que un texto encima se lea). */
+export const CAPAS_IMAGEN = {
+  oscura: { nombre: "Oscura", css: "rgba(0,0,0,.4)" },
+  clara: { nombre: "Clara", css: "rgba(255,255,255,.45)" },
+  "degradado-abajo": { nombre: "Degradado oscuro abajo", css: "linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,0) 68%)" },
+  "degradado-arriba": { nombre: "Degradado oscuro arriba", css: "linear-gradient(to bottom, rgba(0,0,0,.78), rgba(0,0,0,0) 68%)" },
+} as const;
+export type CapaImagen = keyof typeof CAPAS_IMAGEN;
+export const CAPAS_IMAGEN_IDS = Object.keys(CAPAS_IMAGEN) as CapaImagen[];
+
+export const SOMBRAS = {
+  suave: { nombre: "Suave", css: "drop-shadow(0 0.8cqw 1.2cqw rgb(0 0 0 / .25))" },
+  fuerte: { nombre: "Marcada", css: "drop-shadow(0 1.4cqw 2cqw rgb(0 0 0 / .5))" },
+} as const;
+export type SombraImagen = keyof typeof SOMBRAS;
+export const SOMBRAS_IDS = Object.keys(SOMBRAS) as SombraImagen[];
+
 export type ElementoImagen = ElementoBase & {
   tipo: "imagen";
+  /** Filtro de color, capa translúcida, sombra y borde. */
+  filtro?: FiltroImagen;
+  capa?: CapaImagen;
+  sombra?: SombraImagen;
+  borde?: number;
+  colorBorde?: Color;
   src?: string;
   alt?: string;
+  /** Autor y licencia de la imagen. Todos los créditos de la edición se escriben donde un texto ponga {creditos}. */
+  credito?: string;
+  /** Punto de la imagen que debe quedar a la vista al recortar con «cubrir», en % (0–100; 50 = centro). */
+  enfoque?: { x: number; y: number };
+  /** Texto escrito sobre la imagen (globos de un cómic, traducciones, rótulos). */
+  globos?: Globo[];
   ajuste?: Ajuste;
   radio?: number;
   tono?: Tono;
@@ -456,6 +545,56 @@ export function elementoLogo(id: LogoId, cx = ANCHO_LIENZO / 2, cy = 140): Eleme
     y: Math.max(0, Math.round(cy - alto / 2)),
     id: nuevoId(),
   };
+}
+
+/* ------------------------------ Botones prediseñados ------------------------------ */
+
+export type GrupoBoton = "Básicos" | "Redes y contacto" | "Llamativos";
+export type BotonPlantilla = {
+  id: string;
+  nombre: string;
+  grupo: GrupoBoton;
+  /** Texto del botón y su estilo; w y h son su tamaño en la hoja. */
+  texto: string;
+  w: number;
+  h: number;
+  estilo: Partial<ElementoTexto>;
+};
+
+const baseBoton: Partial<ElementoTexto> = { fuente: "sans", peso: 800, tam: 16, alinear: "centro", vertical: "centro", mayusculas: true, espaciado: 0.06, interlineado: 1.1, boton: true };
+
+/** Botones listos para usar: se agregan sin enlace (se lo pones en «Lleva a») y ya traen su efecto al pasar el cursor. */
+export const BOTONES: BotonPlantilla[] = [
+  { id: "solido", nombre: "Sólido", grupo: "Básicos", texto: "Ver más", w: 200, h: 52, estilo: { fondo: "terracota", color: "blanco", radio: 6, hover: "subir" } },
+  { id: "contorno", nombre: "Contorno", grupo: "Básicos", texto: "Ver más", w: 200, h: 52, estilo: { color: "tinta", borde: 3, colorBorde: "tinta", radio: 6, hover: "subir" } },
+  { id: "pildora", nombre: "Píldora", grupo: "Básicos", texto: "Conócenos", w: 220, h: 52, estilo: { fondo: "tinta", color: "papel", radio: 60, hover: "acercar" } },
+  { id: "flecha", nombre: "Con flecha", grupo: "Básicos", texto: "Leer más →", w: 220, h: 52, estilo: { fondo: "ocre", color: "tinta", radio: 4, hover: "subir" } },
+  { id: "enlace", nombre: "Enlace simple", grupo: "Básicos", texto: "Leer la nota →", w: 240, h: 36, estilo: { color: "terracota", mayusculas: false, alinear: "izquierda", tam: 18, espaciado: 0, hover: "acercar" } },
+  { id: "whatsapp", nombre: "WhatsApp", grupo: "Redes y contacto", texto: "WhatsApp", w: 220, h: 52, estilo: { fondo: "#25D366", color: "blanco", radio: 60, hover: "subir" } },
+  { id: "instagram", nombre: "Instagram", grupo: "Redes y contacto", texto: "Instagram", w: 220, h: 52, estilo: { fondo: "#E1306C", color: "blanco", radio: 60, hover: "subir" } },
+  { id: "facebook", nombre: "Facebook", grupo: "Redes y contacto", texto: "Facebook", w: 220, h: 52, estilo: { fondo: "#1877F2", color: "blanco", radio: 60, hover: "subir" } },
+  { id: "llamar", nombre: "Llamar ahora", grupo: "Redes y contacto", texto: "Llamar ahora", w: 220, h: 52, estilo: { fondo: "oliva", color: "blanco", radio: 60, hover: "subir" } },
+  { id: "mapa", nombre: "Cómo llegar", grupo: "Redes y contacto", texto: "Cómo llegar →", w: 230, h: 52, estilo: { fondo: "indigo", color: "blanco", radio: 6, hover: "subir" } },
+  { id: "correo", nombre: "Escríbenos", grupo: "Redes y contacto", texto: "Escríbenos", w: 210, h: 52, estilo: { color: "indigo", borde: 3, colorBorde: "indigo", radio: 6, hover: "brillo" } },
+  { id: "grande", nombre: "Oferta (late)", grupo: "Llamativos", texto: "¡Aprovecha la oferta!", w: 420, h: 76, estilo: { fondo: "terracota", color: "blanco", radio: 0, tam: 24, hover: "brillo", bucle: "latir" } },
+  { id: "suscribirse", nombre: "Suscríbete (brilla)", grupo: "Llamativos", texto: "Suscríbete", w: 240, h: 56, estilo: { fondo: "tinta", color: "papel", radio: 4, tam: 18, hover: "subir", bucle: "brillar" } },
+  { id: "etiqueta", nombre: "Etiqueta «Nuevo»", grupo: "Llamativos", texto: "Nuevo", w: 110, h: 34, estilo: { fondo: "oliva", color: "blanco", radio: 60, tam: 13, boton: false, bucle: "flotar" } },
+];
+
+/** Botón nuevo centrado en (cx, cy). */
+export function elementoBoton(id: string, cx = ANCHO_LIENZO / 2, cy = 700): Elemento {
+  const b = BOTONES.find((x) => x.id === id) ?? BOTONES[0];
+  return {
+    ...baseBoton,
+    ...b.estilo,
+    tipo: "texto",
+    texto: b.texto,
+    w: b.w,
+    h: b.h,
+    x: Math.round(Math.min(Math.max(0, cx - b.w / 2), ANCHO_LIENZO - b.w)),
+    y: Math.max(0, Math.round(cy - b.h / 2)),
+    id: nuevoId(),
+  } as Elemento;
 }
 
 export type PresetElemento = "titular" | "parrafo" | "etiqueta" | "imagen" | "video" | "rectangulo" | "circulo" | "linea";

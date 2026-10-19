@@ -14,7 +14,30 @@ export const EFECTOS = {
   girar: { nombre: "Girar", easing: "cubic-bezier(.2,.7,.2,1)" },
   rebotar: { nombre: "Rebotar", easing: "ease-out" },
   revelar: { nombre: "Revelar (de izquierda a derecha)", easing: "cubic-bezier(.7,0,.2,1)" },
+  cortina: { nombre: "Cortina (de arriba hacia abajo)", easing: "cubic-bezier(.7,0,.2,1)" },
+  difuminar: { nombre: "Difuminar (de borroso a nítido)", easing: "ease-out" },
 } as const;
+
+/** Efecto al pasar el cursor (o el dedo, donde no hay cursor) por encima del elemento. Se dibuja con CSS (ver globals.css, «.fx-h»). */
+export const HOVERS = {
+  subir: "Se levanta con sombra",
+  acercar: "Acerca (en una foto, el zoom queda dentro de su marco)",
+  inclinar: "Se inclina un poco",
+  brillo: "Se ilumina",
+  encoger: "Se hunde (como al presionar)",
+} as const;
+export type Hover = keyof typeof HOVERS;
+export const HOVERS_IDS = Object.keys(HOVERS) as Hover[];
+
+/** Movimiento que se repite todo el tiempo (con CSS, «.fx-b»). Se desactiva si el lector pide menos movimiento. */
+export const BUCLES = {
+  flotar: "Flota suavemente arriba y abajo",
+  latir: "Late (crece y se encoge)",
+  balancear: "Se balancea de lado a lado",
+  brillar: "Parpadea con un brillo",
+} as const;
+export type Bucle = keyof typeof BUCLES;
+export const BUCLES_IDS = Object.keys(BUCLES) as Bucle[];
 
 export type Efecto = keyof typeof EFECTOS;
 export const EFECTOS_IDS = Object.keys(EFECTOS) as Efecto[];
@@ -56,6 +79,16 @@ export function fotogramas(efecto: Efecto): Keyframe[] {
       return [
         { opacity: 1, clipPath: "inset(0 100% 0 0)" },
         { opacity: 1, clipPath: "inset(0 0 0 0)" },
+      ];
+    case "cortina":
+      return [
+        { opacity: 1, clipPath: "inset(0 0 100% 0)" },
+        { opacity: 1, clipPath: "inset(0 0 0 0)" },
+      ];
+    case "difuminar":
+      return [
+        { opacity: 0, filter: "blur(1.8cqw)", transform: "scale(1.03)" },
+        { opacity: 1, filter: "blur(0)", transform: "scale(1)" },
       ];
   }
 }

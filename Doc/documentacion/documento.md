@@ -41,7 +41,12 @@ Archivo `content/ediciones/NN.json`:
 - **Celular:** por página, `movil: "escala"` (toda la hoja reducida; bueno para anuncios) o `"apilar"` (columna de arriba abajo, con
   `ordenMovil`). Por elemento: `movil: "ocultar"` (no aparece en la columna) o `"solo"` (solo aparece en la columna; no se dibuja
   en la hoja de escritorio). Las fotos apaisadas (≥ 1.4) van a todo el ancho; los logos anchos van centrados a ~58 %.
-- **Validación:** `lib/ediciones.ts` (`validarEdicion`). Los errores dicen página y campo. Los colores solo pueden ser de la paleta
+- **Imágenes:** `credito` (autor y licencia; `{creditos}` en un texto junta los de toda la edición) y `enfoque` {x,y} en % (punto que queda a la vista con «cubrir»; `object-position`).
+- **Texto sobre la imagen:** `globos[]` en una imagen (`x,y,w,h` en % de la imagen, `texto`, `tam` en % del ancho de la imagen, `forma` globo/pensamiento/recuadro/sonido/tapa, `cola`, `fondo`, `color`, `fuente`, `mayusculas`). Los dibuja `components/Globos.tsx` (unidades `cqw`); en el editor se arrastran y redimensionan desde el lienzo y el panel del inspector.
+- **Imágenes decoradas:** `filtro` (FILTROS_IMAGEN), `capa` (CAPAS_IMAGEN), `sombra` (SOMBRAS), `borde`/`colorBorde`; la sombra va en un envoltorio exterior para no recortarse con el molde. **Bloques listos:** `lib/bloques.ts` (BLOQUES, `elementosBloque`: ids nuevos y `grupo` común), pestaña «Bloques» de `BibliotecaLienzo`; soltar `bloque:id`.
+- **Botones y efectos:** un botón es un texto con `boton: true`, `fondo`, `radio`, `borde`/`colorBorde`, `enlace`; los estilos listos están en `BOTONES` (`lib/esquema.ts`, `elementoBoton`) y salen en la pestaña «Botones» de `BibliotecaLienzo`. Todo elemento admite `hover` (subir, acercar, inclinar, brillo, encoger) y `bucle` (flotar, latir, balancear, brillar), definidos en `lib/animaciones.ts` y dibujados con CSS (`.fx-h`, `.fx-b` en `globals.css`; solo en el sitio y la vista previa, no en el editor ni en miniaturas). La entrada suma `cortina` y `difuminar`.
+- **Espacio en el celular:** `espacioMovil` (0–400) fija el espacio antes de un elemento en la columna; si falta se calcula del hueco que tenía en la hoja.
+- **Validación:** `lib/ediciones.ts` (`validarEdicion`; estricta en el panel, `tolerante` en el sitio: una página con error se sustituye por un aviso y una edición dañada se omite). Los errores dicen página y campo. Los colores solo pueden ser de la paleta
   (`papel, papel2, tinta, tintaSuave, blanco, terracota, ocre, oliva, indigo`) o hexadecimales (no `rgba`).
 
 ## Números de página automáticos (identificadores)

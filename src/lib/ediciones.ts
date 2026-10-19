@@ -1,10 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
-import { EFECTOS_IDS } from "./animaciones";
+import { BUCLES_IDS, EFECTOS_IDS, HOVERS_IDS } from "./animaciones";
 import { ICONOS } from "./iconos-datos";
 import { TRANSICIONES, type Transicion } from "./transiciones";
 import {
+  CAPAS_IMAGEN_IDS,
+  FILTROS_IMAGEN_IDS,
+  SOMBRAS_IDS,
   AJUSTES,
+  COLAS_GLOBO,
+  FORMAS_GLOBO,
   ALINEACIONES,
   ALINEACIONES_V,
   ANCHOS,
@@ -28,6 +33,7 @@ import {
 } from "./esquema";
 
 import { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
+import { resolverTextoReferencias, textoCreditos, tieneReferencias } from "./referencias";
 
 export * from "./esquema";
 export { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
@@ -159,6 +165,7 @@ function checkElemento(e: unknown, ctx: string, total: number) {
     fail(c, `"icono" vale "${String(e.icono)}", que no está en el catálogo (lib/iconos-datos.ts)`);
   checkEnum(e.molde, MOLDES_IDS, c, "molde");
   checkEnum(e.movil, VISIBILIDAD_MOVIL, c, "movil");
+  checkNum(e.espacioMovil, c, "espacioMovil", 0, 400);
   checkNum(e.trazo, c, "trazo", 0.25, 6);
   for (const k of ["x", "y"] as const) {
     if (typeof e[k] !== "number") fail(c, `falta el número "${k}"`);
@@ -170,6 +177,12 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   }
   if (e.grupo !== undefined && !(typeof e.grupo === "string" && /^[\w-]{1,40}$/.test(e.grupo)))
     fail(c, '"grupo" debe ser un identificador corto (letras, números, - y _)');
+  checkEnum(e.hover, HOVERS_IDS, c, "hover");
+  checkEnum(e.filtro, FILTROS_IMAGEN_IDS, c, "filtro");
+  checkEnum(e.capa, CAPAS_IMAGEN_IDS, c, "capa");
+  checkEnum(e.sombra, SOMBRAS_IDS, c, "sombra");
+  checkEnum(e.bucle, BUCLES_IDS, c, "bucle");
+  if (e.boton !== undefined && typeof e.boton !== "boolean") fail(c, '"boton" debe ser verdadero o falso');
   if (e.animacion !== undefined) {
     if (!isObj(e.animacion)) fail(c, '"animacion" debe ser un objeto con "efecto"');
     checkEnum(e.animacion.efecto, EFECTOS_IDS, c, "animacion.efecto");
@@ -187,6 +200,30 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   }
   checkUrl(e.src, c, "src");
   checkUrl(e.poster, c, "poster");
+  if (e.credito !== undefined && !(typeof e.credito === "string" && e.credito.length <= 300)) fail(c, '"credito" debe ser un texto de hasta 300 caracteres');
+  if (e.enfoque !== undefined) {
+    if (!isObj(e.enfoque)) fail(c, '"enfoque" debe ser un objeto con "x" e "y"');
+    checkNum(e.enfoque.x, c, "enfoque.x", 0, 100);
+    checkNum(e.enfoque.y, c, "enfoque.y", 0, 100);
+  }
+  if (e.globos !== undefined) {
+    if (e.tipo !== "imagen") fail(c, '"globos" solo existe en las imágenes');
+    if (!Array.isArray(e.globos) || e.globos.length > 80) fail(c, '"globos" debe ser una lista (máx. 80)');
+    e.globos.forEach((g, i) => {
+      const cg = `${c}, globo ${i + 1}`;
+      if (!isObj(g) || typeof g.texto !== "string" || g.texto.length > 600) fail(cg, 'cada globo necesita un "texto" (hasta 600 caracteres)');
+      for (const k of ["x", "y", "w", "h"] as const) {
+        if (typeof g[k] !== "number") fail(cg, `falta el número "${k}"`);
+        checkNum(g[k], cg, k, k === "w" || k === "h" ? 1 : -50, k === "w" || k === "h" ? 150 : 150);
+      }
+      checkNum(g.tam, cg, "tam", 0.5, 30);
+      checkEnum(g.forma, FORMAS_GLOBO, cg, "forma");
+      checkEnum(g.cola, COLAS_GLOBO, cg, "cola");
+      checkEnum(g.fuente, FUENTES, cg, "fuente");
+      checkColor(g.fondo, cg, "fondo");
+      checkColor(g.color, cg, "color");
+    });
+  }
   checkEnum(e.tono, TONOS, c, "tono");
   checkEnum(e.fuente, FUENTES, c, "fuente");
   checkEnum(e.alinear, ALINEACIONES, c, "alinear");
@@ -300,41 +337,73 @@ export function validarPagina(raw: unknown, ctx: string, total: number): Pagina 
  *    {n:2} o {p:ancla:2} (por ejemplo «07»).
  * El archivo guardado conserva las referencias: solo se resuelven en lo que se lee para el sitio. No modifica el original.
  */
-function resolverReferencias(paginas: Pagina[], ctx: string): Pagina[] {
+function resolverReferencias(paginas: Pagina[], ctx: string, tolerante = false): Pagina[] {
   const mapa = new Map<string, number>();
   paginas.forEach((p, i) => {
     if (!p.ancla) return;
-    if (mapa.has(p.ancla)) fail(`${ctx}, página ${i + 1}`, `el identificador "${p.ancla}" ya lo usa la página ${mapa.get(p.ancla)}; cada identificador debe ser único`);
+    if (mapa.has(p.ancla)) {
+      if (tolerante) return; // en el sitio gana la primera página con ese identificador
+      fail(`${ctx}, página ${i + 1}`, `el identificador "${p.ancla}" ya lo usa la página ${mapa.get(p.ancla)}; cada identificador debe ser único`);
+    }
     mapa.set(p.ancla, i + 1);
   });
-  const numeroDe = (ancla: string, c: string) => {
-    const n = mapa.get(ancla);
-    if (n === undefined) fail(c, `no existe ninguna página con el identificador "${ancla}"${mapa.size ? ` (hay: ${[...mapa.keys()].join(", ")})` : " (ninguna página tiene identificador todavía)"}`);
-    return n;
-  };
-  const reemplazar = (texto: string, n: number, c: string) =>
-    texto.replace(/\{(?:(n)|p:([\w-]+))(?::(\d))?\}/g, (_m, esta, ancla, ceros) => {
-      const valor = esta ? n : numeroDe(ancla as string, c);
-      return ceros ? String(valor).padStart(Number(ceros), "0") : String(valor);
-    });
-  const hayAlgo = (p: Pagina) => (p.elementos ?? []).some((e) => (typeof e.enlace === "string" && e.enlace.startsWith("#")) || (e.tipo === "texto" && (e.texto.includes("{") || e.contenido?.some((par) => par.some((t) => t.texto.includes("{"))))));
+  const creditos = textoCreditos(paginas);
+  const faltante = (ancla: string) => `no existe ninguna página con el identificador "${ancla}"${mapa.size ? ` (hay: ${[...mapa.keys()].join(", ")})` : " (ninguna página tiene identificador todavía)"}`;
+  const hayAlgo = (p: Pagina) => (p.elementos ?? []).some((e) => (typeof e.enlace === "string" && e.enlace.startsWith("#")) || (e.tipo === "texto" && (tieneReferencias(e.texto) || e.contenido?.some((par) => par.some((t) => tieneReferencias(t.texto))))));
   return paginas.map((p, i) => {
     if (!hayAlgo(p)) return p;
     const c = `${ctx}, página ${i + 1}`;
+    // Estricto (panel): un identificador que no existe es un error con mensaje claro. Tolerante (sitio): el número se escribe «—»
+    // y el enlace se quita, para que un descuido en una página no tumbe la edición.
+    const numeroDe = (ancla: string) => {
+      const n = mapa.get(ancla);
+      if (n === undefined && !tolerante) fail(c, faltante(ancla));
+      return n;
+    };
     const copia = structuredClone(p);
     for (const e of copia.elementos ?? []) {
-      if (typeof e.enlace === "string" && e.enlace.startsWith("#")) e.enlace = numeroDe(e.enlace.slice(1), `${c} (enlace)`);
+      if (typeof e.enlace === "string" && e.enlace.startsWith("#")) {
+        const n = numeroDe(e.enlace.slice(1));
+        if (n === undefined) delete e.enlace;
+        else e.enlace = n;
+      }
       if (e.tipo === "texto") {
-        e.texto = reemplazar(e.texto, i + 1, c);
-        e.contenido?.forEach((par) => par.forEach((t) => (t.texto = reemplazar(t.texto, i + 1, c))));
+        e.texto = resolverTextoReferencias(e.texto, i + 1, numeroDe, "—", creditos);
+        e.contenido?.forEach((par) => par.forEach((t) => (t.texto = resolverTextoReferencias(t.texto, i + 1, numeroDe, "—", creditos))));
       }
     }
     return copia;
   });
 }
 
-/** Valida el contenido de un archivo de edición. Lanza un error legible si algo está mal. */
-export function validarEdicion(raw: unknown, id: string): Edicion {
+/** Página que sustituye a una con errores cuando se lee la edición para el sitio (ver `validarEdicion` con `tolerante`). */
+function paginaConError(raw: unknown, mensaje: string): Pagina {
+  const dev = process.env.NODE_ENV !== "production";
+  const titulo = isObj(raw) && typeof raw.titulo === "string" ? raw.titulo : "Página no disponible";
+  return {
+    plantilla: "lienzo",
+    transicion: "fundido",
+    titulo,
+    seccion: isObj(raw) && typeof raw.seccion === "string" ? raw.seccion : undefined,
+    fondo: "papel",
+    alto: 1100,
+    movil: "apilar",
+    elementos: [
+      { tipo: "texto", id: "error-t", x: 80, y: 420, w: 640, h: 70, texto: "Esta página no está disponible por ahora", fuente: "display", tam: 34, peso: 900, alinear: "centro", color: "tinta" },
+      ...(dev
+        ? [{ tipo: "texto" as const, id: "error-d", x: 80, y: 510, w: 640, h: 200, texto: mensaje.replace(/^[ediciones] /, ""), fuente: "sans" as const, tam: 16, alinear: "centro" as const, color: "terracota" }]
+        : []),
+    ],
+  };
+}
+
+/**
+ * Valida el contenido de un archivo de edición. Lanza un error legible si algo está mal.
+ * Con `tolerante` (lectura para el sitio) un error dentro de una página no tumba la edición: esa página se sustituye por un aviso
+ * (en desarrollo muestra el motivo) y se registra en la consola del servidor; los errores generales (fecha, tema…) siguen lanzando.
+ */
+export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?: boolean } = {}): Edicion {
+  const tolerante = opciones.tolerante === true;
   const ctx = `Edición "${id}"`;
   if (!isObj(raw)) fail(ctx, "el archivo debe contener un objeto JSON");
   // El número es automático (lib/numeracion.ts): el del archivo es solo una copia y puede faltar.
@@ -358,8 +427,18 @@ export function validarEdicion(raw: unknown, id: string): Edicion {
     ...(raw.publicarEn ? { publicarEn: raw.publicarEn as string } : {}),
     ...(raw.numeroFijo === true ? { numeroFijo: true } : {}),
     paginas: resolverReferencias(
-      raw.paginas.map((p, i) => validarPagina(p, `${ctx}, página ${i + 1}`, total)),
+      raw.paginas.map((p, i) => {
+        if (!tolerante) return validarPagina(p, `${ctx}, página ${i + 1}`, total);
+        try {
+          return validarPagina(p, `${ctx}, página ${i + 1}`, total);
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.error(msg);
+          return paginaConError(p, msg);
+        }
+      }),
       ctx,
+      tolerante,
     ),
   };
 }
@@ -376,9 +455,15 @@ export function getEdiciones(): Edicion[] {
   const todas = fs
     .readdirSync(DIR_EDICIONES)
     .filter((f) => f.endsWith(".json"))
-    .map((f) => {
+    .flatMap((f) => {
       const id = f.replace(/\.json$/, "");
-      return validarEdicion(JSON.parse(fs.readFileSync(path.join(DIR_EDICIONES, f), "utf8")), id);
+      // Una edición dañada no debe romper el resto del sitio: se omite y se avisa en la consola del servidor.
+      try {
+        return [validarEdicion(JSON.parse(fs.readFileSync(path.join(DIR_EDICIONES, f), "utf8")), id, { tolerante: true })];
+      } catch (e) {
+        console.error(`[ediciones] se omite "${id}": ${e instanceof Error ? e.message : String(e)}`);
+        return [];
+      }
     });
   // El número lo decide el orden de publicación, no lo escrito en el archivo.
   const numeros = calcularNumeracion(todas.map((e) => ({ id: e.id, fecha: e.fecha, publicada: e.publicada, publicarEn: e.publicarEn, fijo: numeroFijoDe(e) })));

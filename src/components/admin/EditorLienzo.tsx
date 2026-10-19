@@ -1,12 +1,13 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ElementoVista } from "@/components/Lienzo";
 import {
   ALTO_LIENZO,
   ANCHO_LIENZO,
   PRESETS,
   colorCss,
+  elementoBoton,
   elementoFormaMolde,
   elementoIcono,
   elementoLogo,
@@ -19,9 +20,11 @@ import {
   type PresetElemento,
 } from "@/lib/esquema";
 import { MediosContext, btnCls } from "./campos";
+import { elementosBloque } from "@/lib/bloques";
 import BibliotecaLienzo, { type ModoBiblioteca } from "./BibliotecaLienzo";
 import { fotogramas, opcionesAnimacion, type Efecto } from "@/lib/animaciones";
 import { ICONOS } from "@/lib/iconos-datos";
+import { mapaAnclas } from "@/lib/referencias";
 import EditorTexto from "./EditorTexto";
 import Reglas, { GROSOR_REGLA } from "./Reglas";
 import VistaCelular from "./VistaCelular";
@@ -53,6 +56,8 @@ function leerRejilla(): Rejilla | null {
 
 /** Pestaña del panel lateral: se recuerda al cambiar de página (el editor se vuelve a montar en cada una). */
 let lateralRecordado: "propiedades" | "celular" = "propiedades";
+/** Cómo se ajusta la hoja al abrir una página: entera por defecto (como en Canva); si el usuario elige «Ancho», se recuerda al cambiar de página. */
+let ajusteRecordado: "ancho" | "pagina" = "pagina";
 const UMBRAL_PX = 6;
 const MARGEN_VISTA = 32;
 const ZOOM_MIN = 0.1;
@@ -116,7 +121,10 @@ export default function EditorLienzo({
   onChange,
   paginas,
   anclas,
+  indice,
+  creditos,
   edicionId,
+  onPlantillas,
 }: {
   pagina: Pagina;
   onChange: (p: Pagina) => void;
@@ -126,10 +134,20 @@ export default function EditorLienzo({
   paginas: string[];
   /** Identificador de cada página, si lo tiene (para enlaces que siguen a la página). */
   anclas?: (string | undefined)[];
+  /** Posición (desde 0) de esta página en la edición: sirve para mostrar el número real de {n} y {p:…}. */
+  indice?: number;
+  /** Texto de {creditos}: los créditos de todas las imágenes de la edición. */
+  creditos?: string;
+  /** Abre las plantillas de página (se ofrece en la guía de la hoja vacía). */
+  onPlantillas?: () => void;
 }) {
   const { subir } = useContext(MediosContext);
   const elementos = pagina.elementos ?? [];
   const alto = pagina.alto ?? ALTO_LIENZO;
+  const refs = useMemo(
+    () => (indice === undefined ? undefined : { n: indice + 1, mapa: mapaAnclas(anclas ?? []), creditos }),
+    [indice, anclas, creditos],
+  );
 
   const [sel, setSel] = useState<string[]>([]);
   const [rej, setRejEstado] = useState<Rejilla>(rejillaRecordada);
@@ -163,6 +181,7 @@ export default function EditorLienzo({
   };
   const [biblioteca, setBiblioteca] = useState<null | { modo: ModoBiblioteca; reemplazar?: boolean }>(null);
   const [editando, setEditando] = useState<string | null>(null);
+  const [globoSel, setGloboSel] = useState<number | null>(null);
   const [guias, setGuias] = useState<Guias>({ v: [], h: [] });
   const [marquesina, setMarquesina] = useState<Caja | null>(null);
   const [respectoHoja, setRespectoHoja] = useState(false);
@@ -241,7 +260,7 @@ export default function EditorLienzo({
     s: 0.8,
     x: MARGEN_VISTA,
     y: MARGEN_VISTA,
-    modo: "ancho",
+    modo: ajusteRecordado,
   });
   const [mano, setMano] = useState(false);
   const [espacio, setEspacio] = useState(false);
@@ -256,6 +275,7 @@ export default function EditorLienzo({
   const anchoPx = ANCHO_LIENZO * vista.s;
 
   const fijarVista = (v: typeof vista) => {
+    if (v.modo !== "libre") ajusteRecordado = v.modo;
     vistaRef.current = v;
     setVista(v);
   };
@@ -341,6 +361,54 @@ export default function EditorLienzo({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Pantalla táctil: con dos dedos se hace zoom (pellizco) y se desplaza la hoja. Mientras dura el gesto, se cancela lo que hiciera un
+  // solo dedo (mover o redimensionar un elemento) para no deformar nada por accidente.
+  useEffect(() => {
+    const nodo = viewport.current;
+    if (!nodo) return;
+    const dedos = new Map<number, { x: number; y: number }>();
+    let gesto: null | { d0: number; cx0: number; cy0: number; v0: typeof vistaRef.current } = null;
+    const medir = () => {
+      const [a, b] = [...dedos.values()];
+      const r = nodo.getBoundingClientRect();
+      return { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, cx: (a.x + b.x) / 2 - r.left, cy: (a.y + b.y) / 2 - r.top };
+    };
+    const abajo = (ev: PointerEvent) => {
+      if (ev.pointerType !== "touch" || !(ev.target instanceof Node) || !nodo.contains(ev.target)) return;
+      dedos.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (dedos.size === 2) {
+        const m = medir();
+        gesto = { d0: m.d, cx0: m.cx, cy0: m.cy, v0: vistaRef.current };
+      }
+    };
+    const mover = (ev: PointerEvent) => {
+      if (ev.pointerType !== "touch" || !dedos.has(ev.pointerId)) return;
+      dedos.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (!gesto || dedos.size < 2) return;
+      ev.stopImmediatePropagation(); // los arrastres de un dedo no deben seguir durante el pellizco
+      const m = medir();
+      const s = limitarZoom(gesto.v0.s * (m.d / gesto.d0));
+      const k = s / gesto.v0.s;
+      // El punto bajo el centro inicial de los dedos sigue al centro actual (zoom + desplazamiento).
+      fijarVista({ s, ...acotar(m.cx - (gesto.cx0 - gesto.v0.x) * k, m.cy - (gesto.cy0 - gesto.v0.y) * k, s), modo: "libre" });
+    };
+    const arriba = (ev: PointerEvent) => {
+      if (!dedos.delete(ev.pointerId)) return;
+      if (dedos.size < 2) gesto = null;
+    };
+    window.addEventListener("pointerdown", abajo, true); // en window: el manejador del fondo detiene el evento antes de llegar a la hoja
+    window.addEventListener("pointermove", mover, true);
+    window.addEventListener("pointerup", arriba, true);
+    window.addEventListener("pointercancel", arriba, true);
+    return () => {
+      window.removeEventListener("pointerdown", abajo, true);
+      window.removeEventListener("pointermove", mover, true);
+      window.removeEventListener("pointerup", arriba, true);
+      window.removeEventListener("pointercancel", arriba, true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Mantener Espacio = herramienta Mano temporal.
   useEffect(() => {
     const abajo = (ev: KeyboardEvent) => {
@@ -423,6 +491,18 @@ export default function EditorLienzo({
 
   const agregarIcono = (id: string, cx?: number, cy?: number) => {
     const el = elementoIcono(id, cx, cy);
+    aplicar([...getEls(), el]);
+    setSel([el.id!]);
+  };
+
+  const agregarBloque = (id: string, cx?: number, cy?: number) => {
+    const els = elementosBloque(id, cx, cy);
+    aplicar([...getEls(), ...els]);
+    setSel(els.map((e) => e.id!));
+  };
+
+  const agregarBoton = (id: string, cx?: number, cy?: number) => {
+    const el = elementoBoton(id, cx, cy);
     aplicar([...getEls(), el]);
     setSel([el.id!]);
   };
@@ -1149,6 +1229,14 @@ export default function EditorLienzo({
       agregarIcono(dato.slice(6), x, y);
       return;
     }
+    if (dato.startsWith("bloque:")) {
+      agregarBloque(dato.slice(7), x, y);
+      return;
+    }
+    if (dato.startsWith("boton:")) {
+      agregarBoton(dato.slice(6), x, y);
+      return;
+    }
     if (dato.startsWith("logo:")) {
       agregarLogo(dato.slice(5) as LogoId, x, y);
       return;
@@ -1290,7 +1378,7 @@ export default function EditorLienzo({
 
   /* ------------------------------- Dibujo ----------------------------- */
 
-  const handle = "absolute h-2.5 w-2.5 border border-terracota bg-white";
+  const handle = "absolute h-2.5 w-2.5 border border-terracota bg-white pointer-coarse:h-5 pointer-coarse:w-5";
   const cajaGrupo = seleccion.length > 1 ? unir(seleccion.map(caja)) : null;
 
   return (
@@ -1299,9 +1387,9 @@ export default function EditorLienzo({
     >
       <div className="min-w-0">
         {/* Barra de herramientas */}
-        <div className="mb-3 flex flex-wrap items-center gap-1.5">
+        <div className="mb-2 flex flex-wrap items-center gap-1.5" role="toolbar" aria-label="Agregar elementos">
           <span className="font-sans mr-1 text-[0.7rem] font-bold uppercase tracking-wider text-ink-soft">
-            Arrastra a la hoja:
+            Agregar:
           </span>
           {PRESETS.map((p) => (
             <button
@@ -1314,18 +1402,34 @@ export default function EditorLienzo({
               }}
               onClick={() => agregar(p.id)}
               className={`${btnCls} cursor-grab`}
-              title="Arrástralo a la hoja o haz clic para agregarlo"
+              title="Haz clic para agregarlo, o arrástralo a la hoja"
             >
-              + {p.etiqueta}
+              {p.etiqueta}
             </button>
           ))}
+          <button
+            type="button"
+            className={`${btnCls} ${biblioteca?.modo === "bloques" ? "!bg-ink !text-paper" : ""}`}
+            onClick={() => setBiblioteca((b) => (b?.modo === "bloques" ? null : { modo: "bloques" }))}
+            title="Bloques listos: tarjeta de producto, cupón, testimonio, cifra, evento…"
+          >
+            Bloques
+          </button>
+          <button
+            type="button"
+            className={`${btnCls} ${biblioteca?.modo === "botones" ? "!bg-ink !text-paper" : ""}`}
+            onClick={() => setBiblioteca((b) => (b?.modo === "botones" ? null : { modo: "botones" }))}
+            title="Botones prediseñados, con su efecto al pasar el cursor"
+          >
+            Botones
+          </button>
           <button
             type="button"
             className={`${btnCls} ${biblioteca?.modo === "iconos" ? "!bg-ink !text-paper" : ""}`}
             onClick={() => setBiblioteca((b) => (b?.modo === "iconos" ? null : { modo: "iconos" }))}
             title="Biblioteca de iconos"
           >
-            ✦ Iconos
+            Iconos
           </button>
           <button
             type="button"
@@ -1333,7 +1437,7 @@ export default function EditorLienzo({
             onClick={() => setBiblioteca((b) => (b?.modo === "moldes" ? null : { modo: "moldes" }))}
             title="Moldes (marcos) para fotos y formas"
           >
-            ◍ Moldes
+            Moldes
           </button>
           <button
             type="button"
@@ -1341,23 +1445,26 @@ export default function EditorLienzo({
             onClick={() => setBiblioteca((b) => (b?.modo === "logos" ? null : { modo: "logos" }))}
             title="Logotipo y emblema de la revista"
           >
-            ◈ Logo
+            Logo
           </button>
-          <span className="ml-auto flex gap-1">
-            <button type="button" className={btnCls} onClick={copiarBoton} disabled={sel.length === 0} title="Copiar (Ctrl+C): se puede pegar en otra página o edición">⧉ Copiar</button>
-            <button type="button" className={btnCls} onClick={cortarBoton} disabled={sel.length === 0} title="Cortar (Ctrl+X)">✂ Cortar</button>
-            <button type="button" className={btnCls} onClick={pegarBoton} title="Pegar (Ctrl+V). Ctrl+Mayús+V pega en el mismo lugar">▣ Pegar</button>
-            <button type="button" className={btnCls} onClick={() => setSel(elementos.map((e) => e.id!))} disabled={elementos.length === 0} title="Seleccionar todo (Ctrl+A)">
-              Seleccionar todo
+          <span className="ml-auto flex gap-1" role="toolbar" aria-label="Copiar, pegar y deshacer">
+            <button type="button" className={btnCls} onClick={copiarBoton} disabled={sel.length === 0} title="Copiar (Ctrl+C): se puede pegar en otra página o edición" aria-label="Copiar">⧉</button>
+            <button type="button" className={btnCls} onClick={cortarBoton} disabled={sel.length === 0} title="Cortar (Ctrl+X)" aria-label="Cortar">✂</button>
+            <button type="button" className={btnCls} onClick={pegarBoton} title="Pegar (Ctrl+V). Ctrl+Mayús+V pega en el mismo lugar" aria-label="Pegar">▣</button>
+            <button type="button" className={btnCls} onClick={() => setSel(elementos.map((e) => e.id!))} disabled={elementos.length === 0} title="Seleccionar todo (Ctrl+A)" aria-label="Seleccionar todo">
+              ☑
             </button>
             <button type="button" className={btnCls} onClick={deshacer} disabled={pasado.current.length === 0} title="Deshacer (Ctrl+Z)">↶</button>
             <button type="button" className={btnCls} onClick={rehacer} disabled={futuro.current.length === 0} title="Rehacer (Ctrl+Y)">↷</button>
           </span>
         </div>
-        <p className="font-sans mb-3 text-[0.7rem] text-ink-soft">
-          Soltar imágenes o videos desde tu equipo sobre la hoja · Doble clic en un texto para escribir · Mayús/Ctrl + clic o
-          arrastrar en vacío selecciona varios · Mayús al redimensionar conserva la proporción · Alt desactiva los imanes.
-        </p>
+        <details className="font-sans mb-2 text-[0.7rem] text-ink-soft">
+          <summary className="inline-block cursor-pointer select-none font-bold hover:text-ink">ⓘ Ayuda rápida</summary>
+          <p className="mt-1 leading-relaxed">
+            Suelta imágenes o videos desde tu equipo sobre la hoja · Doble clic en un texto para escribir · Mayús/Ctrl + clic o arrastrar en vacío
+            selecciona varios · Mayús al redimensionar conserva la proporción · Alt desactiva los imanes · Dos dedos (pantalla táctil) = zoom.
+          </p>
+        </details>
         {aviso && <p role="status" className="font-sans mb-2 text-xs font-bold text-terracota">{aviso}</p>}
 
         {biblioteca && (
@@ -1374,73 +1481,11 @@ export default function EditorLienzo({
             }}
             onMolde={(id, comoForma) => aplicarMolde(id, comoForma)}
             onLogo={(id) => agregarLogo(id)}
+            onBoton={(id) => agregarBoton(id)}
+            onBloque={(id) => agregarBloque(id)}
             onCerrar={() => setBiblioteca(null)}
           />
         )}
-
-        {/* Vista: zoom y posición */}
-        <div className="mb-2 flex flex-wrap items-center gap-1.5">
-          <span className="font-sans mr-1 text-[0.7rem] font-bold uppercase tracking-wider text-ink-soft">Vista:</span>
-          <button type="button" className={btnCls} onClick={() => zoomCentro(vista.s / 1.25)} title="Alejar (Ctrl y -)" aria-label="Alejar">−</button>
-          <select
-            aria-label="Zoom"
-            className="font-sans h-[1.7rem] w-[4.6rem] border border-ink/40 bg-paper px-1 text-xs font-semibold"
-            value={ZOOMS.includes(Math.round(vista.s * 100)) ? String(Math.round(vista.s * 100)) : "otro"}
-            onChange={(e) => e.target.value !== "otro" && zoomCentro(Number(e.target.value) / 100)}
-          >
-            {!ZOOMS.includes(Math.round(vista.s * 100)) && <option value="otro">{Math.round(vista.s * 100)} %</option>}
-            {ZOOMS.map((z) => (
-              <option key={z} value={z}>{z} %</option>
-            ))}
-          </select>
-          <button type="button" className={btnCls} onClick={() => zoomCentro(vista.s * 1.25)} title="Acercar (Ctrl y +)" aria-label="Acercar">+</button>
-          <button type="button" className={btnCls} onClick={() => ajustarVista("ancho")} title="Ajustar la hoja al ancho (Ctrl y 0)">Ajustar al ancho</button>
-          <button type="button" className={btnCls} onClick={() => ajustarVista("pagina")} title="Ver la hoja entera">Hoja entera</button>
-          <button type="button" className={btnCls} onClick={() => zoomCentro(1)} title="Tamaño real: 1 unidad = 1 píxel">100 %</button>
-          <button
-            type="button"
-            className={`${btnCls} ${mano ? "!bg-ink !text-paper" : ""}`}
-            onClick={() => setMano((m) => !m)}
-            aria-pressed={mano}
-            title="Mano: arrastrar para mover la hoja (H, o mantén Espacio)"
-          >
-            ✋ Mano
-          </button>
-          <span className="mx-1 h-5 w-px bg-ink/25" aria-hidden />
-          <button type="button" className={`${btnCls} ${rej.reglas ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.reglas} onClick={() => setRej({ reglas: !rej.reglas })} title="Reglas: arrastra desde ellas para crear guías">
-            ▭ Reglas
-          </button>
-          <button type="button" className={`${btnCls} ${rej.cuadricula ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.cuadricula} onClick={() => setRej({ cuadricula: !rej.cuadricula })} title="Cuadrícula (Ctrl + ')">
-            ▦ Cuadrícula
-          </button>
-          <select
-            aria-label="Paso de la cuadrícula"
-            title="Separación de la cuadrícula, en unidades de la hoja"
-            className="font-sans h-[1.7rem] w-[4.3rem] border border-ink/40 bg-paper px-1 text-xs font-semibold"
-            value={rej.paso}
-            onChange={(e) => setRej({ paso: Number(e.target.value) })}
-          >
-            {PASOS_REJILLA.map((p) => (
-              <option key={p} value={p}>{p} u</option>
-            ))}
-          </select>
-          <button type="button" className={`${btnCls} ${rej.iman ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.iman} onClick={() => setRej({ iman: !rej.iman })} title="Imán a la cuadrícula: al mover o redimensionar, los bordes se acercan a sus líneas (Alt lo desactiva)">
-            🧲 Imán
-          </button>
-          {(guiasPag.v?.length || guiasPag.h?.length) ? (
-            <button type="button" className={btnCls} onClick={() => fijarGuias([], [])} title="Quitar todas las guías de esta página">
-              ✕ Guías ({(guiasPag.v?.length ?? 0) + (guiasPag.h?.length ?? 0)})
-            </button>
-          ) : null}
-          <button
-            type="button"
-            className={`${btnCls} ml-auto`}
-            onClick={() => setCompleta((c) => !c)}
-            title={completa ? "Volver al panel" : "Ampliar el espacio de trabajo a toda la pantalla (Ctrl+S sigue guardando)"}
-          >
-            {completa ? "✕ Salir de pantalla completa" : "⛶ Pantalla completa"}
-          </button>
-        </div>
 
         {/* Hoja */}
         <div
@@ -1450,11 +1495,12 @@ export default function EditorLienzo({
             arrastrandoVista ? "[&_*]:cursor-grabbing!" : mano || espacio ? "[&_*]:cursor-grab!" : ""
           }`}
           style={{
-            height: completa ? "calc(100vh - 12rem)" : "max(24rem, calc(100vh - 20rem))",
+            height: completa ? "calc(100vh - 9rem)" : "max(24rem, calc(100vh - 19.5rem))",
             backgroundColor: "#cbd5e1",
             backgroundImage: "radial-gradient(rgba(28,24,20,.2) 1px, transparent 1px)",
             backgroundSize: "18px 18px",
             cursor: arrastrandoVista ? "grabbing" : mano || espacio ? "grab" : "default",
+            touchAction: "none",
           }}
         >
           {rej.reglas && (
@@ -1494,6 +1540,7 @@ export default function EditorLienzo({
                   <ElementoVista
                     key={el.id}
                     el={el}
+                    refs={refs}
                     editor={{
                       seleccionado: activo,
                       editando: editando === el.id,
@@ -1515,14 +1562,40 @@ export default function EditorLienzo({
                             escala={vista.s}
                           />
                         ) : undefined,
+                      globos:
+                        solo && el.tipo === "imagen" && el.globos?.length
+                          ? {
+                              seleccionado: globoSel,
+                              onSeleccionar: setGloboSel,
+                              onCambiar: (i, patch) =>
+                                aplicar(
+                                  getEls().map((it) =>
+                                    it.id === el.id && it.tipo === "imagen" ? ({ ...it, globos: (it.globos ?? []).map((g, k) => (k === i ? { ...g, ...patch } : g)) } as Elemento) : it,
+                                  ),
+                                  `${el.id}:globo${i}`,
+                                ),
+                            }
+                          : undefined,
                       onPointerDown: (e) => empezarMover(e, el),
                       onDoubleClick: () => {
                         // Doble clic "entra" al grupo: selecciona solo este elemento; en un texto, además lo edita.
                         setSel([el.id!]);
                         if (el.tipo === "texto") setEditando(el.id!);
                       },
-                      children:
-                        solo && editando !== el.id ? (
+                      children: (
+                        <>
+                          {el.movil === "solo" && (
+                            <>
+                              <span className="pointer-events-none absolute inset-0 border-2 border-dashed border-terracota" />
+                              <span
+                                className="pointer-events-none absolute left-0 top-0 bg-terracota px-1 font-sans font-bold uppercase text-paper"
+                                style={{ fontSize: Math.max(9, 11 / Math.max(vista.s, 0.2)), lineHeight: 1.3, transform: "translateY(-100%)" }}
+                              >
+                                Solo en el celular
+                              </span>
+                            </>
+                          )}
+                          {solo && editando !== el.id ? (
                           <>
                             {TIRADORES.map((t) => (
                               <span
@@ -1538,14 +1611,16 @@ export default function EditorLienzo({
                               />
                             ))}
                             <span
-                              className="absolute h-3 w-3 rounded-full border border-terracota bg-white"
+                              className="absolute h-3 w-3 rounded-full border border-terracota bg-white pointer-coarse:h-6 pointer-coarse:w-6"
                               onPointerDown={(e) => empezarGiro(e, el)}
                               title="Girar (Mayús: de 15° en 15°)"
                               style={{ left: "50%", top: -26, transform: "translateX(-50%)", cursor: "grab" }}
                             />
                             <span className="absolute w-px bg-terracota" style={{ left: "50%", top: -14, height: 14 }} />
                           </>
-                        ) : null,
+                        ) : null}
+                        </>
+                      ),
                     }}
                   />
                 );
@@ -1667,13 +1742,87 @@ export default function EditorLienzo({
               ))}
 
               {elementos.length === 0 && (
-                <p className="font-display pointer-events-none absolute inset-0 flex items-center justify-center px-8 text-center text-xl italic text-ink-soft/70">
-                  Página en blanco. Arrastra aquí un titular, un párrafo o una imagen.
-                </p>
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 px-8 text-center">
+                  <p className="font-display text-2xl font-bold text-ink/70">Página en blanco</p>
+                  <p className="font-sans max-w-sm text-sm text-ink-soft">
+                    Empieza agregando algo con la barra de arriba, suelta aquí una imagen de tu equipo o parte de una plantilla ya diseñada.
+                  </p>
+                  <div className="pointer-events-auto flex flex-wrap justify-center gap-2" onPointerDown={(e) => e.stopPropagation()}>
+                    <button type="button" className={btnCls} onClick={() => agregar("titular")}>+ Titular</button>
+                    <button type="button" className={btnCls} onClick={() => agregar("parrafo")}>+ Párrafo</button>
+                    <button type="button" className={btnCls} onClick={() => agregar("imagen")}>+ Imagen</button>
+                    {onPlantillas && (
+                      <button type="button" className={`${btnCls} !bg-ink !text-paper`} onClick={onPlantillas}>▤ Usar una plantilla</button>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
         </div>
+        {/* Vista: zoom y posición */}
+        <div className="sticky bottom-0 z-20 mt-1 flex flex-wrap items-center gap-1.5 border-t border-ink/20 bg-paper py-1.5" role="toolbar" aria-label="Vista de la hoja">
+          <button type="button" className={btnCls} onClick={() => zoomCentro(vista.s / 1.25)} title="Alejar (Ctrl y -)" aria-label="Alejar">−</button>
+          <select
+            aria-label="Zoom"
+            className="font-sans h-[1.7rem] w-[4.6rem] border border-ink/40 bg-paper px-1 text-xs font-semibold"
+            value={ZOOMS.includes(Math.round(vista.s * 100)) ? String(Math.round(vista.s * 100)) : "otro"}
+            onChange={(e) => e.target.value !== "otro" && zoomCentro(Number(e.target.value) / 100)}
+          >
+            {!ZOOMS.includes(Math.round(vista.s * 100)) && <option value="otro">{Math.round(vista.s * 100)} %</option>}
+            {ZOOMS.map((z) => (
+              <option key={z} value={z}>{z} %</option>
+            ))}
+          </select>
+          <button type="button" className={btnCls} onClick={() => zoomCentro(vista.s * 1.25)} title="Acercar (Ctrl y +)" aria-label="Acercar">+</button>
+          <button type="button" className={btnCls} onClick={() => ajustarVista("ancho")} title="Ajustar la hoja al ancho de la pantalla (Ctrl y 0)">Ancho</button>
+          <button type="button" className={btnCls} onClick={() => ajustarVista("pagina")} title="Ver la hoja entera">Entera</button>
+          <button type="button" className={btnCls} onClick={() => zoomCentro(1)} title="Tamaño real: 1 unidad = 1 píxel">100 %</button>
+          <button
+            type="button"
+            className={`${btnCls} ${mano ? "!bg-ink !text-paper" : ""}`}
+            onClick={() => setMano((m) => !m)}
+            aria-pressed={mano}
+            title="Mano: arrastrar para mover la hoja (H, o mantén Espacio)"
+          >
+            ✋ Mano
+          </button>
+          <span className="mx-1 h-5 w-px bg-ink/25" aria-hidden />
+          <button type="button" className={`${btnCls} ${rej.reglas ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.reglas} onClick={() => setRej({ reglas: !rej.reglas })} title="Reglas: arrastra desde ellas para crear guías">
+            ▭ Reglas
+          </button>
+          <button type="button" className={`${btnCls} ${rej.cuadricula ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.cuadricula} onClick={() => setRej({ cuadricula: !rej.cuadricula })} title="Cuadrícula (Ctrl + ')">
+            ▦ Cuadrícula
+          </button>
+          <select
+            aria-label="Paso de la cuadrícula"
+            title="Separación de la cuadrícula, en unidades de la hoja"
+            className="font-sans h-[1.7rem] w-[4.3rem] border border-ink/40 bg-paper px-1 text-xs font-semibold"
+            value={rej.paso}
+            onChange={(e) => setRej({ paso: Number(e.target.value) })}
+          >
+            {PASOS_REJILLA.map((p) => (
+              <option key={p} value={p}>{p} u</option>
+            ))}
+          </select>
+          <button type="button" className={`${btnCls} ${rej.iman ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.iman} onClick={() => setRej({ iman: !rej.iman })} title="Imán a la cuadrícula: al mover o redimensionar, los bordes se acercan a sus líneas (Alt lo desactiva)">
+            🧲 Imán
+          </button>
+          {(guiasPag.v?.length || guiasPag.h?.length) ? (
+            <button type="button" className={btnCls} onClick={() => fijarGuias([], [])} title="Quitar todas las guías de esta página">
+              ✕ Guías ({(guiasPag.v?.length ?? 0) + (guiasPag.h?.length ?? 0)})
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={`${btnCls} ml-auto`}
+            onClick={() => setCompleta((c) => !c)}
+            title={completa ? "Volver al panel" : "Ampliar el espacio de trabajo a toda la pantalla (Ctrl+S sigue guardando)"}
+          >
+            {completa ? "✕ Salir" : "⛶ Completa"}
+          </button>
+        </div>
+
       </div>
 
       {/* Panel lateral: propiedades o vista del celular */}
@@ -1718,6 +1867,8 @@ export default function EditorLienzo({
             cambiar={cambiar}
             paginas={paginas}
             anclas={anclas}
+            globoSel={globoSel}
+            onGloboSel={setGloboSel}
             acciones={{
               frente: () => moverGrupo("frente"),
               atras: () => moverGrupo("atras"),

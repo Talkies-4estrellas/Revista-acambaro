@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, memo, useEffect, useRef, useState } from "react";
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from "react";
 import LienzoVista from "@/components/Lienzo";
 import { ETIQUETAS_PLANTILLA, type Pagina } from "@/lib/esquema";
+import { mapaAnclas } from "@/lib/referencias";
 
 export type VistaPaginas = "lista" | "miniaturas" | "grandes";
 
@@ -18,11 +19,13 @@ let vistaRecordada: VistaPaginas = "miniaturas";
  * Va memorizada: al editar una página solo se vuelve a dibujar su propia miniatura.
  */
 const Miniatura = memo(
-  function Miniatura({ pagina, edicionId }: { pagina: Pagina; edicionId: string }) {
+  function Miniatura({ pagina, edicionId, indice, anclas, creditos }: { pagina: Pagina; edicionId: string; indice: number; anclas: string; creditos: string }) {
+    // Las referencias ({n}, {p:ancla}, {creditos}) se muestran ya resueltas, como en la hoja.
+    const refs = useMemo(() => ({ n: indice + 1, mapa: mapaAnclas(anclas.split("").map((a) => a || undefined)), creditos }), [indice, anclas, creditos]);
     if (pagina.plantilla === "lienzo") {
       return (
         <div className="pointer-events-none overflow-hidden border border-ink/30 bg-white shadow-sm">
-          <LienzoVista elementos={pagina.elementos ?? []} fondo={pagina.fondo} alto={pagina.alto} edicionId={edicionId} miniatura />
+          <LienzoVista elementos={pagina.elementos ?? []} fondo={pagina.fondo} alto={pagina.alto} edicionId={edicionId} miniatura refs={refs} />
         </div>
       );
     }
@@ -33,7 +36,7 @@ const Miniatura = memo(
       </div>
     );
   },
-  (a, b) => a.pagina === b.pagina && a.edicionId === b.edicionId,
+  (a, b) => a.pagina === b.pagina && a.edicionId === b.edicionId && a.indice === b.indice && a.anclas === b.anclas && a.creditos === b.creditos,
 );
 
 /**
@@ -44,12 +47,15 @@ export default function PanelPaginas({
   paginas,
   seleccionada,
   edicionId,
+  creditos = "",
   onSeleccionar,
   onReordenar,
 }: {
   paginas: Pagina[];
   seleccionada: number;
   edicionId: string;
+  /** Texto de {creditos} de la edición. */
+  creditos?: string;
   onSeleccionar: (i: number) => void;
   /** Mueve la página `desde` a la posición `hasta` (índices de 0 a n-1 en la lista resultante). */
   onReordenar: (desde: number, hasta: number) => void;
@@ -63,6 +69,8 @@ export default function PanelPaginas({
   /** Posición de inserción: 0 = antes de la primera, n = después de la última. */
   const [hueco, setHueco] = useState<number | null>(null);
   const items = useRef<(HTMLLIElement | null)[]>([]);
+  // Una sola cadena (no un arreglo nuevo en cada cambio) para que las miniaturas memorizadas no se redibujen al teclear.
+  const anclas = paginas.map((p) => p.ancla ?? "").join("");
 
   // La página elegida siempre queda a la vista.
   useEffect(() => {
@@ -87,7 +95,7 @@ export default function PanelPaginas({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="font-sans flex items-center justify-between gap-1 border-b border-ink/20 px-2 py-1.5">
-        <span className="text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">{paginas.length} páginas</span>
+        <span className="text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">{paginas.length} {paginas.length === 1 ? "página" : "páginas"}</span>
         <span role="group" aria-label="Vista de las páginas" className="flex gap-0.5">
           {(
             [
@@ -186,7 +194,7 @@ export default function PanelPaginas({
                     </>
                   ) : vista === "miniaturas" ? (
                     <>
-                      <Miniatura pagina={p} edicionId={edicionId} />
+                      <Miniatura pagina={p} edicionId={edicionId} indice={i} anclas={anclas} creditos={creditos} />
                       <span className="min-w-0 pt-0.5 text-sm">
                         <span className="block text-xs text-ink-soft">{i + 1}</span>
                         <span className={`line-clamp-2 leading-tight ${activa ? "font-bold" : ""}`}>{TITULO(p)}</span>
@@ -202,7 +210,7 @@ export default function PanelPaginas({
                         <span className={`min-w-0 flex-1 truncate ${activa ? "font-bold" : ""}`}>{TITULO(p)}</span>
                         <span className="shrink-0 text-[0.6rem] uppercase tracking-wide text-ink-soft">{p.transicion}</span>
                       </span>
-                      <Miniatura pagina={p} edicionId={edicionId} />
+                      <Miniatura pagina={p} edicionId={edicionId} indice={i} anclas={anclas} creditos={creditos} />
                     </>
                   )}
                 </button>

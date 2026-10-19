@@ -11,6 +11,14 @@ import {
   ETIQUETAS_PESO,
   FUENTES_INFO,
   FORMAS,
+  CAPAS_IMAGEN,
+  CAPAS_IMAGEN_IDS,
+  FILTROS_IMAGEN,
+  FILTROS_IMAGEN_IDS,
+  SOMBRAS,
+  SOMBRAS_IDS,
+  FORMAS_GLOBO,
+  COLAS_GLOBO,
   FUENTES,
   TONOS,
   colorCss,
@@ -19,11 +27,12 @@ import {
   estiloMolde,
   type Elemento,
   type Fuente,
+  type Globo,
   type MoldeId,
   type Pagina,
   type Peso,
 } from "@/lib/esquema";
-import { EFECTOS, EFECTOS_IDS, type Efecto } from "@/lib/animaciones";
+import { BUCLES, BUCLES_IDS, EFECTOS, EFECTOS_IDS, HOVERS, HOVERS_IDS, type Efecto } from "@/lib/animaciones";
 import { ICONOS } from "@/lib/iconos-datos";
 import { IconoSvg } from "@/components/Lienzo";
 import { useState } from "react";
@@ -246,11 +255,71 @@ export function InspectorMultiple({
 
 const num = (v: number | undefined, d: number) => (Number.isFinite(v as number) ? (v as number) : d);
 
+/** «Lleva a»: con muchas páginas (ediciones largas) añade un buscador por número, título o identificador. */
+function SelectorDestino({
+  enlace,
+  paginas,
+  anclas,
+  onChange,
+}: {
+  enlace: Elemento["enlace"];
+  paginas: string[];
+  anclas?: (string | undefined)[];
+  onChange: (enlace: Elemento["enlace"]) => void;
+}) {
+  const [filtro, setFiltro] = useState("");
+  const valor =
+    typeof enlace === "number"
+      ? String(enlace)
+      : enlace === "/suscribirse"
+        ? "suscribirse"
+        : typeof enlace === "string" && enlace.startsWith("#")
+          ? enlace
+          : enlace
+            ? "externo"
+            : "";
+  const f = filtro.trim().toLowerCase();
+  const opciones = paginas
+    .map((t, i) => ({ t, i, valor: anclas?.[i] ? `#${anclas[i]}` : String(i + 1), ancla: anclas?.[i] }))
+    .filter((o) => !f || o.valor === valor || `${o.i + 1} ${o.t} ${o.ancla ?? ""}`.toLowerCase().includes(f));
+  return (
+    <>
+      {paginas.length > 12 && (
+        <Campo label="Buscar página">
+          <input className={inputCls} value={filtro} onChange={(e) => setFiltro(e.target.value)} placeholder="Número, título o identificador…" />
+        </Campo>
+      )}
+      <Campo label="Lleva a">
+        <select
+          className={inputCls}
+          value={valor}
+          onChange={(e) => {
+            const v = e.target.value;
+            onChange(v === "" ? undefined : v === "externo" ? "https://" : v === "suscribirse" ? "/suscribirse" : v.startsWith("#") ? v : Number(v));
+          }}
+        >
+          <option value="">Sin enlace</option>
+          {opciones.map((o) => (
+            <option key={o.i} value={o.valor}>
+              Página {o.i + 1}: {o.t}
+              {o.ancla ? ` · #${o.ancla}` : ""}
+            </option>
+          ))}
+          <option value="suscribirse">Formulario de suscripción (newsletter)</option>
+          <option value="externo">Dirección externa…</option>
+        </select>
+      </Campo>
+    </>
+  );
+}
+
 export function InspectorElemento({
   el,
   cambiar,
   paginas,
   anclas,
+  globoSel,
+  onGloboSel,
   acciones,
 }: {
   el: Elemento;
@@ -259,6 +328,9 @@ export function InspectorElemento({
   paginas: string[];
   /** Identificador de cada página (si lo tiene): el enlace por identificador sigue a la página si se mueve. */
   anclas?: (string | undefined)[];
+  /** Globo de texto seleccionado en la imagen (también se elige en el lienzo). */
+  globoSel?: number | null;
+  onGloboSel?: (i: number | null) => void;
   acciones: {
     frente: () => void;
     atras: () => void;
@@ -372,7 +444,13 @@ export function InspectorElemento({
           </div>
           <CampoColor label="Color del texto" value={el.color ?? "tinta"} onChange={(v) => set({ color: v })} />
           <CampoColor label="Fondo de la caja" value={el.fondo} onChange={(v) => set({ fondo: v })} vacio="Sin fondo" />
-          <Numero label="Relleno interior" value={el.relleno} onChange={(v) => set({ relleno: v })} min={0} />
+          <div className="grid grid-cols-2 gap-3">
+            <Numero label="Relleno interior" value={el.relleno} onChange={(v) => set({ relleno: v })} min={0} />
+            <Numero label="Esquinas redondas" value={el.radio} onChange={(v) => set({ radio: v || undefined }, "radio")} min={0} />
+            <Numero label="Grosor del borde" value={el.borde} onChange={(v) => set({ borde: v || undefined }, "borde")} min={0} />
+          </div>
+          {el.borde ? <CampoColor label="Color del borde" value={el.colorBorde ?? "tinta"} onChange={(v) => set({ colorBorde: v })} /> : null}
+          <Interruptor label="Es un botón (el revisor avisa si no lleva enlace)" value={el.boton ?? false} onChange={(v) => set({ boton: v || undefined })} />
           {acciones.ajustarAlto && (
             <button type="button" className={btnCls} onClick={acciones.ajustarAlto}>
               Ajustar el alto al texto
@@ -385,14 +463,30 @@ export function InspectorElemento({
         <Panel titulo="Imagen">
           <CampoArchivo label="Archivo" value={el.src} onChange={(v) => set({ src: v })} />
           <Texto label="Texto alternativo" value={el.alt} onChange={(v) => set({ alt: v }, "alt")} hint="Describe la imagen (accesibilidad)" />
+          <Texto label="Crédito (autor y licencia)" value={el.credito} onChange={(v) => set({ credito: v || undefined }, "credito")} placeholder="Foto: Nombre, CC BY-SA 4.0" hint="Se junta con el de las demás imágenes donde pongas {creditos} en un texto (p. ej. la página de créditos)" />
+          {(el.ajuste ?? "cubrir") === "cubrir" && (
+            <div className="grid grid-cols-2 gap-3">
+              <Numero label="Enfoque horizontal (%)" value={el.enfoque?.x ?? 50} onChange={(v) => set({ enfoque: { x: Math.min(100, Math.max(0, v ?? 50)), y: el.enfoque?.y ?? 50 } }, "enfoque")} min={0} max={100} />
+              <Numero label="Enfoque vertical (%)" value={el.enfoque?.y ?? 50} onChange={(v) => set({ enfoque: { x: el.enfoque?.x ?? 50, y: Math.min(100, Math.max(0, v ?? 50)) } }, "enfoque")} min={0} max={100} />
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <Selector label="Ajuste" value={el.ajuste ?? "cubrir"} onChange={(v) => set({ ajuste: v })} opciones={AJUSTES.map((a) => ({ valor: a, etiqueta: a === "cubrir" ? "Cubrir (recorta)" : "Contener (completa)" }))} />
             <Numero label="Esquinas redondas" value={el.radio} onChange={(v) => set({ radio: v }, "radio")} min={0} />
           </div>
           <CampoMolde value={el.molde} onChange={(m) => set({ molde: m })} />
+          <div className="grid grid-cols-2 gap-3">
+            <Selector label="Filtro de color" value={el.filtro} onChange={(v) => set({ filtro: v })} opciones={FILTROS_IMAGEN_IDS.map((id) => ({ valor: id, etiqueta: FILTROS_IMAGEN[id].nombre }))} vacio="Ninguno" />
+            <Selector label="Capa encima" value={el.capa} onChange={(v) => set({ capa: v })} opciones={CAPAS_IMAGEN_IDS.map((id) => ({ valor: id, etiqueta: CAPAS_IMAGEN[id].nombre }))} vacio="Ninguna" hint="El degradado oscuro ayuda a leer un texto puesto encima" />
+            <Selector label="Sombra" value={el.sombra} onChange={(v) => set({ sombra: v })} opciones={SOMBRAS_IDS.map((id) => ({ valor: id, etiqueta: SOMBRAS[id].nombre }))} vacio="Sin sombra" />
+            <Numero label="Grosor del borde" value={el.borde} onChange={(v) => set({ borde: v || undefined }, "borde")} min={0} />
+          </div>
+          {el.borde ? <CampoColor label="Color del borde" value={el.colorBorde ?? "tinta"} onChange={(v) => set({ colorBorde: v })} /> : null}
           <Selector label="Color provisional" value={el.tono} onChange={(v) => set({ tono: v })} opciones={TONOS} vacio="—" hint="Se ve mientras no haya archivo" />
         </Panel>
       )}
+
+      {el.tipo === "imagen" && <PanelGlobos globos={el.globos ?? []} sel={globoSel ?? null} onSel={(i) => onGloboSel?.(i)} onChange={(g, clave) => set({ globos: g.length ? g : undefined }, clave)} />}
 
       {el.tipo === "video" && (
         <Panel titulo="Video">
@@ -458,6 +552,13 @@ export function InspectorElemento({
           ]}
           vacio="Automático (se ocultan fondos y formas gruesas)"
         />
+        <Numero
+          label="Espacio antes de este elemento (vacío = automático)"
+          value={el.espacioMovil}
+          onChange={(v) => set({ espacioMovil: v === undefined ? undefined : Math.min(400, Math.max(0, Math.round(v))) }, "espacioMovil")}
+          min={0}
+          max={400}
+        />
       </Panel>
 
       <Panel titulo="Animación de entrada" ayuda="Se reproduce cuando el elemento entra en pantalla en la página publicada.">
@@ -484,37 +585,25 @@ export function InspectorElemento({
         )}
       </Panel>
 
+      <Panel titulo="Efectos de movimiento" ayuda="Se ven en el sitio publicado y en la vista previa (no mientras editas). El movimiento continuo se apaga solo si el lector pidió menos animaciones en su equipo.">
+        <Selector
+          label="Al pasar el cursor"
+          value={el.hover}
+          onChange={(v) => set({ hover: v })}
+          opciones={HOVERS_IDS.map((id) => ({ valor: id, etiqueta: HOVERS[id] }))}
+          vacio="Ninguno"
+        />
+        <Selector
+          label="Movimiento continuo"
+          value={el.bucle}
+          onChange={(v) => set({ bucle: v })}
+          opciones={BUCLES_IDS.map((id) => ({ valor: id, etiqueta: BUCLES[id] }))}
+          vacio="Ninguno"
+        />
+      </Panel>
+
       <Panel titulo="Enlace" ayuda="Al hacer clic en el elemento (en el sitio publicado).">
-        <Campo label="Lleva a">
-          <select
-            className={inputCls}
-            value={
-              typeof el.enlace === "number"
-                ? String(el.enlace)
-                : el.enlace === "/suscribirse"
-                  ? "suscribirse"
-                  : typeof el.enlace === "string" && el.enlace.startsWith("#")
-                    ? el.enlace
-                    : el.enlace
-                      ? "externo"
-                      : ""
-            }
-            onChange={(e) => {
-              const v = e.target.value;
-              set({ enlace: v === "" ? undefined : v === "externo" ? "https://" : v === "suscribirse" ? "/suscribirse" : v.startsWith("#") ? v : Number(v) });
-            }}
-          >
-            <option value="">Sin enlace</option>
-            {paginas.map((t, i) => (
-              <option key={i} value={anclas?.[i] ? `#${anclas[i]}` : i + 1}>
-                Página {i + 1}: {t}
-                {anclas?.[i] ? ` · #${anclas[i]}` : ""}
-              </option>
-            ))}
-            <option value="suscribirse">Formulario de suscripción (newsletter)</option>
-            <option value="externo">Dirección externa…</option>
-          </select>
-        </Campo>
+        <SelectorDestino enlace={el.enlace} paginas={paginas} anclas={anclas} onChange={(enlace) => set({ enlace })} />
         {typeof el.enlace === "string" && el.enlace !== "/suscribirse" && !el.enlace.startsWith("#") && (
           <Texto label="Dirección" value={el.enlace} onChange={(v) => set({ enlace: v || undefined }, "enlace")} placeholder="https://…" />
         )}
@@ -583,5 +672,77 @@ export function InspectorPagina({
         <Interruptor label="Mostrar en el índice" value={pagina.enIndice !== false} onChange={(v) => set("enIndice", v ? undefined : false)} />
       </Panel>
     </div>
+  );
+}
+
+/* ------------------------- Texto sobre la imagen ------------------------- */
+
+const ETIQUETAS_FORMA: Record<(typeof FORMAS_GLOBO)[number], string> = {
+  globo: "Globo de diálogo",
+  pensamiento: "Pensamiento (ovalado)",
+  recuadro: "Recuadro (narración)",
+  sonido: "Sonido (efecto)",
+  tapa: "Parche liso (tapa el texto original)",
+};
+const ETIQUETAS_COLA: Record<(typeof COLAS_GLOBO)[number], string> = {
+  ninguna: "Sin cola",
+  "abajo-izquierda": "Abajo a la izquierda",
+  "abajo-derecha": "Abajo a la derecha",
+  "arriba-izquierda": "Arriba a la izquierda",
+  "arriba-derecha": "Arriba a la derecha",
+};
+
+/** Escribe texto encima de una imagen (globos de cómic, rótulos, parches que tapan letras originales y traducciones). Medidas en % de la imagen. */
+function PanelGlobos({ globos, sel, onSel, onChange }: { globos: Globo[]; sel: number | null; onSel: (i: number | null) => void; onChange: (g: Globo[], clave?: string) => void }) {
+  const i = sel !== null && sel < globos.length ? sel : null;
+  const g = i !== null ? globos[i] : null;
+  const poner = (patch: Partial<Globo>, clave?: string) => i !== null && onChange(globos.map((x, k) => (k === i ? { ...x, ...patch } : x)), clave ? `globo${i}:${clave}` : undefined);
+  const nuevo = (base?: Partial<Globo>) => {
+    onChange([...globos, { x: 10, y: 10, w: 40, h: 14, texto: "Nuevo texto", tam: 3, ...base }]);
+    onSel(globos.length);
+  };
+  return (
+    <Panel titulo="Texto sobre la imagen" ayuda="Globos, rótulos y parches dibujados encima de la imagen, con letra de verdad (editable). Sirven para traducir un cómic: un parche tapa el texto original y un globo escribe la traducción. Selecciona la imagen sola para moverlos con el puntero.">
+      <div className="flex flex-wrap gap-1">
+        <button type="button" className={btnCls} onClick={() => nuevo()}>+ Globo</button>
+        <button type="button" className={btnCls} onClick={() => nuevo({ forma: "recuadro", texto: "Narración", w: 60, h: 8 })}>+ Recuadro</button>
+        <button type="button" className={btnCls} onClick={() => nuevo({ forma: "tapa", texto: "", fondo: "#ffffff", w: 25, h: 8 })}>+ Parche</button>
+      </div>
+      {globos.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {globos.map((x, k) => (
+            <button key={k} type="button" className={btnCls} style={k === i ? { borderColor: "#068562", fontWeight: 700 } : undefined} onClick={() => onSel(k)}>
+              {k + 1}. {(x.texto || (x.forma === "tapa" ? "Parche" : "—")).slice(0, 14)}
+            </button>
+          ))}
+        </div>
+      )}
+      {g && i !== null && (
+        <div className="space-y-3 border-t border-dashed pt-3">
+          <Area label="Texto" value={g.texto} onChange={(v) => poner({ texto: v }, "texto")} rows={3} />
+          <Selector label="Forma" value={g.forma ?? "globo"} onChange={(v) => poner({ forma: v })} opciones={FORMAS_GLOBO.map((f) => ({ valor: f, etiqueta: ETIQUETAS_FORMA[f] }))} />
+          {(g.forma ?? "globo") === "globo" && (
+            <Selector label="Cola" value={g.cola ?? "abajo-izquierda"} onChange={(v) => poner({ cola: v })} opciones={COLAS_GLOBO.map((c) => ({ valor: c, etiqueta: ETIQUETAS_COLA[c] }))} />
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            <Numero label="X (%)" value={g.x} onChange={(v) => poner({ x: v ?? 0 }, "x")} />
+            <Numero label="Y (%)" value={g.y} onChange={(v) => poner({ y: v ?? 0 }, "y")} />
+            <Numero label="Ancho (%)" value={g.w} onChange={(v) => poner({ w: Math.max(1, v ?? 1) }, "w")} min={1} />
+            <Numero label="Alto (%)" value={g.h} onChange={(v) => poner({ h: Math.max(1, v ?? 1) }, "h")} min={1} />
+            <Numero label="Tamaño de letra" value={g.tam ?? 3} onChange={(v) => poner({ tam: v === undefined ? undefined : Math.min(30, Math.max(0.5, v)) }, "tam")} min={0.5} max={30} />
+          </div>
+          <Selector label="Letra" value={g.fuente ?? "comicneue"} onChange={(v) => poner({ fuente: v })} opciones={FUENTES.map((f) => ({ valor: f, etiqueta: FUENTES_INFO[f].nombre }))} />
+          <div className="grid grid-cols-2 gap-3">
+            <CampoColor label="Fondo" value={g.fondo} onChange={(v) => poner({ fondo: v })} vacio="Crema" />
+            <CampoColor label="Color del texto" value={g.color} onChange={(v) => poner({ color: v })} vacio="Tinta" />
+          </div>
+          <Interruptor label="Todo en mayúsculas" value={!!g.mayusculas} onChange={(v) => poner({ mayusculas: v || undefined })} />
+          <div className="flex gap-1">
+            <button type="button" className={btnCls} onClick={() => { onChange([...globos, { ...g, x: g.x + 2, y: g.y + 2 }]); onSel(globos.length); }}>⧉ Duplicar</button>
+            <button type="button" className={btnCls} onClick={() => { onChange(globos.filter((_, k) => k !== i)); onSel(null); }}>✕ Quitar</button>
+          </div>
+        </div>
+      )}
+    </Panel>
   );
 }

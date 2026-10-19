@@ -2922,7 +2922,8 @@
           "tam": 14.5,
           "color": "tinta",
           "interlineado": 1.5,
-          "peso": 400
+          "peso": 400,
+          "espacioMovil": 14
         },
         {
           "tipo": "texto",

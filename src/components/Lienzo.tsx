@@ -4,6 +4,9 @@ import EnlaceMedido from "@/components/EnlaceMedido";
 import {
   ANCHO_LIENZO,
   ALTO_LIENZO,
+  CAPAS_IMAGEN,
+  FILTROS_IMAGEN,
+  SOMBRAS,
   colorCss,
   estiloMolde,
   fuenteCss,
@@ -14,7 +17,9 @@ import {
 } from "@/lib/esquema";
 import { createElement } from "react";
 import { ICONOS } from "@/lib/iconos-datos";
+import { resolverTextoReferencias, tieneReferencias } from "@/lib/referencias";
 import { Inline, Video } from "./Bloques";
+import GlobosVista, { type EdicionGlobos } from "./Globos";
 import Placeholder from "./Placeholder";
 
 /**
@@ -74,6 +79,14 @@ export function ParrafosVista({ contenido, base = ANCHO_LIENZO }: { contenido: P
   );
 }
 
+/** En el editor, los números escritos como {p:ancla} o {n} se muestran resueltos («?» si el identificador no existe). */
+function resolverTexto(t: string, refs: { n: number; mapa: Map<string, number>; creditos?: string }) {
+  return resolverTextoReferencias(t, refs.n, (a) => refs.mapa.get(a), "?", refs.creditos ?? "");
+}
+function resolverContenido(c: Parrafo[], refs: { n: number; mapa: Map<string, number>; creditos?: string }): Parrafo[] {
+  return c.some((p) => p.some((t) => tieneReferencias(t.texto))) ? c.map((p) => p.map((t) => ({ ...t, texto: resolverTexto(t.texto, refs) }))) : c;
+}
+
 const ALINEAR = { izquierda: "left", centro: "center", derecha: "right", justificado: "justify" } as const;
 const VERTICAL = { arriba: "flex-start", centro: "center", abajo: "flex-end" } as const;
 
@@ -125,6 +138,8 @@ export type PropsEdicion = {
   onDoubleClick?: () => void;
   /** Por ejemplo, los tiradores de redimensionado. */
   children?: React.ReactNode;
+  /** Imagen con globos de texto seleccionada sola: se pueden mover y redimensionar con el puntero. */
+  globos?: EdicionGlobos;
 };
 
 /** Cómo se coloca un elemento en la columna del celular (ver LienzoApilado). */
@@ -146,6 +161,7 @@ export function ElementoVista({
   base = ANCHO_LIENZO,
   apilado,
   miniatura = false,
+  refs,
 }: {
   el: Elemento;
   edicionId?: string;
@@ -156,6 +172,8 @@ export function ElementoVista({
   base?: number;
   /** Colocación en columna (celular); sin esto el elemento va en su posición libre de la hoja. */
   apilado?: Apilado;
+  /** Solo el editor: número de esta página y de las que tienen identificador, para mostrar ya resueltos los {p:…} y {n} de los textos. */
+  refs?: { n: number; mapa: Map<string, number>; creditos?: string };
   /** Miniatura: los videos (y sus reproductores) se sustituyen por un marcador para no cargarlos. */
   miniatura?: boolean;
 }) {
@@ -205,6 +223,8 @@ export function ElementoVista({
       textTransform: el.mayusculas ? "uppercase" : undefined,
       background: el.fondo ? colorCss(el.fondo, "transparent") : undefined,
       padding: el.relleno ? cq(el.relleno) : undefined,
+      borderRadius: el.radio ? cq(el.radio) : undefined,
+      border: el.borde ? `${cq(el.borde)} solid ${colorCss(el.colorBorde, "var(--ink)")}` : undefined,
       boxSizing: "border-box",
       overflowWrap: "break-word",
     };
@@ -225,14 +245,25 @@ export function ElementoVista({
       ) : (
         <div style={estilo}>
           <div style={{ whiteSpace: "pre-wrap" }} data-texto>
-            {el.contenido ? <ParrafosVista contenido={el.contenido} base={base} /> : <Inline text={el.texto} />}
+            {el.contenido ? <ParrafosVista contenido={refs ? resolverContenido(el.contenido, refs) : el.contenido} base={base} /> : <Inline text={refs ? resolverTexto(el.texto, refs) : el.texto} />}
           </div>
         </div>
       );
   } else if (el.tipo === "imagen") {
     const radio = el.radio ? cq(el.radio) : undefined;
     contenido = (
-      <div style={{ width: "100%", height: "100%", overflow: "hidden", borderRadius: el.molde ? undefined : radio, ...estiloMolde(el.molde) }}>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          borderRadius: el.molde ? undefined : radio,
+          border: el.borde && !el.molde ? `${cq(el.borde)} solid ${colorCss(el.colorBorde, "var(--ink)")}` : undefined,
+          boxSizing: "border-box",
+          ...estiloMolde(el.molde),
+        }}
+      >
         {el.src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -240,11 +271,20 @@ export function ElementoVista({
             alt={el.alt ?? ""}
             draggable={false}
             loading="lazy"
-            style={{ width: "100%", height: "100%", objectFit: el.ajuste === "contener" ? "contain" : "cover", display: "block" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: el.ajuste === "contener" ? "contain" : "cover",
+              objectPosition: el.enfoque ? `${el.enfoque.x}% ${el.enfoque.y}%` : undefined,
+              filter: el.filtro && el.filtro in FILTROS_IMAGEN ? FILTROS_IMAGEN[el.filtro].css : undefined,
+              display: "block",
+            }}
           />
         ) : (
           <Placeholder tone={el.tono ?? "ocre"} label={el.alt ?? "Imagen"} showLabel={false} className="h-full w-full" />
         )}
+        {el.capa && el.capa in CAPAS_IMAGEN && <div aria-hidden style={{ position: "absolute", inset: 0, background: CAPAS_IMAGEN[el.capa].css, pointerEvents: "none" }} />}
+        {el.globos && el.globos.length > 0 && <GlobosVista globos={el.globos} edicion={editor?.globos} />}
       </div>
     );
   } else if (el.tipo === "video") {
@@ -283,6 +323,12 @@ export function ElementoVista({
     );
   }
 
+  // Sombra de una imagen: va por fuera del marco recortado (un molde recortaría la sombra si fuera del mismo elemento).
+  if (el.tipo === "imagen" && el.sombra && el.sombra in SOMBRAS)
+    contenido = (
+      <div style={{ width: "100%", height: "100%", filter: SOMBRAS[el.sombra].css }}>{contenido}</div>
+    );
+
   const marca: CSSProperties = editor
     ? { outline: editor.seleccionado ? "2px solid #068562" : undefined, cursor: editor.editando ? "text" : "move", touchAction: "none" }
     : {};
@@ -307,6 +353,24 @@ export function ElementoVista({
     );
   }
 
+  // Efectos de movimiento (al pasar el cursor y continuos): envoltorios con CSS puro, solo en el sitio y la vista previa.
+  // Van por separado entre sí y de la animación de entrada para que sus transformaciones no se pisen.
+  let conEfectos = contenido;
+  if (!editor && !miniatura) {
+    if (el.hover)
+      conEfectos = (
+        <div className="fx-h" data-hover={el.hover} data-medio={el.tipo === "imagen" || el.tipo === "video" ? "" : undefined} style={{ width: "100%", height: "100%" }}>
+          {conEfectos}
+        </div>
+      );
+    if (el.bucle)
+      conEfectos = (
+        <div className="fx-b" data-bucle={el.bucle} style={{ width: "100%", height: "100%" }}>
+          {conEfectos}
+        </div>
+      );
+  }
+
   // Con animación de entrada, el contenido va en un envoltorio que arranca invisible; el cliente lo anima al verse.
   // (El envoltorio es independiente de la caja, que ya lleva el giro y la opacidad del elemento.)
   const animado =
@@ -317,10 +381,10 @@ export function ElementoVista({
         data-ret={el.animacion.retraso}
         style={{ width: "100%", height: "100%", opacity: 0 }}
       >
-        {contenido}
+        {conEfectos}
       </div>
     ) : (
-      contenido
+      conEfectos
     );
 
   // En el sitio: el elemento puede ser un enlace a otra página o a una dirección externa.
@@ -353,11 +417,14 @@ export default function LienzoVista({
   animar = false,
   className = "",
   miniatura = false,
+  refs,
 }: {
   elementos: Elemento[];
   fondo?: string;
   alto?: number;
   edicionId: string;
+  /** Para miniaturas del editor: resuelve {n}, {p:…} y {creditos} en los textos. */
+  refs?: { n: number; mapa: Map<string, number>; creditos?: string };
   /** Activa las animaciones de entrada (solo en las páginas publicadas, no en miniaturas). */
   animar?: boolean;
   className?: string;
@@ -374,7 +441,7 @@ export default function LienzoVista({
       }}
     >
       {elementos.map((el, i) =>
-        el.movil === "solo" ? null : <ElementoVista key={el.id ?? i} el={el} edicionId={edicionId} animar={animar} miniatura={miniatura} />,
+        el.movil === "solo" ? null : <ElementoVista key={el.id ?? i} el={el} edicionId={edicionId} animar={animar} miniatura={miniatura} refs={refs} />,
       )}
     </div>
   );
@@ -472,7 +539,7 @@ export function LienzoApilado({
       // Las fotos apaisadas (cubrir, al menos 1.4 de ancho por alto) también van a todo el ancho aunque midan menos de un tercio.
       ancho: logo ? 58 : el.tipo === "texto" || rel >= 0.3 || (el.tipo === "imagen" && el.ajuste === "cubrir" && el.w / el.h >= 1.4) ? 100 : Math.min(100, Math.max(18, rel * 170)),
       alinear: logo ? "center" : centro < 0.38 ? "start" : centro > 0.62 ? "end" : "center",
-      margenSuperior: primero ? 0 : Math.min(56, Math.max(14, hueco * 0.55)),
+      margenSuperior: primero ? 0 : (el.espacioMovil ?? Math.min(56, Math.max(14, hueco * 0.55))),
       altoFijo: linea ? Math.max(2, el.h) : undefined,
     };
   };

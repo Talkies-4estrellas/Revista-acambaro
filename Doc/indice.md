@@ -61,6 +61,7 @@
 | `numeracion.ts` | Número de edición automático (fijo al publicar) |
 | `admin.ts` | Lectura/escritura de ediciones desde el panel (`crearEdicion`, `crearResumen`, borrar, guardar) |
 | `resumen.ts` | `construirResumen`: arma una edición con páginas elegidas y ajusta índice, portada y enlaces |
+| `referencias.ts` | Referencias `{n}` / `{p:ancla}` en textos (lector y editor) |
 | `revision.ts` | Revisión de **datos** del revisor de diseño (anuncios seguidos, enlaces/textos de ejemplo, imágenes sin alt) |
 | `plantillas.ts` | Plantillas guardadas (copia sus imágenes, quita ids y enlaces a páginas) |
 | `plantillas-base.ts` | 6 plantillas iniciales |

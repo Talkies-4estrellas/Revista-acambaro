@@ -18,8 +18,10 @@ import { MediosContext, Campo, Texto, btnCls, inputCls } from "./campos";
 import FormPagina from "./FormPagina";
 import EditorLienzo from "./EditorLienzo";
 import PanelPaginas from "./PanelPaginas";
+import { construirIndice } from "@/lib/indice";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
 import RevisorDiseno from "./RevisorDiseno";
+import { textoCreditos } from "@/lib/referencias";
 
 /** «las páginas 7 y 8» / «las páginas 4 a 6 y 10 y 11», a partir de los números de página que son anuncios pegados. */
 function textoSeguidos(paginas: number[]) {
@@ -82,6 +84,8 @@ export default function Editor({
   const [nuevaPlantilla, setNuevaPlantilla] = useState<Plantilla>("lienzo");
   const [verPlantillas, setVerPlantillas] = useState(false);
   const [verRevisor, setVerRevisor] = useState(false);
+  // Los datos de la edición (número, fecha, tema, publicación) ocupan lugar: quedan plegados salvo en una edición sin tema todavía.
+  const [verDatos, setVerDatos] = useState(() => !inicial.tema?.trim());
 
   const sucio = JSON.stringify(datos) !== guardado;
   const pagina = datos.paginas[Math.min(sel, datos.paginas.length - 1)];
@@ -89,6 +93,7 @@ export default function Editor({
   const seguidos = useMemo(() => anunciosSeguidos(datos.paginas), [datos.paginas]);
   const titulos = useMemo(() => datos.paginas.map(tituloPagina), [datos.paginas]);
   const anclas = useMemo(() => datos.paginas.map((p) => p.ancla), [datos.paginas]);
+  const creditos = useMemo(() => textoCreditos(datos.paginas), [datos.paginas]);
   const anclaRepetida = !!pagina.ancla && datos.paginas.some((p, i) => i !== idx && p.ancla === pagina.ancla);
   // En las páginas de lienzo la propia hoja es la vista previa.
   const esLienzo = pagina.plantilla === "lienzo";
@@ -190,6 +195,35 @@ export default function Editor({
     setSel(k);
   }
 
+  /** Pone un identificador (a partir del título) a las páginas que no lo tienen; no cambia los que ya existen. */
+  function asignarAnclas() {
+    const slug = (t: string) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 36);
+    const usadas = new Set(datos.paginas.map((p) => p.ancla).filter(Boolean) as string[]);
+    const nuevas = datos.paginas.map((p, i) => {
+      if (p.ancla) return p;
+      const base = slug(tituloPagina(p)) || `pagina-${i + 1}`;
+      let a = base;
+      let k = 2;
+      while (usadas.has(a)) a = `${base}-${k++}`;
+      usadas.add(a);
+      return { ...p, ancla: a };
+    });
+    setPaginas(nuevas);
+  }
+
+  /** Arma (o rehace) las páginas de «Contenido» con una fila por página: usa identificadores, así que sigue bien si se mueven páginas. */
+  function generarIndice() {
+    const previo = datos.paginas.some((p) => p.ancla === "indice");
+    if (previo && !window.confirm("Ya hay un índice generado. ¿Rehacerlo con las páginas actuales? (Se pierde lo que hayas cambiado en él.)")) return;
+    const r = construirIndice(datos.paginas);
+    if (r.entradas === 0) {
+      window.alert("Ninguna página tiene título para el índice. Ponles título (y que estén marcadas «Mostrar en el índice») y vuelve a intentarlo.");
+      return;
+    }
+    setPaginas(r.paginas, r.numero);
+    setSel(r.posicion);
+  }
+
   function duplicarPagina() {
     const k = idx + 1;
     const copia = [...datos.paginas];
@@ -278,7 +312,19 @@ export default function Editor({
             </div>
           </div>
 
-          <div className="grid gap-3 border-t border-ink/20 px-4 py-2 sm:grid-cols-[6rem_10rem_1fr_auto] sm:items-end">
+          <div className="font-sans flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-ink/20 px-4 py-1 text-xs text-ink-soft">
+            <span className={`font-display text-base font-black ${datos.publicada || fijoPropio !== undefined ? "text-terracota" : "text-ink/40"}`} title="Número de la edición (automático)">N.º {formatoNumero(numeroEdicion)}</span>
+            <span>{datos.fecha ? new Date(datos.fecha + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }) : "sin fecha"}</span>
+            <span className="min-w-0 max-w-[24rem] truncate font-semibold text-ink">{datos.tema?.trim() || "Sin tema"}</span>
+            <span className="border border-ink/30 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider">
+              {!datos.publicada ? "Borrador" : estadoEdicion(datos) === "programada" ? "Programada" : "Publicada"}
+            </span>
+            <button type="button" className="font-bold text-terracota hover:underline" onClick={() => setVerDatos((v) => !v)} aria-expanded={verDatos}>
+              {verDatos ? "▲ Ocultar datos de la edición" : "✎ Datos de la edición"}
+            </button>
+          </div>
+
+          <div className={`grid gap-3 border-t border-ink/20 px-4 py-2 sm:grid-cols-[6rem_10rem_1fr_auto] sm:items-end ${verDatos ? "" : "hidden"}`}>
             <Campo label="Número" hint={fijoPropio !== undefined ? "Fijo: ya se publicó" : datos.publicada ? "Se fija al guardar" : "Se asigna al publicar"}>
               <p className={`font-display text-3xl font-black leading-none ${datos.publicada || fijoPropio !== undefined ? "text-terracota" : "text-ink/30"}`} title="El número es automático: sigue a la última edición publicada y, una vez publicada, no cambia">
                 {formatoNumero(numeroEdicion)}
@@ -332,23 +378,30 @@ export default function Editor({
               paginas={datos.paginas}
               seleccionada={idx}
               edicionId={id}
+              creditos={creditos}
               onSeleccionar={setSel}
               onReordenar={reordenarPagina}
             />
             <div className="space-y-2 border-t border-ink/30 p-3">
-              <button type="button" className={`${btnCls} w-full`} onClick={() => setVerPlantillas(true)} title="Usar o guardar plantillas de página">
-                ▤ Plantillas…
-              </button>
-              <select className={inputCls} value={nuevaPlantilla} onChange={(e) => setNuevaPlantilla(e.target.value as Plantilla)} aria-label="Plantilla de la página nueva">
+              <p className="font-sans text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">Agregar una página</p>
+              <select className={inputCls} value={nuevaPlantilla} onChange={(e) => setNuevaPlantilla(e.target.value as Plantilla)} aria-label="Tipo de la página nueva">
                 {PLANTILLAS.map((t) => (
                   <option key={t} value={t}>
                     {ETIQUETAS_PLANTILLA[t]}
                   </option>
                 ))}
               </select>
-              <button type="button" className={`${btnCls} w-full`} onClick={agregarPagina}>
-                + Agregar página después de la {idx + 1}
+              <button type="button" className={`${btnCls} w-full !bg-ink !text-paper`} onClick={agregarPagina}>
+                + Agregar después de la {idx + 1}
               </button>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button type="button" className={btnCls} onClick={() => setVerPlantillas(true)} title="Usar una plantilla ya diseñada (o guardar esta página como plantilla)">
+                  ▤ Plantillas
+                </button>
+                <button type="button" className={btnCls} onClick={generarIndice} title="Crea la página «Contenido» con todas las páginas de la edición (y la rehace si ya la generaste)">
+                  ☰ Índice
+                </button>
+              </div>
             </div>
           </nav>
 
@@ -359,8 +412,8 @@ export default function Editor({
                 <strong>Anuncios seguidos:</strong> {textoSeguidos(seguidos)}. Conviene intercalar contenido entre un anuncio y otro para que la publicidad no canse al lector.
               </p>
             )}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-display text-2xl font-black">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-display text-xl font-black">
                 Página {idx + 1} <span className="text-base font-bold italic text-ink-soft">· {ETIQUETAS_PLANTILLA[pagina.plantilla]}</span>
               </h2>
               <div className="flex flex-wrap gap-1">
@@ -371,9 +424,13 @@ export default function Editor({
                 <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={quitarPagina}>✕ Quitar</button>
               </div>
             </div>
-            <div className="mb-4 border border-ink/20 bg-paper-deep/40 px-3 py-2">
+            <details className="mb-3 border border-ink/20 bg-paper-deep/40" open={anclaRepetida || undefined}>
+              <summary className="font-sans cursor-pointer select-none px-3 py-1.5 text-xs font-bold text-ink-soft hover:text-ink">
+                ⚙ Identificador de la página{pagina.ancla ? `: #${pagina.ancla}` : " (opcional)"}
+              </summary>
+              <div className="px-3 pb-2">
               <Texto
-                label="Identificador de la página (opcional)"
+                label="Identificador"
                 value={pagina.ancla ?? ""}
                 placeholder="editorial, noticias, cupones…"
                 onChange={(v) => {
@@ -389,9 +446,15 @@ export default function Editor({
                     ? `Para enlazar esta página usa «Lleva a» (queda como #${pagina.ancla} y sigue a la página si la mueves). Para escribir su número en un texto (índice, portada) pon {p:${pagina.ancla}}, o {p:${pagina.ancla}:2} para «07». En un pie de página, {n} es el número de la página donde está.`
                     : "Si le pones un identificador, el índice y los enlaces con su número se corrigen solos al agregar, quitar o mover páginas."}
               </p>
-            </div>
+              {datos.paginas.some((p) => !p.ancla) && (
+                <button type="button" className={`${btnCls} mt-2`} onClick={asignarAnclas} title="Genera un identificador a partir del título de cada página que no tenga uno">
+                  Poner identificador a las {datos.paginas.filter((p) => !p.ancla).length} páginas que no lo tienen
+                </button>
+              )}
+              </div>
+            </details>
             {esLienzo ? (
-              <EditorLienzo key={idx} pagina={pagina} onChange={cambiarPagina} paginas={titulos} anclas={anclas} edicionId={id} />
+              <EditorLienzo key={idx} pagina={pagina} onChange={cambiarPagina} onPlantillas={() => setVerPlantillas(true)} paginas={titulos} anclas={anclas} indice={idx} creditos={creditos} edicionId={id} />
             ) : (
               <FormPagina key={idx} pagina={pagina} onChange={cambiarPagina} titulos={titulos} />
             )}
