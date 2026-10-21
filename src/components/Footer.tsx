@@ -11,7 +11,7 @@ export default function Footer() {
           <a href="/proyecto" className="py-3 hover:underline">El proyecto</a>
         </nav>
         <p className="font-sans text-xs text-ink-soft">
-          © 2026 · Hecho en Guanajuato
+          © 2026 · Hecho en Michoacán
         </p>
       </div>
     </footer>

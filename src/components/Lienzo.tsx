@@ -108,7 +108,8 @@ export function IconoSvg({
   className?: string;
 }) {
   const d = ICONOS[icono];
-  const estilo: CSSProperties = { display: "block", width: "100%", height: "100%", color: colorCss(color, "var(--ink)") };
+  // Sin clase, el icono llena su caja (en el lienzo). Con clase (h-10 w-10…), el tamaño lo manda la clase: un estilo en línea le ganaría y el icono saldría enorme.
+  const estilo: CSSProperties = { display: "block", ...(className ? {} : { width: "100%", height: "100%" }), color: colorCss(color, "var(--ink)") };
   if (!d)
     return (
       <div className={className} style={{ ...estilo, border: "1px dashed currentColor", fontSize: cq(12) }}>
