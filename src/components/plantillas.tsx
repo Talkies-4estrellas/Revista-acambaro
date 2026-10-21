@@ -346,15 +346,15 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
           <ThemeToggle className="-mr-2 sm:mr-0" />
         </span>
       </div>
-      <main className="bg-paper-deep/60 py-6 sm:py-10">
+      <main className="bg-paper-deep/60 pb-0 pt-0 sm:py-10">
         <h1 className="sr-only">{etiqueta(p)}</h1>
         {/* Celular: no hay giro de hoja; se lee bajando y las páginas siguientes se agregan debajo (FlujoMovil). */}
         {prev && (
-          <Link href={hrefPagina(ed, n - 1)} className="font-sans mx-auto mb-4 block max-w-[900px] px-5 text-center text-xs font-bold uppercase tracking-wider text-ink-soft hover:text-terracota sm:hidden">
+          <Link href={hrefPagina(ed, n - 1)} className="font-sans mx-auto block max-w-[900px] px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-ink-soft hover:text-terracota sm:hidden">
             ↑ Página anterior
           </Link>
         )}
-        <div data-flujo-n={n} className="mx-auto max-w-[900px] shadow-[0_10px_40px_-12px_rgba(28,24,20,0.35)]">
+        <div data-flujo-n={n} className="mx-auto max-w-[900px] sm:shadow-[0_10px_40px_-12px_rgba(28,24,20,0.35)]">
           <CuerpoLienzo ed={ed} n={n} pagina={p} />
         </div>
         <FlujoMovil

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cargarPaginaFlujo } from "@/lib/flujo-actions";
 
-const HOJA = "mx-auto mt-6 max-w-[900px] shadow-[0_10px_40px_-12px_rgba(28,24,20,0.35)]";
+// Sin separación ni sombra: las hojas se pegan una a otra para que el scroll se sienta continuo.
+const HOJA = "mx-auto max-w-[900px]";
 
 /**
  * Scroll continuo en celular: al acercarse al final de la página, la siguiente se agrega debajo (sin giro de hoja), y así hasta el final de la
@@ -138,7 +139,7 @@ export default function FlujoMovil({
       )}
 
       {!hay && (
-        <div className="mx-auto mt-8 max-w-[900px] border-t-4 border-double border-ink px-5 py-8 text-center">
+        <div className="mx-auto max-w-[900px] border-t-4 border-double border-ink px-5 py-8 text-center">
           {siguiente <= total ? (
             <Link href={hrefs[siguiente - 1]} className="group block">
               <span className="kicker block text-[0.62rem] text-ink-soft">Continuar →</span>
