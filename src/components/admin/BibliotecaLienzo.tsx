@@ -3,15 +3,26 @@
 import { useMemo, useState } from "react";
 import { ElementoVista, IconoSvg } from "@/components/Lienzo";
 import { CATEGORIAS_ICONO, ICONOS } from "@/lib/iconos-datos";
-import { ANCHO_LIENZO, BOTONES, LOGOS, MOLDES, MOLDES_IDS, elementoBoton, estiloMolde, type GrupoBoton, type LogoId, type MoldeId } from "@/lib/esquema";
+import { ANCHO_LIENZO, BOTONES, type ElementoGuardado, LOGOS, MOLDES, MOLDES_IDS, elementoBoton, estiloMolde, type GrupoBoton, type LogoId, type MoldeId, type PresetElemento } from "@/lib/esquema";
 import { BLOQUES, CATEGORIAS_BLOQUE } from "@/lib/bloques";
 import { btnCls, inputCls } from "./campos";
 
 export const TIPO_BIBLIOTECA = "application/x-lienzo";
 
-export type ModoBiblioteca = "iconos" | "moldes" | "logos" | "botones" | "bloques";
+export type ModoBiblioteca = "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios";
 
-const ANCHO_PREVIA_BLOQUE = 250;
+const TITULOS: Record<ModoBiblioteca, string> = {
+  texto: "Texto",
+  formas: "Formas",
+  bloques: "Bloques listos",
+  botones: "Botones",
+  iconos: "Iconos",
+  moldes: "Moldes",
+  logos: "Logos",
+  mios: "Mis elementos",
+};
+
+const ANCHO_PREVIA_BLOQUE = 262;
 
 /** Vista previa de un bloque listo (la hoja de 800 se reduce con transform). */
 function PreviaBloque({ id }: { id: string }) {
@@ -28,8 +39,22 @@ function PreviaBloque({ id }: { id: string }) {
   );
 }
 
+/** Vista previa de un grupo guardado: se reduce para que quepa en la ficha. */
+function PreviaMio({ item }: { item: ElementoGuardado }) {
+  const k = Math.min(1, ANCHO_PREVIA_BLOQUE / (item.w + 24), 190 / (item.h + 24));
+  return (
+    <span className="pointer-events-none block overflow-hidden" style={{ width: (item.w + 24) * k, height: (item.h + 24) * k }}>
+      <span className="block origin-top-left" style={{ width: ANCHO_LIENZO, height: ANCHO_LIENZO, position: "relative", containerType: "inline-size", transform: `scale(${k})` }}>
+        {item.elementos.map((e, i) => (
+          <ElementoVista key={i} el={{ ...e, x: e.x + 12, y: e.y + 12, id: `m${i}` }} miniatura />
+        ))}
+      </span>
+    </span>
+  );
+}
+
 const GRUPOS_BOTON: GrupoBoton[] = ["Básicos", "Redes y contacto", "Llamativos"];
-const ANCHO_PREVIA = 176; // px de cada vista previa de botón
+const ANCHO_PREVIA = 240; // px de cada vista previa de botón
 
 /** Vista previa viva de un botón (con su efecto al pasar el cursor y su movimiento): la hoja de 800 se reduce con transform. */
 function PreviaBoton({ id }: { id: string }) {
@@ -53,7 +78,6 @@ const normalizar = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toL
  */
 export default function BibliotecaLienzo({
   modo,
-  onModo,
   reemplazando,
   hayMoldeable,
   onIcono,
@@ -61,10 +85,16 @@ export default function BibliotecaLienzo({
   onLogo,
   onBoton,
   onBloque,
+  onPreset,
+  mios,
+  seleccionados,
+  onGuardarSeleccion,
+  onMio,
+  onRenombrarMio,
+  onBorrarMio,
   onCerrar,
 }: {
   modo: ModoBiblioteca;
-  onModo: (m: ModoBiblioteca) => void;
   /** Se está eligiendo el icono que sustituirá al seleccionado. */
   reemplazando: boolean;
   /** Hay una foto, video o forma seleccionada a la que aplicar el molde. */
@@ -74,6 +104,16 @@ export default function BibliotecaLienzo({
   onLogo: (id: LogoId) => void;
   onBoton: (id: string) => void;
   onBloque: (id: string) => void;
+  /** Elementos básicos (titular, párrafo, formas…). */
+  onPreset: (id: PresetElemento) => void;
+  /** «Mis elementos» guardados (null mientras se cargan). */
+  mios: ElementoGuardado[] | null;
+  /** Cuántos elementos hay seleccionados en la hoja. */
+  seleccionados: number;
+  onGuardarSeleccion: () => void;
+  onMio: (id: string) => void;
+  onRenombrarMio: (id: string) => void;
+  onBorrarMio: (id: string) => void;
   onCerrar: () => void;
 }) {
   const [busqueda, setBusqueda] = useState("");
@@ -89,52 +129,108 @@ export default function BibliotecaLienzo({
     });
   }, [busqueda, categoria]);
 
-  const pestana = (m: ModoBiblioteca, texto: string) => (
-    <button
-      type="button"
-      onClick={() => onModo(m)}
-      aria-pressed={modo === m}
-      className={`${btnCls} ${modo === m ? "!bg-ink !text-paper" : ""}`}
-    >
-      {texto}
-    </button>
-  );
-
   return (
-    <section aria-label="Biblioteca" className="mb-3 border border-ink/40 bg-white/50 dark:bg-white/5">
-      <header className="flex flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
-        <h3 className="font-sans mr-1 text-xs font-bold uppercase tracking-wider">Biblioteca</h3>
-        {pestana("bloques", `Bloques (${BLOQUES.length})`)}
-        {pestana("botones", `Botones (${BOTONES.length})`)}
-        {pestana("iconos", `Iconos (${Object.keys(ICONOS).length})`)}
-        {pestana("moldes", `Moldes (${MOLDES_IDS.length})`)}
-        {pestana("logos", `Logos (${LOGOS.length})`)}
+    <section aria-label={TITULOS[modo]} className="flex h-full min-h-0 flex-col border border-ink/40 bg-white/50 dark:bg-white/5">
+      <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
+        <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">{TITULOS[modo]}</h3>
         {modo === "iconos" && (
           <input
             type="search"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar: café, mapa, corazón…"
+            placeholder="Buscar: café, mapa…"
             aria-label="Buscar iconos"
-            className={`${inputCls} !w-56`}
+            className={`${inputCls} !w-40`}
           />
         )}
-        <button type="button" className={`${btnCls} ml-auto`} onClick={onCerrar} aria-label="Cerrar la biblioteca">
-          ✕ Cerrar
+        <button type="button" className={btnCls} onClick={onCerrar} aria-label="Cerrar el panel">
+          ✕
         </button>
       </header>
+      <div className="min-h-0 flex-1 overflow-y-auto">
 
-      {modo === "bloques" ? (
+      {modo === "mios" ? (
+        <div className="p-3">
+          <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
+            Guarda aquí lo que armes (el anuncio de un cliente, una firma, un sello…) para usarlo en cualquier edición. Selecciona uno o varios elementos en la hoja y pulsa el botón.
+          </p>
+          <button type="button" className={`${btnCls} mb-3 w-full !bg-ink !text-paper`} disabled={seleccionados === 0} onClick={onGuardarSeleccion}>
+            ☆ Guardar la selección{seleccionados > 0 ? ` (${seleccionados})` : ""}
+          </button>
+          {mios === null && <p className="font-sans text-xs italic text-ink-soft">Cargando…</p>}
+          {mios && mios.length === 0 && <p className="font-sans text-xs italic text-ink-soft">Todavía no has guardado nada.</p>}
+          <div className="flex flex-col gap-2">
+            {(mios ?? []).map((m) => (
+              <div key={m.id} className="border border-ink/20 bg-white p-2">
+                <button
+                  type="button"
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData(TIPO_BIBLIOTECA, `mio:${m.id}`);
+                    e.dataTransfer.effectAllowed = "copy";
+                  }}
+                  onClick={() => onMio(m.id)}
+                  title={`Agregar: ${m.nombre}`}
+                  className="flex w-full cursor-grab flex-col items-center gap-1 hover:opacity-80"
+                >
+                  <PreviaMio item={m} />
+                </button>
+                <div className="mt-1 flex items-center gap-1">
+                  <span className="font-sans min-w-0 flex-1 truncate text-[0.7rem] font-semibold">{m.nombre}</span>
+                  <button type="button" className={btnCls} onClick={() => onRenombrarMio(m.id)} title="Cambiar el nombre" aria-label={`Renombrar ${m.nombre}`}>✎</button>
+                  <button type="button" className={btnCls} onClick={() => onBorrarMio(m.id)} title="Borrar" aria-label={`Borrar ${m.nombre}`}>✕</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : modo === "texto" || modo === "formas" ? (
+        <div className="p-3">
+          <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">Haz clic para agregarlo o arrástralo a la hoja. Después puedes cambiarle el tamaño, el color y todo lo demás.</p>
+          <div className="flex flex-col gap-2">
+            {(modo === "texto"
+              ? ([
+                  ["titular", "Titular", "Un título grande", "font-display text-2xl font-black leading-tight"],
+                  ["parrafo", "Párrafo", "Texto de lectura, en varias líneas, para el cuerpo de una nota.", "font-serif text-[0.8rem] leading-snug"],
+                  ["etiqueta", "Etiqueta", "SECCIÓN", "font-sans text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-terracota"],
+                ] as const)
+              : ([
+                  ["rectangulo", "Rectángulo", "", "h-10 w-full bg-ink"],
+                  ["circulo", "Círculo", "", "h-10 w-10 rounded-full bg-ink"],
+                  ["linea", "Línea", "", "h-[3px] w-full bg-ink"],
+                ] as const)
+            ).map(([id, nombre, muestra, clase]) => (
+              <button
+                key={id}
+                type="button"
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(TIPO_BIBLIOTECA, `preset:${id}`);
+                  e.dataTransfer.effectAllowed = "copy";
+                }}
+                onClick={() => onPreset(id)}
+                title={`Agregar: ${nombre}`}
+                className="flex w-full cursor-grab flex-col gap-2 border border-ink/20 bg-white p-3 text-left hover:border-terracota"
+              >
+                <span className="pointer-events-none flex min-h-10 items-center text-ink">
+                  {modo === "texto" ? <span className={clase}>{muestra}</span> : <span className={`block ${clase}`} />}
+                </span>
+                <span className="font-sans text-[0.62rem] font-semibold text-ink-soft">{nombre}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : modo === "bloques" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Grupos de elementos ya compuestos. Clic para agregarlo al centro de la hoja o arrástralo a donde lo quieras; se mueve junto (doble clic para editar una pieza). Reemplaza
             los textos de guía, y suelta tus fotos sobre los marcadores de color.
           </p>
-          <div className="max-h-80 space-y-3 overflow-y-auto">
+          <div className="space-y-3">
             {CATEGORIAS_BLOQUE.map((c) => (
               <div key={c}>
                 <p className="font-sans mb-1.5 text-[0.65rem] font-bold uppercase tracking-wider text-ink-soft">{c}</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col gap-2">
                   {BLOQUES.filter((b) => b.categoria === c).map((b) => (
                     <button
                       key={b.id}
@@ -146,8 +242,7 @@ export default function BibliotecaLienzo({
                       }}
                       onClick={() => onBloque(b.id)}
                       title={b.descripcion}
-                      className="flex cursor-grab flex-col items-center gap-1 border border-ink/20 bg-white p-2 hover:border-terracota"
-                      style={{ width: ANCHO_PREVIA_BLOQUE + 20 }}
+                      className="flex w-full cursor-grab flex-col items-center gap-1 border border-ink/20 bg-white p-2 hover:border-terracota"
                     >
                       <PreviaBloque id={b.id} />
                       <span className="font-sans w-full truncate text-center text-[0.62rem] font-semibold text-ink-soft">{b.nombre}</span>
@@ -164,11 +259,11 @@ export default function BibliotecaLienzo({
             Haz clic para agregar el botón o arrástralo a la hoja. Pasa el cursor por encima para ver su efecto. Después escribe su texto (doble clic), pon a dónde lleva en
             «Lleva a» y cambia colores y efectos en el panel de la derecha.
           </p>
-          <div className="max-h-72 space-y-3 overflow-y-auto">
+          <div className="space-y-3">
             {GRUPOS_BOTON.map((g) => (
               <div key={g}>
                 <p className="font-sans mb-1.5 text-[0.65rem] font-bold uppercase tracking-wider text-ink-soft">{g}</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col gap-2">
                   {BOTONES.filter((b) => b.grupo === g).map((b) => (
                     <button
                       key={b.id}
@@ -180,8 +275,7 @@ export default function BibliotecaLienzo({
                       }}
                       onClick={() => onBoton(b.id)}
                       title={`Agregar: ${b.nombre}`}
-                      className="flex cursor-grab flex-col items-center gap-1 border border-ink/20 bg-white p-2 hover:border-terracota"
-                      style={{ width: ANCHO_PREVIA + 20 }}
+                      className="flex w-full cursor-grab flex-col items-center gap-1 border border-ink/20 bg-white p-2 hover:border-terracota"
                     >
                       <PreviaBoton id={b.id} />
                       <span className="font-sans w-full truncate text-center text-[0.62rem] font-semibold text-ink-soft">{b.nombre}</span>
@@ -212,7 +306,7 @@ export default function BibliotecaLienzo({
               ? "Elige el icono que sustituirá al seleccionado."
               : "Haz clic para agregarlo o arrástralo a la hoja. Después puedes cambiarle el color, el tamaño y el grosor del trazo."}
           </p>
-          <div className="grid max-h-60 grid-cols-[repeat(auto-fill,minmax(3.4rem,1fr))] gap-1.5 overflow-y-auto">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(3.4rem,1fr))] gap-1.5">
             {iconos.map(([id, d]) => (
               <button
                 key={id}
@@ -243,7 +337,7 @@ export default function BibliotecaLienzo({
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Haz clic para agregar el logotipo a la hoja, o arrástralo hasta donde lo quieras. Usa la versión clara sobre fondos oscuros.
           </p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {LOGOS.map((l) => (
               <button
                 key={l.id}
@@ -285,7 +379,7 @@ export default function BibliotecaLienzo({
               Forma de color
             </label>
           </div>
-          <div className="grid max-h-60 grid-cols-[repeat(auto-fill,minmax(4.6rem,1fr))] gap-2 overflow-y-auto">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(4.6rem,1fr))] gap-2">
             {MOLDES_IDS.map((id) => (
               <button
                 key={id}
@@ -306,6 +400,7 @@ export default function BibliotecaLienzo({
           </div>
         </div>
       )}
+      </div>
     </section>
   );
 }

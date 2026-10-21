@@ -196,3 +196,10 @@ body {
   .fx-b[data-bucle="balancear"] { animation: fx-balancear 3.4s ease-in-out infinite; transform-origin: 50% 20%; }
   .fx-b[data-bucle="brillar"] { animation: fx-brillar 2.8s ease-in-out infinite; }
 }
+
+/* Parallax de fotos (components/ParallaxLienzo.tsx): sin movimiento, la foto se queda sin ampliar. */
+@media (prefers-reduced-motion: reduce) {
+  .fx-par {
+    transform: none !important;
+  }
+}

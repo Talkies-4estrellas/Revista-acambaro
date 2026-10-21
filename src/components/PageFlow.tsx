@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { opuesta, type Transicion } from "@/lib/transiciones";
 
 /**
@@ -289,7 +289,18 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  // En celular no hay giro de hoja: se lee con scroll continuo (FlujoMovil).
+  const [movil, setMovil] = useState(false);
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    setMovil(mq.matches);
+    const alCambiar = () => setMovil(mq.matches);
+    mq.addEventListener("change", alCambiar);
+    return () => mq.removeEventListener("change", alCambiar);
+  }, []);
+
+  useEffect(() => {
+    if (movil) return;
     const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const indexNow = () => pagesRef.current.findIndex((p) => p.href === pathRef.current);
 
@@ -496,6 +507,11 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
     // --- Táctil ---
     let touch: { x: number; y: number; top: boolean; bottom: boolean } | null = null;
     const onTouchStart = (e: TouchEvent) => {
+      // Un deslizador (antes y después) usa el mismo gesto horizontal: no se toma como giro de página.
+      if ((e.target as Element | null)?.closest?.("[data-sin-giro]")) {
+        touch = null;
+        return;
+      }
       const p = e.touches[0];
       const doc = document.documentElement;
       touch = {
@@ -547,7 +563,7 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
       if (current) cleanup(current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [router, movil]);
 
   return (
     <div

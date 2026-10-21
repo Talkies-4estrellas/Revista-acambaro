@@ -354,6 +354,8 @@ type ElementoBase = {
   grupo?: string;
   /** Animación de entrada: se reproduce cuando el elemento entra en pantalla. */
   animacion?: AnimacionEl;
+  /** Tapa el elemento con este texto hasta que el lector lo toca (p. ej. la respuesta de una trivia). */
+  revelar?: string;
   /** Efecto al pasar el cursor por encima (se ve en el sitio publicado y en la vista previa, no al editar). */
   hover?: Hover;
   /** Movimiento continuo (flotar, latir…); se ve en el sitio publicado y en la vista previa. */
@@ -424,8 +426,24 @@ export const SOMBRAS = {
 export type SombraImagen = keyof typeof SOMBRAS;
 export const SOMBRAS_IDS = Object.keys(SOMBRAS) as SombraImagen[];
 
+/** Parallax de una foto: cuánto se amplía (y por tanto cuánto puede desplazarse dentro de su marco) al hacer scroll. */
+export const PARALLAX = {
+  suave: { nombre: "Suave", escala: 1.12 },
+  medio: { nombre: "Medio", escala: 1.22 },
+  fuerte: { nombre: "Marcado", escala: 1.35 },
+} as const;
+export type NivelParallax = keyof typeof PARALLAX;
+export const PARALLAX_IDS = Object.keys(PARALLAX) as NivelParallax[];
+
+/** Segunda foto de un comparador «antes y después»: la foto principal (`src`) es el «antes», a la izquierda; esta es el «después». */
+export type Comparar = { src: string; alt?: string; antes?: string; despues?: string };
+
 export type ElementoImagen = ElementoBase & {
   tipo: "imagen";
+  /** Convierte la imagen en un deslizador «antes y después» con esta segunda foto. */
+  comparar?: Comparar;
+  /** La foto se mueve más lento que la página al hacer scroll (solo en el sitio publicado y la vista previa). */
+  parallax?: NivelParallax;
   /** Filtro de color, capa translúcida, sombra y borde. */
   filtro?: FiltroImagen;
   capa?: CapaImagen;
@@ -473,6 +491,9 @@ export type ElementoIcono = ElementoBase & {
   alt?: string;
 };
 export type Elemento = ElementoTexto | ElementoImagen | ElementoVideo | ElementoForma | ElementoIcono;
+
+/** Un grupo de elementos guardado por el usuario («Mis elementos»), con su esquina superior izquierda en (0, 0). */
+export type ElementoGuardado = { id: string; nombre: string; creada: string; w: number; h: number; elementos: Elemento[] };
 
 export function elementoIcono(icono: string, cx = ANCHO_LIENZO / 2, cy = 300): Elemento {
   const w = 96;

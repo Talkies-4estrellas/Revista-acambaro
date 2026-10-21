@@ -147,6 +147,77 @@ function escribir(id: string, datos: EdicionDatos) {
   fs.renameSync(tmp, archivo);
 }
 
+/* ------------------------- Versiones anteriores ------------------------- */
+
+/** Copias de las versiones anteriores de cada edición (no se suben al repositorio: ver .gitignore). */
+const DIR_RESPALDOS = path.join(path.dirname(DIR_EDICIONES), "respaldos");
+const MAX_RESPALDOS = 40;
+/** Con el autoguardado se escribe cada pocos segundos: solo se conserva una copia nueva si la última tiene más de esto. */
+const SEPARACION_RESPALDOS_MS = 3 * 60 * 1000;
+const RE_RESPALDO = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.json$/;
+
+const dirRespaldos = (id: string) => path.join(DIR_RESPALDOS, verificarId(id));
+
+/** Guarda el archivo actual de la edición como versión anterior (si la última copia es de hace rato) y poda las más viejas. */
+function respaldarAntes(id: string) {
+  try {
+    const archivo = archivoEdicion(id);
+    if (!fs.existsSync(archivo)) return;
+    const dir = dirRespaldos(id);
+    fs.mkdirSync(dir, { recursive: true });
+    const previas = fs.readdirSync(dir).filter((n) => RE_RESPALDO.test(n)).sort();
+    const ultima = previas[previas.length - 1];
+    if (ultima && Date.now() - fs.statSync(path.join(dir, ultima)).mtimeMs < SEPARACION_RESPALDOS_MS) return;
+    const nombre = `${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
+    fs.copyFileSync(archivo, path.join(dir, nombre));
+    for (const viejo of [...previas, nombre].sort().slice(0, -MAX_RESPALDOS)) fs.rmSync(path.join(dir, viejo), { force: true });
+  } catch {
+    // Un fallo al respaldar nunca debe impedir guardar.
+  }
+}
+
+export type Respaldo = { nombre: string; fecha: number; paginas: number; tema: string };
+
+export function listarRespaldos(id: string): Respaldo[] {
+  const dir = dirRespaldos(id);
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((n) => RE_RESPALDO.test(n))
+    .sort()
+    .reverse()
+    .map((nombre) => {
+      const ruta = path.join(dir, nombre);
+      let paginas = 0;
+      let tema = "";
+      try {
+        const raw = JSON.parse(fs.readFileSync(ruta, "utf8"));
+        paginas = Array.isArray(raw.paginas) ? raw.paginas.length : 0;
+        tema = String(raw.tema ?? "");
+      } catch {
+        // copia ilegible: se lista igual, sin detalles
+      }
+      return { nombre, fecha: fs.statSync(ruta).mtimeMs, paginas, tema };
+    });
+}
+
+/** Una versión anterior tal cual (para cargarla en el editor; no se escribe nada hasta que el usuario guarde). */
+export function leerRespaldo(id: string, nombre: string): EdicionDatos {
+  if (!RE_RESPALDO.test(nombre)) throw new ErrorAdmin("Nombre de versión no válido.");
+  const ruta = path.join(dirRespaldos(id), nombre);
+  if (!fs.existsSync(ruta)) throw new ErrorAdmin("Esa versión ya no existe.", 404);
+  const raw = JSON.parse(fs.readFileSync(ruta, "utf8"));
+  return {
+    numero: String(raw.numero ?? ""),
+    fecha: String(raw.fecha ?? ""),
+    tema: String(raw.tema ?? ""),
+    publicada: raw.publicada !== false,
+    publicarEn: typeof raw.publicarEn === "string" ? raw.publicarEn : undefined,
+    numeroFijo: raw.numeroFijo === true ? true : undefined,
+    paginas: Array.isArray(raw.paginas) ? raw.paginas : [],
+  };
+}
+
 export function guardarEdicion(id: string, datos: unknown) {
   if (!fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin("La edición no existe.", 404);
   try {
@@ -159,7 +230,10 @@ export function guardarEdicion(id: string, datos: unknown) {
     const otras = entradasNumeracion().filter((e) => e.id !== id);
     const n = calcularNumeracion([...otras, { id, fecha: String(nuevos.fecha), publicada, publicarEn: nuevos.publicarEn, fijo: fijoActual }]).get(id);
     const fijo = fijoActual !== undefined || publicada;
-    escribir(id, { ...nuevos, numero: formatoNumero(n?.numero ?? 1), numeroFijo: fijo ? true : undefined });
+    const nuevo = { ...nuevos, numero: formatoNumero(n?.numero ?? 1), numeroFijo: fijo ? true : undefined };
+    validarEdicion(limpiar(nuevo), id); // si no es válida, ni siquiera se respalda ni se toca el archivo
+    respaldarAntes(id);
+    escribir(id, nuevo);
   } catch (e) {
     if (e instanceof ErrorAdmin) throw e;
     throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
@@ -206,7 +280,7 @@ export function crearResumen(id: string, base: { fecha: string; tema: string }, 
     const n = calcularNumeracion([...entradasNumeracion(), { id, fecha: base.fecha, publicada: false }]).get(id);
     escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, paginas: resultado.paginas });
   } catch (e) {
-    throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^[ediciones] /, "") : String(e));
+    throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
   }
   return resultado.avisos;
 }

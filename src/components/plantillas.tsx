@@ -6,6 +6,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 import PageTurner from "@/components/PageTurner";
 import Ticker from "@/components/Ticker";
 import AnimacionesLienzo from "@/components/AnimacionesLienzo";
+import FlujoMovil from "@/components/FlujoMovil";
+import ParallaxLienzo from "@/components/ParallaxLienzo";
 import { LienzoResponsivo } from "@/components/Lienzo";
 import Bloques, { Galeria, Imagen, Video } from "@/components/Bloques";
 import {
@@ -306,6 +308,21 @@ function Libre({ ed, n, pagina: p }: Props) {
 
 /* -------------------------------- Lienzo ----------------------------- */
 
+/** El dibujo de una página de lienzo (sin cabecera ni pie): lo usa la página y, en el celular, el scroll continuo (lib/flujo-actions.tsx). */
+export function CuerpoLienzo({ ed, n, pagina: p }: Props) {
+  return (
+    <>
+      <LienzoResponsivo elementos={p.elementos ?? []} fondo={p.fondo} alto={p.alto} movil={p.movil} ordenMovil={p.ordenMovil} edicionId={ed.id} animar />
+      {/* Sin JavaScript no hay quien reproduzca las animaciones: todo se muestra tal cual. */}
+      <noscript>
+        <style>{`[data-anim]{opacity:1!important}`}</style>
+      </noscript>
+      <AnimacionesLienzo key={n} />
+      <ParallaxLienzo key={`p${n}`} />
+    </>
+  );
+}
+
 function LienzoPagina({ ed, n, pagina: p }: Props) {
   const prev = ed.paginas[n - 2];
   const next = ed.paginas[n];
@@ -324,27 +341,38 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
         <span className="flex items-center gap-1 justify-self-end whitespace-nowrap tabular-nums" title={`Edición N.º ${ed.numero}`}>
           <span>
             <span className="hidden sm:inline">N.º {ed.numero} · </span>
-            {n}/{ed.paginas.length}
+            <span data-contador>{n}/{ed.paginas.length}</span>
           </span>
           <ThemeToggle className="-mr-2 sm:mr-0" />
         </span>
       </div>
       <main className="bg-paper-deep/60 py-6 sm:py-10">
         <h1 className="sr-only">{etiqueta(p)}</h1>
-        <div className="mx-auto max-w-[900px] shadow-[0_10px_40px_-12px_rgba(28,24,20,0.35)]">
-          <LienzoResponsivo elementos={p.elementos ?? []} fondo={p.fondo} alto={p.alto} movil={p.movil} ordenMovil={p.ordenMovil} edicionId={ed.id} animar />
-          {/* Sin JavaScript no hay quien reproduzca las animaciones: todo se muestra tal cual. */}
-          <noscript>
-            <style>{`[data-anim]{opacity:1!important}`}</style>
-          </noscript>
-          <AnimacionesLienzo key={n} />
+        {/* Celular: no hay giro de hoja; se lee bajando y las páginas siguientes se agregan debajo (FlujoMovil). */}
+        {prev && (
+          <Link href={hrefPagina(ed, n - 1)} className="font-sans mx-auto mb-4 block max-w-[900px] px-5 text-center text-xs font-bold uppercase tracking-wider text-ink-soft hover:text-terracota sm:hidden">
+            ↑ Página anterior
+          </Link>
+        )}
+        <div data-flujo-n={n} className="mx-auto max-w-[900px] shadow-[0_10px_40px_-12px_rgba(28,24,20,0.35)]">
+          <CuerpoLienzo ed={ed} n={n} pagina={p} />
         </div>
+        <FlujoMovil
+          id={ed.id}
+          numero={ed.numero}
+          desde={n}
+          hrefs={ed.paginas.map((_, i) => hrefPagina(ed, i + 1))}
+          titulos={ed.paginas.map((pg) => etiqueta(pg))}
+          tipos={ed.paginas.map((pg) => pg.plantilla)}
+        />
       </main>
-      <PageTurner
-        page={`${n} de ${ed.paginas.length}`}
-        prev={prev && { href: hrefPagina(ed, n - 1), label: etiqueta(prev) }}
-        next={next && { href: hrefPagina(ed, n + 1), label: etiqueta(next) }}
-      />
+      <div className="max-sm:hidden">
+        <PageTurner
+          page={`${n} de ${ed.paginas.length}`}
+          prev={prev && { href: hrefPagina(ed, n - 1), label: etiqueta(prev) }}
+          next={next && { href: hrefPagina(ed, n + 1), label: etiqueta(next) }}
+        />
+      </div>
       <Footer />
     </>
   );

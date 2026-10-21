@@ -1,11 +1,14 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import ComparadorImagen from "@/components/ComparadorImagen";
 import EnlaceMedido from "@/components/EnlaceMedido";
+import RevelarAlTocar from "@/components/RevelarAlTocar";
 import {
   ANCHO_LIENZO,
   ALTO_LIENZO,
   CAPAS_IMAGEN,
   FILTROS_IMAGEN,
+  PARALLAX,
   SOMBRAS,
   colorCss,
   estiloMolde,
@@ -251,6 +254,15 @@ export function ElementoVista({
       );
   } else if (el.tipo === "imagen") {
     const radio = el.radio ? cq(el.radio) : undefined;
+    // Parallax: la foto va en un envoltorio ya ampliado (ParallaxLienzo lo desplaza al hacer scroll); no en el editor ni en miniaturas.
+    const conParallax = (foto: React.ReactNode) =>
+      el.parallax && el.parallax in PARALLAX && !editor && !miniatura ? (
+        <div className="fx-par" data-parallax={el.parallax} style={{ width: "100%", height: "100%", transform: `scale(${PARALLAX[el.parallax].escala})`, willChange: "transform" }}>
+          {foto}
+        </div>
+      ) : (
+        foto
+      );
     contenido = (
       <div
         style={{
@@ -264,7 +276,25 @@ export function ElementoVista({
           ...estiloMolde(el.molde),
         }}
       >
-        {el.src ? (
+        {el.src && el.comparar?.src ? (
+          <ComparadorImagen
+            antes={el.src}
+            despues={el.comparar.src}
+            altAntes={el.alt}
+            altDespues={el.comparar.alt}
+            etiquetaAntes={el.comparar.antes}
+            etiquetaDespues={el.comparar.despues}
+            estatico={!!editor || miniatura}
+            estilo={{
+              width: "100%",
+              height: "100%",
+              objectFit: el.ajuste === "contener" ? "contain" : "cover",
+              objectPosition: el.enfoque ? `${el.enfoque.x}% ${el.enfoque.y}%` : undefined,
+              filter: el.filtro && el.filtro in FILTROS_IMAGEN ? FILTROS_IMAGEN[el.filtro].css : undefined,
+              display: "block",
+            }}
+          />
+        ) : el.src ? conParallax(
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={el.src}
@@ -279,7 +309,7 @@ export function ElementoVista({
               filter: el.filtro && el.filtro in FILTROS_IMAGEN ? FILTROS_IMAGEN[el.filtro].css : undefined,
               display: "block",
             }}
-          />
+          />,
         ) : (
           <Placeholder tone={el.tono ?? "ocre"} label={el.alt ?? "Imagen"} showLabel={false} className="h-full w-full" />
         )}
@@ -327,6 +357,14 @@ export function ElementoVista({
   if (el.tipo === "imagen" && el.sombra && el.sombra in SOMBRAS)
     contenido = (
       <div style={{ width: "100%", height: "100%", filter: SOMBRAS[el.sombra].css }}>{contenido}</div>
+    );
+
+  // Revelar al tocar: el elemento queda tapado hasta que el lector lo toca (no en el editor ni en miniaturas).
+  if (el.revelar && !editor && !miniatura)
+    contenido = (
+      <RevelarAlTocar etiqueta={el.revelar} radio={"radio" in el && el.radio ? cq(el.radio) : undefined}>
+        {contenido}
+      </RevelarAlTocar>
     );
 
   const marca: CSSProperties = editor

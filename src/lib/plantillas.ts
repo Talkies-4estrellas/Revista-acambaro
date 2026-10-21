@@ -49,7 +49,7 @@ function idDesde(nombre: string) {
 }
 
 /** Una plantilla no debe llevar enlaces a números de página de una edición concreta. */
-function sinReferenciasDePagina(p: Pagina): Pagina {
+export function sinReferenciasDePagina(p: Pagina): Pagina {
   const copia = structuredClone(p) as Pagina;
   delete copia.enlace;
   delete copia.destacados;
@@ -71,7 +71,7 @@ function sinReferenciasDePagina(p: Pagina): Pagina {
 }
 
 /** Copia a la carpeta de la plantilla los archivos de /media/ que use, y reescribe sus rutas. */
-function copiarMedios(valor: unknown, id: string, copiados: Map<string, string>): unknown {
+export function copiarMedios(valor: unknown, id: string, copiados: Map<string, string>): unknown {
   if (Array.isArray(valor)) return valor.map((v) => copiarMedios(v, id, copiados));
   if (valor && typeof valor === "object") {
     const salida: Record<string, unknown> = {};

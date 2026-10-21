@@ -201,7 +201,7 @@ Las fotos con ajuste «Cubrir» se recortan para llenar su caja. En **Enfoque ho
 
 ## Bloques listos
 
-En la fila **Agregar**, **Bloques** abre 9 bloques ya compuestos con vista previa: **Comercio** (tarjeta de producto, cupón de descuento, llamada a la acción,
+En el **riel de herramientas** (a la izquierda de la hoja), **Bloques** abre 9 bloques ya compuestos con vista previa: **Comercio** (tarjeta de producto, cupón de descuento, llamada a la acción,
 datos de contacto con iconos), **Datos y citas** (cifra grande, testimonio), **Eventos y pasos** (evento con fecha, tres pasos) y **Estructura** (encabezado de
 sección). Clic para ponerlo al centro de la hoja o arrástralo a donde lo quieras. Salen **agrupados** (se mueven juntos; doble clic entra a una pieza, y el
 botón de agrupar del panel los separa). Cambia los textos de guía y suelta tus fotos sobre los marcadores de color; los botones traen su efecto y piden enlace.
@@ -214,23 +214,67 @@ Se combinan con los moldes y las esquinas redondas.
 
 ## Botones prediseñados
 
-En la fila **Agregar**, **Botones** abre una biblioteca de 14 estilos con vista previa viva (pasa el cursor para ver su efecto): básicos (sólido,
+En el **riel de herramientas** (a la izquierda de la hoja), **Botones** abre una biblioteca de 14 estilos con vista previa viva (pasa el cursor para ver su efecto): básicos (sólido,
 contorno, píldora, con flecha, enlace simple), redes y contacto (WhatsApp, Instagram, Facebook, Llamar, Cómo llegar, Escríbenos) y llamativos (oferta
 que late, suscríbete que brilla, etiqueta «Nuevo»). Clic o arrastre a la hoja. Después: doble clic para escribir el texto, **Lleva a** (panel Enlace)
 para decir a dónde va, y colores, esquinas redondas y borde en el panel **Texto**. Un botón nace sin enlace; el **revisor de diseño** avisa si te lo
 dejas así. (Cualquier texto con fondo se puede convertir en botón: esquinas redondas, borde y «Es un botón».)
+
+## Mis elementos (guardar y reutilizar)
+
+Para volver a usar algo que armaste (el anuncio de un cliente, una firma, un sello, un encabezado…): **selecciona uno o varios elementos** en la hoja y pulsa **☆** (arriba de la hoja)
+o abre **Míos** en el riel de herramientas y pulsa **Guardar la selección**; escribe un nombre. Desde entonces aparece en **Míos**, en **cualquier edición**: clic para ponerlo en medio de
+la hoja o arrástralo a donde lo quieras (entra como un grupo nuevo: se mueve junto, doble clic entra a una pieza). Con **✎** cambias el nombre y con **✕** lo borras (las ediciones donde ya
+lo usaste no cambian). Las imágenes se copian aparte, así que siguen funcionando aunque cambies o borres la edición de origen; se quitan los enlaces a números de página y los
+`{p:…}` (los enlaces a direcciones externas se conservan).
+
+## Interactivos: antes y después, y revelar al tocar
+
+- **Antes y después** (imagen → panel **Imagen** → **Segunda imagen**): elige otra foto y la imagen se vuelve un **deslizador**. La foto principal (Archivo) es el «antes», a la
+  izquierda, y la segunda es el «después», a la derecha; las dos deben tener el mismo tamaño o encuadre. Puedes cambiar los **rótulos** («Antes» / «Después»). Se mueve con
+  el ratón, el dedo o las flechas del teclado, y en el celular no gira la página mientras lo deslizas. En el editor se ve a la mitad y no responde (para no estorbar al editar).
+- **Revelar al tocar** (cualquier elemento → panel **Revelar al tocar**): escribe el texto de la tapa (p. ej. «Toca para ver la respuesta») y el elemento queda tapado hasta que el
+  lector lo toca; luego se queda a la vista. Sirve para la respuesta de una trivia, un cupón, un dato curioso. Si el elemento lleva enlace, tocar la tapa solo la quita (no navega).
+  En el editor se ve normal y con la etiqueta «Se revela al tocar».
+- No hay «acordeón» (secciones que se abren y empujan lo de abajo): la hoja tiene posiciones fijas. Para preguntas y respuestas usa **Revelar al tocar** en cada respuesta.
 
 ## Efectos de movimiento
 
 En el panel de cada elemento, **Efectos de movimiento** (se ven en el sitio publicado y en la vista previa, no mientras editas):
 - **Al pasar el cursor:** se levanta con sombra, acerca (en una foto, el zoom queda dentro de su marco), se inclina, se ilumina o se hunde.
 - **Movimiento continuo:** flota, late, se balancea o parpadea con un brillo. Se apaga solo si el lector pidió menos animaciones en su equipo.
-- Además, la **animación de entrada** suma **Cortina** (de arriba hacia abajo) y **Difuminar** (de borroso a nítido).
+- En una **foto**, **Parallax al hacer scroll** (suave, medio o marcado): la imagen se mueve más lento que la página, dentro de su marco (se amplía un poco para poder moverse,
+  12 %, 22 % o 35 %; funciona mejor en fotos grandes y anchas). Los globos de texto, la capa y el borde no se mueven; solo la foto. Se apaga si el lector pidió menos animaciones.
+- Además, la **animación de entrada** suma **Cortina** (de arriba hacia abajo) y **Difuminar** (de borroso a nítido), y, solo en los **textos**,
+  **Texto letra por letra** y **Texto palabra por palabra**: el texto se va escribiendo al entrar en pantalla. Su **Duración** es el tiempo de toda la escritura
+  (déjala vacía y se calcula según lo largo que sea el texto); el **Retraso** es la espera antes de empezar. **▶ Probar** lo muestra en la hoja. Si el lector pidió
+  menos animaciones en su equipo, el texto aparece completo de una vez.
 
 ## Editar con el dedo (tableta o celular)
 
 Con la pantalla táctil, un dedo mueve y redimensiona elementos (los tiradores se agrandan en pantallas táctiles); un dedo sobre el fondo gris desplaza la
 hoja, y **dos dedos hacen zoom y desplazan** (pellizco). Mientras haces el pellizco no se mueve ningún elemento.
+
+## El panel de la derecha (propiedades)
+
+El inspector está dividido en **paneles plegables**: pulsa el título de uno para abrirlo o cerrarlo, o usa **Abrir todo / Plegar todo** (arriba del panel). El navegador
+recuerda cuáles dejaste abiertos. Con un elemento seleccionado, de arriba abajo:
+- **Texto / Imagen / Video / Icono / Forma:** lo propio del elemento (siempre a mano). El texto se divide en **Texto** y **Fondo y borde** (fondo, esquinas, borde,
+  «es un botón»); la imagen en **Imagen** y **Estilo de la imagen** (molde, filtro, capa, sombra, borde); además **Texto sobre la imagen** (globos).
+- **Posición y tamaño** (X, Y, ancho, alto, giro, opacidad), **Enlace**, **Animación de entrada**, **Efectos de movimiento** y **En el celular**.
+  Los que no usas empiezan cerrados y, cuando están cerrados, muestran en una línea lo que tienen (p. ej. «Subir», «Página 16», «Solo celular»); si el elemento ya tiene
+  un valor ahí (un enlace, una animación…), el panel empieza abierto.
+- Sin nada seleccionado, el panel es el de **Esta página**: Hoja abierta; Animaciones, Transición e Índice cerrados.
+
+## Autoguardado, recuperación y versiones
+
+- **Autoguardar** (casilla arriba): guarda solo, unos 3 segundos después de cada cambio. Viene **activo en los borradores** y **apagado en las ediciones publicadas**
+  (para que un cambio a medias no llegue al sitio sin que lo revises); puedes cambiarlo y se recuerda en este navegador. Arriba se lee «Guardado a las 10:56».
+  Si un autoguardado falla (por ejemplo, un color no válido), avisa y no reintenta hasta que cambies algo.
+- **Recuperación:** mientras hay cambios sin guardar, el navegador conserva una copia. Si se cierra la pestaña o se cae el equipo, al volver a abrir la edición
+  sale un aviso con **Recuperarlos** o **Descartarlos** (la copia no se borra mientras decides). Se limpia sola al guardar.
+- **↶ Versiones:** antes de sobrescribir el archivo, el servidor guarda la versión anterior (como mucho una cada 3 minutos, las últimas 40, en `content/respaldos/`).
+  **Restaurar** carga en el editor las páginas, el tema y la fecha de esa versión; no cambia si la edición está publicada y no se escribe hasta que se guarde.
 
 ## Dónde está cada cosa en el editor
 
@@ -240,7 +284,10 @@ De arriba abajo, la **hoja** es lo principal y lo demás se aparta para no estor
   publicada); **✎ Datos de la edición** despliega los campos para cambiarlos (en una edición nueva sin tema ya salen abiertos).
 - **A la izquierda:** las páginas. Abajo, **Agregar una página** (elige el tipo y pulsa «+ Agregar después de la N»), más **Plantillas** e **Índice**.
 - **Sobre la hoja:** el título de la página con sus acciones (subir, bajar, plantillas, duplicar, quitar) y, plegado, el **⚙ Identificador** de la página.
-  Después, la fila **Agregar** (titular, párrafo, imagen…; clic o arrastrar a la hoja) y a la derecha copiar / cortar / pegar / deshacer.
+  Después, la ayuda rápida (ⓘ) y a la derecha copiar / cortar / pegar / seleccionar todo / deshacer.
+- **Riel de herramientas** (a la izquierda de la hoja, con icono y nombre; en pantallas angostas va en fila sobre la hoja): **Texto** (titular, párrafo, etiqueta),
+  **Imagen** y **Video** (se agregan al instante), **Formas** (rectángulo, círculo, línea), **Bloques**, **Botones**, **Iconos**, **Moldes** y **Logo**. Las que tienen
+  opciones abren un **panel** junto al riel (clic en una pieza para agregarla o arrástrala a la hoja; la hoja se reajusta sola); vuelve a pulsar la herramienta o ✕ para cerrarlo.
 - **Debajo de la hoja** (siempre a la vista): zoom, ajustar, mano, reglas, cuadrícula e imán. Al abrir una página la hoja aparece **entera y centrada**
   (como en Canva); cambia el zoom o pulsa **Ancho** / **Entera** / **100 %** cuando quieras. Si eliges «Ancho», se recuerda al cambiar de página.
 - **A la derecha:** propiedades del elemento (o de la hoja si no hay nada elegido) y la pestaña **Celular**.

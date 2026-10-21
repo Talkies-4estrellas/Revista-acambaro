@@ -1,13 +1,14 @@
 "use client";
 
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { ElementoVista } from "@/components/Lienzo";
+import { ElementoVista, IconoSvg } from "@/components/Lienzo";
 import {
   ALTO_LIENZO,
   ANCHO_LIENZO,
   PRESETS,
   colorCss,
   elementoBoton,
+  type ElementoGuardado,
   elementoFormaMolde,
   elementoIcono,
   elementoLogo,
@@ -21,6 +22,7 @@ import {
 } from "@/lib/esquema";
 import { MediosContext, btnCls } from "./campos";
 import { elementosBloque } from "@/lib/bloques";
+import { animarTexto } from "@/lib/animaciones-texto";
 import BibliotecaLienzo, { type ModoBiblioteca } from "./BibliotecaLienzo";
 import { fotogramas, opcionesAnimacion, type Efecto } from "@/lib/animaciones";
 import { ICONOS } from "@/lib/iconos-datos";
@@ -64,6 +66,31 @@ const ZOOM_MIN = 0.1;
 const ZOOM_MAX = 4;
 const ZOOMS = [25, 50, 75, 100, 125, 150, 200, 300, 400];
 const TIPO_DND = "application/x-lienzo";
+
+const Trazo = ({ children }: { children: React.ReactNode }) => (
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    {children}
+  </svg>
+);
+const Vector = ({ id }: { id: string }) => (
+  <span className="block h-[26px] w-[26px]" aria-hidden>
+    <IconoSvg icono={id} color="currentColor" />
+  </span>
+);
+
+/** Herramientas del riel: las de `preset` agregan el elemento al instante; las de `modo` abren su panel con opciones. */
+const RIEL: { id: string; etiqueta: string; titulo: string; modo?: ModoBiblioteca; preset?: PresetElemento; icono: React.ReactNode }[] = [
+  { id: "texto", etiqueta: "Texto", titulo: "Titular, párrafo y etiqueta", modo: "texto", icono: <Trazo><path d="M5 7V5h14v2M12 5v14M9 19h6" /></Trazo> },
+  { id: "imagen", etiqueta: "Imagen", titulo: "Agregar una imagen (clic o arrastra a la hoja)", preset: "imagen", icono: <Vector id="image" /> },
+  { id: "video", etiqueta: "Video", titulo: "Agregar un video (clic o arrastra a la hoja)", preset: "video", icono: <Vector id="film" /> },
+  { id: "formas", etiqueta: "Formas", titulo: "Rectángulo, círculo y línea", modo: "formas", icono: <Trazo><rect x="3" y="3" width="11" height="11" rx="1" /><circle cx="16" cy="16" r="5" /></Trazo> },
+  { id: "bloques", etiqueta: "Bloques", titulo: "Bloques listos: tarjeta de producto, cupón, testimonio, cifra, evento…", modo: "bloques", icono: <Trazo><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></Trazo> },
+  { id: "botones", etiqueta: "Botones", titulo: "Botones prediseñados, con su efecto al pasar el cursor", modo: "botones", icono: <Trazo><rect x="3" y="7.5" width="18" height="9" rx="4.5" /><path d="M8.5 12h7" /></Trazo> },
+  { id: "iconos", etiqueta: "Iconos", titulo: "Biblioteca de iconos", modo: "iconos", icono: <Vector id="star" /> },
+  { id: "moldes", etiqueta: "Moldes", titulo: "Moldes (marcos) para fotos y formas", modo: "moldes", icono: <Trazo><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" /></Trazo> },
+  { id: "mios", etiqueta: "Míos", titulo: "Mis elementos: grupos que guardaste para reutilizar en cualquier edición", modo: "mios", icono: <Trazo><path d="M12 21s-7.5-4.6-9.3-9.2C1.5 8.5 3.4 5 6.8 5c2 0 3.5 1 5.2 3 1.7-2 3.2-3 5.2-3 3.4 0 5.3 3.5 4.1 6.8C19.5 16.4 12 21 12 21z" /></Trazo> },
+  { id: "logos", etiqueta: "Logo", titulo: "Logotipo y emblema de la revista", modo: "logos", icono: <Vector id="bookmark" /> },
+];
 
 type Guias = { v: number[]; h: number[] };
 type Caja = { l: number; t: number; r: number; b: number };
@@ -495,6 +522,79 @@ export default function EditorLienzo({
     setSel([el.id!]);
   };
 
+  /* ------------------------------ Mis elementos ------------------------------ */
+
+  const [mios, setMios] = useState<ElementoGuardado[] | null>(null);
+  const modoPanel = biblioteca?.modo;
+  useEffect(() => {
+    if (modoPanel !== "mios" || mios !== null) return;
+    fetch("/api/admin/elementos")
+      .then((r) => r.json())
+      .then((j) => setMios(Array.isArray(j.elementos) ? j.elementos : []))
+      .catch(() => setMios([]));
+  }, [modoPanel, mios]);
+
+  const guardarSeleccion = async () => {
+    if (seleccion.length === 0) {
+      avisar("Selecciona primero lo que quieres guardar.");
+      return;
+    }
+    const nombre = window.prompt("Nombre para guardar estos elementos:", "");
+    if (!nombre?.trim()) return;
+    try {
+      const res = await fetch("/api/admin/elementos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre, elementos: seleccion }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error ?? `Error ${res.status}`);
+      setMios((l) => [j.elemento as ElementoGuardado, ...(l ?? [])]);
+      setBiblioteca({ modo: "mios" });
+      avisar("Guardado en Mis elementos");
+    } catch (e) {
+      avisar(e instanceof Error ? e.message : "No se pudo guardar");
+    }
+  };
+
+  const renombrarMio = async (id: string) => {
+    const actual = mios?.find((m) => m.id === id);
+    const nombre = window.prompt("Nuevo nombre:", actual?.nombre ?? "");
+    if (!nombre?.trim() || nombre.trim() === actual?.nombre) return;
+    try {
+      const res = await fetch(`/api/admin/elementos/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error ?? `Error ${res.status}`);
+      setMios((l) => (l ?? []).map((m) => (m.id === id ? { ...m, nombre: nombre.trim().replace(/\s+/g, " ") } : m)));
+    } catch (e) {
+      avisar(e instanceof Error ? e.message : "No se pudo renombrar");
+    }
+  };
+
+  const borrarMio = async (id: string) => {
+    const actual = mios?.find((m) => m.id === id);
+    if (!window.confirm(`¿Borrar «${actual?.nombre ?? id}» de Mis elementos? Las ediciones donde ya lo usaste no cambian.`)) return;
+    try {
+      const res = await fetch(`/api/admin/elementos/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Error ${res.status}`);
+      setMios((l) => (l ?? []).filter((m) => m.id !== id));
+    } catch (e) {
+      avisar(e instanceof Error ? e.message : "No se pudo borrar");
+    }
+  };
+
+  /** Agrega un grupo guardado, centrado donde se pida (por defecto en medio de la hoja), todo junto en un grupo nuevo. */
+  const agregarMio = (id: string, cx = ANCHO_LIENZO / 2, cy = 500) => {
+    const item = mios?.find((m) => m.id === id);
+    if (!item) return;
+    const x0 = Math.round(Math.min(Math.max(0, cx - item.w / 2), Math.max(0, ANCHO_LIENZO - item.w)));
+    const y0 = Math.max(0, Math.round(cy - item.h / 2));
+    const grupo = item.elementos.length > 1 ? nuevoId() : undefined;
+    const els = item.elementos.map((e) => {
+      const { grupo: _g, ...resto } = e;
+      void _g;
+      return { ...structuredClone(resto), x: e.x + x0, y: e.y + y0, id: nuevoId(), ...(grupo ? { grupo } : {}) } as Elemento;
+    });
+    aplicar([...getEls(), ...els]);
+    setSel(els.map((e) => e.id!));
+  };
+
   const agregarBloque = (id: string, cx?: number, cy?: number) => {
     const els = elementosBloque(id, cx, cy);
     aplicar([...getEls(), ...els]);
@@ -594,7 +694,9 @@ export default function EditorLienzo({
     if (!raiz) return;
     for (const el of getEls()) {
       if (!el.animacion || (ids && !ids.includes(el.id!))) continue;
-      const nodo = raiz.querySelector<HTMLElement>(`[data-elid="${el.id}"]`)?.firstElementChild;
+      const caja = raiz.querySelector<HTMLElement>(`[data-elid="${el.id}"]`);
+      const nodo = caja?.firstElementChild;
+      if (caja && nodo instanceof HTMLElement && el.tipo === "texto" && animarTexto(nodo, caja, el.animacion)) continue;
       if (nodo instanceof HTMLElement && typeof nodo.animate === "function") {
         nodo.animate(fotogramas(el.animacion.efecto), opcionesAnimacion(el.animacion));
       }
@@ -1229,6 +1331,14 @@ export default function EditorLienzo({
       agregarIcono(dato.slice(6), x, y);
       return;
     }
+    if (dato.startsWith("mio:")) {
+      agregarMio(dato.slice(4), x, y);
+      return;
+    }
+    if (dato.startsWith("preset:")) {
+      agregar(dato.slice(7) as PresetElemento, x, y);
+      return;
+    }
     if (dato.startsWith("bloque:")) {
       agregarBloque(dato.slice(7), x, y);
       return;
@@ -1378,6 +1488,8 @@ export default function EditorLienzo({
 
   /* ------------------------------- Dibujo ----------------------------- */
 
+  /** Alto del área de trabajo (hoja, riel y panel de herramientas). */
+  const altoTrabajo = completa ? "calc(100vh - 9rem)" : "max(24rem, calc(100vh - 19.5rem))";
   const handle = "absolute h-2.5 w-2.5 border border-terracota bg-white pointer-coarse:h-5 pointer-coarse:w-5";
   const cajaGrupo = seleccion.length > 1 ? unir(seleccion.map(caja)) : null;
 
@@ -1386,107 +1498,94 @@ export default function EditorLienzo({
       className={`grid gap-5 xl:grid-cols-[minmax(0,1fr)_21rem] ${completa ? "fixed inset-0 z-50 overflow-y-auto bg-paper p-4" : ""}`}
     >
       <div className="min-w-0">
-        {/* Barra de herramientas */}
-        <div className="mb-2 flex flex-wrap items-center gap-1.5" role="toolbar" aria-label="Agregar elementos">
-          <span className="font-sans mr-1 text-[0.7rem] font-bold uppercase tracking-wider text-ink-soft">
-            Agregar:
-          </span>
-          {PRESETS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData(TIPO_DND, p.id);
-                e.dataTransfer.effectAllowed = "copy";
-              }}
-              onClick={() => agregar(p.id)}
-              className={`${btnCls} cursor-grab`}
-              title="Haz clic para agregarlo, o arrástralo a la hoja"
-            >
-              {p.etiqueta}
-            </button>
-          ))}
-          <button
-            type="button"
-            className={`${btnCls} ${biblioteca?.modo === "bloques" ? "!bg-ink !text-paper" : ""}`}
-            onClick={() => setBiblioteca((b) => (b?.modo === "bloques" ? null : { modo: "bloques" }))}
-            title="Bloques listos: tarjeta de producto, cupón, testimonio, cifra, evento…"
-          >
-            Bloques
-          </button>
-          <button
-            type="button"
-            className={`${btnCls} ${biblioteca?.modo === "botones" ? "!bg-ink !text-paper" : ""}`}
-            onClick={() => setBiblioteca((b) => (b?.modo === "botones" ? null : { modo: "botones" }))}
-            title="Botones prediseñados, con su efecto al pasar el cursor"
-          >
-            Botones
-          </button>
-          <button
-            type="button"
-            className={`${btnCls} ${biblioteca?.modo === "iconos" ? "!bg-ink !text-paper" : ""}`}
-            onClick={() => setBiblioteca((b) => (b?.modo === "iconos" ? null : { modo: "iconos" }))}
-            title="Biblioteca de iconos"
-          >
-            Iconos
-          </button>
-          <button
-            type="button"
-            className={`${btnCls} ${biblioteca?.modo === "moldes" ? "!bg-ink !text-paper" : ""}`}
-            onClick={() => setBiblioteca((b) => (b?.modo === "moldes" ? null : { modo: "moldes" }))}
-            title="Moldes (marcos) para fotos y formas"
-          >
-            Moldes
-          </button>
-          <button
-            type="button"
-            className={`${btnCls} ${biblioteca?.modo === "logos" ? "!bg-ink !text-paper" : ""}`}
-            onClick={() => setBiblioteca((b) => (b?.modo === "logos" ? null : { modo: "logos" }))}
-            title="Logotipo y emblema de la revista"
-          >
-            Logo
-          </button>
-          <span className="ml-auto flex gap-1" role="toolbar" aria-label="Copiar, pegar y deshacer">
+        {/* Fila superior: ayuda y edición (copiar, pegar, deshacer) */}
+        <div className="mb-2 flex flex-wrap items-start gap-2">
+          <details className="font-sans min-w-0 text-[0.7rem] text-ink-soft">
+            <summary className="inline-block cursor-pointer select-none font-bold hover:text-ink">ⓘ Ayuda rápida</summary>
+            <p className="mt-1 max-w-xl leading-relaxed">
+              Elige una herramienta a la izquierda (clic para agregarla o arrástrala a la hoja) · Suelta imágenes o videos desde tu equipo sobre la hoja · Doble clic en un texto para
+              escribir · Mayús/Ctrl + clic o arrastrar en vacío selecciona varios · Mayús al redimensionar conserva la proporción · Alt desactiva los imanes · Dos dedos
+              (pantalla táctil) = zoom.
+            </p>
+          </details>
+            <span className="ml-auto flex gap-1" role="toolbar" aria-label="Copiar, pegar y deshacer">
+              <button type="button" className={btnCls} onClick={guardarSeleccion} disabled={sel.length === 0} title="Guardar la selección en Mis elementos (para usarla en cualquier edición)" aria-label="Guardar la selección en Mis elementos">☆</button>
             <button type="button" className={btnCls} onClick={copiarBoton} disabled={sel.length === 0} title="Copiar (Ctrl+C): se puede pegar en otra página o edición" aria-label="Copiar">⧉</button>
-            <button type="button" className={btnCls} onClick={cortarBoton} disabled={sel.length === 0} title="Cortar (Ctrl+X)" aria-label="Cortar">✂</button>
-            <button type="button" className={btnCls} onClick={pegarBoton} title="Pegar (Ctrl+V). Ctrl+Mayús+V pega en el mismo lugar" aria-label="Pegar">▣</button>
-            <button type="button" className={btnCls} onClick={() => setSel(elementos.map((e) => e.id!))} disabled={elementos.length === 0} title="Seleccionar todo (Ctrl+A)" aria-label="Seleccionar todo">
-              ☑
-            </button>
-            <button type="button" className={btnCls} onClick={deshacer} disabled={pasado.current.length === 0} title="Deshacer (Ctrl+Z)">↶</button>
-            <button type="button" className={btnCls} onClick={rehacer} disabled={futuro.current.length === 0} title="Rehacer (Ctrl+Y)">↷</button>
-          </span>
+              <button type="button" className={btnCls} onClick={cortarBoton} disabled={sel.length === 0} title="Cortar (Ctrl+X)" aria-label="Cortar">✂</button>
+              <button type="button" className={btnCls} onClick={pegarBoton} title="Pegar (Ctrl+V). Ctrl+Mayús+V pega en el mismo lugar" aria-label="Pegar">▣</button>
+              <button type="button" className={btnCls} onClick={() => setSel(elementos.map((e) => e.id!))} disabled={elementos.length === 0} title="Seleccionar todo (Ctrl+A)" aria-label="Seleccionar todo">
+                ☑
+              </button>
+              <button type="button" className={btnCls} onClick={deshacer} disabled={pasado.current.length === 0} title="Deshacer (Ctrl+Z)">↶</button>
+              <button type="button" className={btnCls} onClick={rehacer} disabled={futuro.current.length === 0} title="Rehacer (Ctrl+Y)">↷</button>
+            </span>
         </div>
-        <details className="font-sans mb-2 text-[0.7rem] text-ink-soft">
-          <summary className="inline-block cursor-pointer select-none font-bold hover:text-ink">ⓘ Ayuda rápida</summary>
-          <p className="mt-1 leading-relaxed">
-            Suelta imágenes o videos desde tu equipo sobre la hoja · Doble clic en un texto para escribir · Mayús/Ctrl + clic o arrastrar en vacío
-            selecciona varios · Mayús al redimensionar conserva la proporción · Alt desactiva los imanes · Dos dedos (pantalla táctil) = zoom.
-          </p>
-        </details>
         {aviso && <p role="status" className="font-sans mb-2 text-xs font-bold text-terracota">{aviso}</p>}
 
-        {biblioteca && (
-          <BibliotecaLienzo
-            modo={biblioteca.modo}
-            onModo={(modo) => setBiblioteca({ modo })}
-            reemplazando={!!biblioteca.reemplazar && unico?.tipo === "icono"}
-            hayMoldeable={!!unico && (unico.tipo === "imagen" || unico.tipo === "video" || unico.tipo === "forma")}
-            onIcono={(id) => {
-              if (biblioteca.reemplazar && unico?.tipo === "icono") {
-                cambiar({ icono: id });
-                setBiblioteca((b) => (b ? { ...b, reemplazar: false } : b));
-              } else agregarIcono(id);
-            }}
-            onMolde={(id, comoForma) => aplicarMolde(id, comoForma)}
-            onLogo={(id) => agregarLogo(id)}
-            onBoton={(id) => agregarBoton(id)}
-            onBloque={(id) => agregarBloque(id)}
-            onCerrar={() => setBiblioteca(null)}
-          />
-        )}
+        <div className="flex flex-col gap-2 lg:flex-row">
+          {/* Riel de herramientas */}
+          <nav
+            aria-label="Herramientas"
+            className="flex shrink-0 gap-1 overflow-x-auto border border-ink/30 bg-paper-deep/60 p-1 lg:h-(--alto-trabajo) lg:w-[4.5rem] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden"
+            style={{ "--alto-trabajo": altoTrabajo } as React.CSSProperties}
+          >
+            {RIEL.map((it) => {
+              const activo = !!it.modo && biblioteca?.modo === it.modo;
+              return (
+                <button
+                  key={it.id}
+                  type="button"
+                  draggable={!!it.preset}
+                  onDragStart={(e) => {
+                    if (!it.preset) return;
+                    e.dataTransfer.setData(TIPO_DND, it.preset);
+                    e.dataTransfer.effectAllowed = "copy";
+                  }}
+                  onClick={() => {
+                    if (it.preset) agregar(it.preset);
+                    else setBiblioteca((b) => (b?.modo === it.modo ? null : { modo: it.modo! }));
+                  }}
+                  aria-pressed={it.modo ? activo : undefined}
+                  title={it.titulo}
+                  className={`font-sans flex w-16 shrink-0 flex-col items-center gap-1 px-1 py-2 text-[0.62rem] font-bold leading-tight lg:w-full ${activo ? "bg-ink text-paper" : "text-ink hover:bg-white/70"}`}
+                >
+                  {it.icono}
+                  <span>{it.etiqueta}</span>
+                </button>
+              );
+            })}
+          </nav>
 
+          {/* Panel de la herramienta elegida (bloques, botones, iconos…) */}
+          {biblioteca && (
+            <div className="h-96 shrink-0 lg:h-(--alto-trabajo) lg:w-80" style={{ "--alto-trabajo": altoTrabajo } as React.CSSProperties}>
+              <BibliotecaLienzo
+                modo={biblioteca.modo}
+                reemplazando={!!biblioteca.reemplazar && unico?.tipo === "icono"}
+                hayMoldeable={!!unico && (unico.tipo === "imagen" || unico.tipo === "video" || unico.tipo === "forma")}
+                onIcono={(id) => {
+                  if (biblioteca.reemplazar && unico?.tipo === "icono") {
+                    cambiar({ icono: id });
+                    setBiblioteca((b) => (b ? { ...b, reemplazar: false } : b));
+                  } else agregarIcono(id);
+                }}
+                onMolde={(id, comoForma) => aplicarMolde(id, comoForma)}
+                onLogo={(id) => agregarLogo(id)}
+                onBoton={(id) => agregarBoton(id)}
+                onBloque={(id) => agregarBloque(id)}
+                onPreset={(id) => agregar(id)}
+                mios={mios}
+                seleccionados={seleccion.length}
+                onGuardarSeleccion={guardarSeleccion}
+                onMio={(id) => agregarMio(id)}
+                onRenombrarMio={renombrarMio}
+                onBorrarMio={borrarMio}
+                onCerrar={() => setBiblioteca(null)}
+              />
+            </div>
+          )}
+
+          <div className="min-w-0 flex-1">
         {/* Hoja */}
         <div
           ref={viewport}
@@ -1495,7 +1594,7 @@ export default function EditorLienzo({
             arrastrandoVista ? "[&_*]:cursor-grabbing!" : mano || espacio ? "[&_*]:cursor-grab!" : ""
           }`}
           style={{
-            height: completa ? "calc(100vh - 9rem)" : "max(24rem, calc(100vh - 19.5rem))",
+            height: altoTrabajo,
             backgroundColor: "#cbd5e1",
             backgroundImage: "radial-gradient(rgba(28,24,20,.2) 1px, transparent 1px)",
             backgroundSize: "18px 18px",
@@ -1594,6 +1693,14 @@ export default function EditorLienzo({
                                 Solo en el celular
                               </span>
                             </>
+                          )}
+                          {el.revelar && (
+                            <span
+                              className="pointer-events-none absolute bottom-0 left-0 bg-ocre px-1 font-sans font-bold uppercase text-ink"
+                              style={{ fontSize: Math.max(9, 11 / Math.max(vista.s, 0.2)), lineHeight: 1.3, transform: "translateY(100%)" }}
+                            >
+                              Se revela al tocar
+                            </span>
                           )}
                           {solo && editando !== el.id ? (
                           <>
@@ -1823,6 +1930,8 @@ export default function EditorLienzo({
           </button>
         </div>
 
+          </div>
+        </div>
       </div>
 
       {/* Panel lateral: propiedades o vista del celular */}

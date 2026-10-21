@@ -21,6 +21,7 @@ import PanelPaginas from "./PanelPaginas";
 import { construirIndice } from "@/lib/indice";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
 import RevisorDiseno from "./RevisorDiseno";
+import Versiones from "./Versiones";
 import { textoCreditos } from "@/lib/referencias";
 
 /** «las páginas 7 y 8» / «las páginas 4 a 6 y 10 y 11», a partir de los números de página que son anuncios pegados. */
@@ -84,6 +85,14 @@ export default function Editor({
   const [nuevaPlantilla, setNuevaPlantilla] = useState<Plantilla>("lienzo");
   const [verPlantillas, setVerPlantillas] = useState(false);
   const [verRevisor, setVerRevisor] = useState(false);
+  const [verVersiones, setVerVersiones] = useState(false);
+  /** Cuándo se guardó por última vez en esta sesión (a mano o solo). */
+  const [guardadoEn, setGuardadoEn] = useState<Date | null>(null);
+  /** Copia de recuperación del navegador, de una sesión anterior, que aún no se recuperó ni se descartó. */
+  const [recuperable, setRecuperable] = useState<{ t: number; datos: EdicionDatos } | null>(null);
+  const copiaPendiente = useRef(false);
+  /** Preferencia de autoguardado de este navegador; sin elegir, se autoguarda solo si la edición es un borrador. */
+  const [autoPref, setAutoPref] = useState<boolean | null>(null);
   // Los datos de la edición (número, fecha, tema, publicación) ocupan lugar: quedan plegados salvo en una edición sin tema todavía.
   const [verDatos, setVerDatos] = useState(() => !inicial.tema?.trim());
 
@@ -101,8 +110,12 @@ export default function Editor({
 
   /* ---------------------------- Guardado ----------------------------- */
 
-  const guardar = useCallback(async () => {
-    setEstado({ tipo: "cargando", texto: "Guardando…" });
+  /** Lo que no se pudo autoguardar (para no reintentar sin parar un error que no se arregla solo). */
+  const fallaAuto = useRef("");
+
+  const guardar = useCallback(async (silencioso = false) => {
+    if (!silencioso) fallaAuto.current = "";
+    setEstado({ tipo: "cargando", texto: silencioso ? "Autoguardando…" : "Guardando…" });
     try {
       const res = await fetch(`/api/admin/ediciones/${id}`, {
         method: "PUT",
@@ -112,12 +125,15 @@ export default function Editor({
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? `Error ${res.status}`);
       setGuardado(JSON.stringify(datos));
+      setGuardadoEn(new Date());
       // Al guardar publicada, la edición queda con su número para siempre (lo asigna el servidor).
       if (datos.publicada) setFijoPropio((f) => f ?? numeroEdicion);
-      setVersion((v) => v + 1);
-      setEstado({ tipo: "ok", texto: "Guardado" });
+      if (!silencioso) setVersion((v) => v + 1); // la vista previa se recarga solo al guardar a mano (no en cada autoguardado)
+      setEstado({ tipo: "ok", texto: silencioso ? "Autoguardado" : "Guardado" });
     } catch (e) {
-      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo guardar" });
+      if (silencioso) fallaAuto.current = JSON.stringify(datos);
+      const motivo = e instanceof Error ? e.message : "No se pudo guardar";
+      setEstado({ tipo: "error", texto: silencioso ? `No se pudo autoguardar: ${motivo}` : motivo });
     }
   }, [datos, id, numeroEdicion]);
 
@@ -140,6 +156,79 @@ export default function Editor({
     window.addEventListener("beforeunload", aviso);
     return () => window.removeEventListener("beforeunload", aviso);
   }, [sucio]);
+
+  /* -------------------- Recuperación y autoguardado -------------------- */
+
+  const claveCopia = `revista:borrador:${id}`;
+
+  // Al abrir: si el navegador guardó cambios que no llegaron al archivo (se cerró la pestaña, se cayó el equipo), se ofrece recuperarlos.
+  useEffect(() => {
+    try {
+      const crudo = localStorage.getItem(claveCopia);
+      if (crudo) {
+        const b = JSON.parse(crudo) as { t: number; datos: EdicionDatos };
+        if (b && b.datos && Array.isArray(b.datos.paginas) && JSON.stringify(b.datos) !== JSON.stringify(inicial)) {
+          copiaPendiente.current = true;
+          setRecuperable(b);
+        } else localStorage.removeItem(claveCopia);
+      }
+      const pref = localStorage.getItem("revista:autoguardado");
+      if (pref === "1" || pref === "0") setAutoPref(pref === "1");
+    } catch {
+      // sin localStorage (modo privado, bloqueado): simplemente no hay copia local
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Copia de recuperación en el navegador: poco después de cada cambio; se borra en cuanto lo guardado coincide.
+  useEffect(() => {
+    const t = setTimeout(
+      () => {
+        if (copiaPendiente.current) return; // no pisar la copia vieja mientras el usuario decide qué hacer con ella
+        try {
+          if (sucio) localStorage.setItem(claveCopia, JSON.stringify({ t: Date.now(), datos }));
+          else localStorage.removeItem(claveCopia);
+        } catch {
+          // cuota llena o bloqueado: el autoguardado y el botón Guardar siguen funcionando
+        }
+      },
+      sucio ? 1000 : 0,
+    );
+    return () => clearTimeout(t);
+  }, [datos, sucio, claveCopia]);
+
+  const autoguardar = autoPref ?? !datos.publicada;
+  useEffect(() => {
+    if (!autoguardar || !sucio || estado?.tipo === "cargando") return;
+    if (fallaAuto.current === JSON.stringify(datos)) return;
+    const t = setTimeout(() => guardarRef.current(true), 3000);
+    return () => clearTimeout(t);
+  }, [autoguardar, sucio, datos, estado?.tipo]);
+
+  const cambiarAuto = (v: boolean) => {
+    setAutoPref(v);
+    try {
+      localStorage.setItem("revista:autoguardado", v ? "1" : "0");
+    } catch {}
+  };
+
+  function resolverCopia(recuperar: boolean) {
+    if (recuperar && recuperable) setDatos(recuperable.datos);
+    else
+      try {
+        localStorage.removeItem(claveCopia);
+      } catch {}
+    copiaPendiente.current = false;
+    setRecuperable(null);
+  }
+
+  /** Carga una versión anterior en el editor: sus páginas, tema y fecha; la publicación y el número no cambian. */
+  function restaurarVersion(v: EdicionDatos) {
+    setDatos((d) => ({ ...d, paginas: v.paginas, tema: v.tema, fecha: v.fecha }));
+    setSel(0);
+    setVerVersiones(false);
+    setEstado({ tipo: "ok", texto: "Versión cargada en el editor (se guarda con Guardar o con el autoguardado)" });
+  }
 
   /* ----------------------------- Medios ------------------------------ */
 
@@ -280,7 +369,13 @@ export default function Editor({
             <img src="/brand/emblema.svg" alt="" className="h-7 w-auto" />
             <h1 className="font-display text-xl font-black">Edición {id}</h1>
             <span className={`font-sans text-xs ${sucio ? "font-bold text-terracota" : "text-ink-soft"}`}>
-              {sucio ? "● Cambios sin guardar" : "Todo guardado"}
+              {sucio
+                ? autoguardar && estado?.tipo !== "error"
+                  ? "● Guardando en un momento…"
+                  : "● Cambios sin guardar"
+                : guardadoEn
+                  ? `Guardado a las ${guardadoEn.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}`
+                  : "Todo guardado"}
             </span>
             <div className="ml-auto flex items-center gap-2">
               {estado && (
@@ -295,6 +390,20 @@ export default function Editor({
               <button type="button" className={`${btnCls} hidden ${esLienzo ? "" : "xl:inline-block"}`} onClick={() => setVerPrevia((v) => !v)}>
                 {verPrevia ? "Ocultar vista previa" : "Vista previa"}
               </button>
+              <label
+                className="font-sans flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft"
+                title={
+                  datos.publicada
+                    ? "Guarda solo, unos segundos después de un cambio. Esta edición está publicada: por defecto no se autoguarda (los cambios se verían en el sitio sin que los revises); igual se conserva una copia de recuperación en este navegador."
+                    : "Guarda solo, unos segundos después de un cambio (la edición es un borrador)."
+                }
+              >
+                <input type="checkbox" className="h-3.5 w-3.5 accent-[#068562]" checked={autoguardar} onChange={(e) => cambiarAuto(e.target.checked)} />
+                Autoguardar
+              </label>
+              <button type="button" className={btnCls} onClick={() => setVerVersiones(true)} title="Ver y restaurar versiones anteriores de esta edición">
+                ↶ Versiones
+              </button>
               <button type="button" className={btnCls} onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica en el celular, anuncios seguidos y enlaces de ejemplo">
                 ✓ Revisar diseño
               </button>
@@ -303,7 +412,7 @@ export default function Editor({
               </a>
               <button
                 type="button"
-                onClick={guardar}
+                onClick={() => guardar()}
                 disabled={!sucio || estado?.tipo === "cargando"}
                 className="font-sans bg-ink px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-paper hover:bg-terracota disabled:opacity-40"
               >
@@ -407,6 +516,21 @@ export default function Editor({
 
           {/* Formulario */}
           <main className="min-h-0 px-3 py-4 md:overflow-y-auto md:px-5">
+            {recuperable && (
+              <div role="alert" className="font-sans mb-3 flex flex-wrap items-center gap-3 border-l-4 border-terracota bg-terracota/10 px-3 py-2 text-xs">
+                <span className="min-w-0 flex-1">
+                  <strong>Hay cambios sin guardar de una sesión anterior</strong> (
+                  {new Date(recuperable.t).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}). El navegador los
+                  conservó por si se cerró la pestaña o se cayó el equipo.
+                </span>
+                <button type="button" className={`${btnCls} !bg-ink !text-paper`} onClick={() => resolverCopia(true)}>
+                  Recuperarlos
+                </button>
+                <button type="button" className={btnCls} onClick={() => resolverCopia(false)}>
+                  Descartarlos
+                </button>
+              </div>
+            )}
             {seguidos.length > 0 && (
               <p role="status" className="font-sans mb-3 border-l-4 border-ocre bg-ocre/15 px-3 py-2 text-xs">
                 <strong>Anuncios seguidos:</strong> {textoSeguidos(seguidos)}. Conviene intercalar contenido entre un anuncio y otro para que la publicidad no canse al lector.
@@ -484,6 +608,7 @@ export default function Editor({
           )}
         </div>
       </div>
+      {verVersiones && <Versiones edicionId={id} sucio={sucio} onRestaurar={restaurarVersion} onCerrar={() => setVerVersiones(false)} />}
       {verRevisor && <RevisorDiseno edicionId={id} paginas={datos.paginas} sucio={sucio} paginaActual={idx} onIr={setSel} onCerrar={() => setVerRevisor(false)} />}
       {verPlantillas && (
         <PlantillasModal

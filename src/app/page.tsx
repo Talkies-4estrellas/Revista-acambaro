@@ -1,3 +1,4 @@
+import CarruselEdiciones from "@/components/CarruselEdiciones";
 import Link from "next/link";
 import Masthead from "@/components/Masthead";
 import Footer from "@/components/Footer";
@@ -62,20 +63,25 @@ export default function Home() {
                 Ver todas
               </Link>
             </div>
-            <ol className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+            {/* Celular: carrusel horizontal con imán (se asoma la siguiente portada); desde sm, la cuadrícula de siempre. */}
+            <p className="kicker mt-4 text-center text-ink-soft sm:hidden">Desliza para ver más →</p>
+            <CarruselEdiciones etiqueta="Ediciones anteriores" className="-mx-5 mt-4 flex snap-x snap-mandatory overflow-x-auto py-4 [scrollbar-width:none] [&>li+li]:-ml-[9%] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:mt-8 sm:grid sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 sm:overflow-visible sm:py-0 sm:[&>li+li]:ml-0 lg:grid-cols-4">
               {ediciones.slice(1).map((ed) => (
-                <li key={ed.id}>
+                <li key={ed.id} className="w-[min(62vw,17rem)] shrink-0 snap-center sm:w-auto sm:shrink sm:snap-align-none">
                   <Link href={hrefPagina(ed, 1)} className="group block">
                     <PortadaMini ed={ed} className="shadow-[0_10px_30px_-12px_rgba(28,24,20,0.5)] transition-transform duration-300 group-hover:-translate-y-1" />
-                    <span className="mt-3 flex items-baseline gap-3">
+                    {/* En el carrusel del celular solo la portada central muestra su título (--pie lo pone CarruselEdiciones). */}
+                    <span className="block max-sm:text-center max-sm:[opacity:var(--pie,1)]">
+                    <span className="mt-3 flex items-baseline gap-3 max-sm:justify-center">
                       <span className="font-display text-3xl font-black text-terracota">{ed.numero}</span>
                       <span className="font-display text-lg font-bold leading-snug group-hover:underline decoration-terracota decoration-2 underline-offset-4">{ed.tema}</span>
                     </span>
                     <span className="kicker mt-1 block text-ink-soft">{fechaLarga(ed.fecha)}</span>
+                    </span>
                   </Link>
                 </li>
               ))}
-            </ol>
+            </CarruselEdiciones>
           </section>
         )}
 

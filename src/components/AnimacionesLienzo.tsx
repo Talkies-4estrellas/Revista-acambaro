@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { EFECTOS, EFECTOS_IDS, fotogramas, opcionesAnimacion, type Efecto } from "@/lib/animaciones";
+import { animarTexto } from "@/lib/animaciones-texto";
 
 /**
  * Reproduce las animaciones de entrada de la página publicada. Los elementos animados llegan del servidor ya
@@ -12,8 +13,11 @@ import { EFECTOS, EFECTOS_IDS, fotogramas, opcionesAnimacion, type Efecto } from
 export default function AnimacionesLienzo() {
   useEffect(() => {
     // Se ignoran las copias de la página anterior que usa el giro de página (dentro de [data-pageflow]).
-    const nodos = Array.from(document.querySelectorAll<HTMLElement>("[data-anim]")).filter((n) => !n.closest("[data-pageflow]"));
+    // Con el scroll continuo del celular se montan varias instancias (una por página): cada una se queda con los elementos que aún nadie reclamó.
+    const nodos = Array.from(document.querySelectorAll<HTMLElement>("[data-anim]:not([data-anim-obs])")).filter((n) => !n.closest("[data-pageflow]"));
     if (nodos.length === 0) return;
+    nodos.forEach((n) => n.setAttribute("data-anim-obs", ""));
+    const soltar = () => nodos.forEach((n) => n.removeAttribute("data-anim-obs")); // por si el efecto se vuelve a montar (modo estricto)
 
     const mostrar = (n: HTMLElement) => {
       n.style.opacity = "1";
@@ -22,7 +26,7 @@ export default function AnimacionesLienzo() {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof IntersectionObserver === "undefined";
     if (sinMovimiento) {
       nodos.forEach(mostrar);
-      return;
+      return soltar;
     }
 
     const reproducir = (n: HTMLElement) => {
@@ -33,6 +37,16 @@ export default function AnimacionesLienzo() {
       }
       const dur = Number(n.dataset.dur);
       const ret = Number(n.dataset.ret);
+      // Texto letra por letra / palabra por palabra: se anima un clon por piezas; el elemento se muestra al empezar.
+      if ((efecto === "letras" || efecto === "palabras") && n.firstElementChild instanceof HTMLElement) {
+        const hecho = animarTexto(
+          n.firstElementChild,
+          n,
+          { efecto, duracion: Number.isFinite(dur) && dur > 0 ? dur : undefined, retraso: Number.isFinite(ret) && ret > 0 ? ret : undefined },
+          () => mostrar(n),
+        );
+        if (hecho) return;
+      }
       const anim = n.animate(
         fotogramas(efecto),
         opcionesAnimacion({
@@ -61,7 +75,10 @@ export default function AnimacionesLienzo() {
       { threshold: 0.12, rootMargin: "0px 0px -4% 0px" },
     );
     nodos.forEach((n) => obs.observe(n));
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      soltar();
+    };
   }, []);
 
   return null;

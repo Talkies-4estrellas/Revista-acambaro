@@ -5,6 +5,7 @@ import { ICONOS } from "./iconos-datos";
 import { TRANSICIONES, type Transicion } from "./transiciones";
 import {
   CAPAS_IMAGEN_IDS,
+  PARALLAX_IDS,
   FILTROS_IMAGEN_IDS,
   SOMBRAS_IDS,
   AJUSTES,
@@ -181,6 +182,18 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   checkEnum(e.filtro, FILTROS_IMAGEN_IDS, c, "filtro");
   checkEnum(e.capa, CAPAS_IMAGEN_IDS, c, "capa");
   checkEnum(e.sombra, SOMBRAS_IDS, c, "sombra");
+  checkEnum(e.parallax, PARALLAX_IDS, c, "parallax");
+  if (e.revelar !== undefined && !(typeof e.revelar === "string" && e.revelar.length >= 1 && e.revelar.length <= 80)) fail(c, '"revelar" debe ser un texto de 1 a 80 caracteres');
+  if (e.comparar !== undefined) {
+    if (!isObj(e.comparar)) fail(c, '"comparar" debe ser un objeto con "src"');
+    if (e.tipo !== "imagen") fail(c, '"comparar" solo existe en las imágenes');
+    if (e.comparar.src === undefined) fail(c, '"comparar" necesita un "src"');
+    checkUrl(e.comparar.src, c, "comparar.src");
+    for (const campo of ["alt", "antes", "despues"] as const) {
+      const v = e.comparar[campo];
+      if (v !== undefined && !(typeof v === "string" && v.length <= 100)) fail(c, `"comparar.${campo}" debe ser un texto de hasta 100 caracteres`);
+    }
+  }
   checkEnum(e.bucle, BUCLES_IDS, c, "bucle");
   if (e.boton !== undefined && typeof e.boton !== "boolean") fail(c, '"boton" debe ser verdadero o falso');
   if (e.animacion !== undefined) {

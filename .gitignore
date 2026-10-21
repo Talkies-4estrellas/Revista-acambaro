@@ -13,6 +13,7 @@ next-env.d.ts
 content/suscriptores.json
 content/clics.json
 content/papelera/
+content/respaldos/
 
 # Sistema
 .DS_Store

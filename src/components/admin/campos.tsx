@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
   ANCHOS,
   PROPORCIONES,
@@ -415,14 +415,101 @@ export function ListaTextos({
   );
 }
 
-export function Panel({ titulo, children, ayuda }: { titulo: string; children: React.ReactNode; ayuda?: string }) {
+const EVENTO_PANELES = "revista:paneles";
+
+/**
+ * Cuadro con título. Con `plegable`, el título es un botón que lo abre y lo cierra; se recuerda qué paneles dejó abiertos el usuario (por título, en este
+ * navegador) y `abierto` solo es el estado inicial. `resumen` se muestra junto al título cuando está cerrado (por ejemplo, el efecto elegido).
+ */
+export function Panel({
+  titulo,
+  children,
+  ayuda,
+  plegable = false,
+  abierto = true,
+  resumen,
+}: {
+  titulo: string;
+  children: React.ReactNode;
+  ayuda?: string;
+  plegable?: boolean;
+  abierto?: boolean;
+  resumen?: string;
+}) {
+  const clave = `revista:panel:${titulo}`;
+  const [visible, setVisible] = useState(abierto);
+
+  const fijar = (v: boolean) => {
+    setVisible(v);
+    try {
+      localStorage.setItem(clave, v ? "1" : "0");
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (!plegable) return;
+    try {
+      const v = localStorage.getItem(clave);
+      if (v === "1" || v === "0") setVisible(v === "1");
+    } catch {}
+  }, [plegable, clave]);
+
+  // «Plegar todo» / «Abrir todo» (ver ControlPaneles).
+  useEffect(() => {
+    if (!plegable) return;
+    const alt = (e: Event) => fijar((e as CustomEvent<boolean>).detail);
+    window.addEventListener(EVENTO_PANELES, alt);
+    return () => window.removeEventListener(EVENTO_PANELES, alt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plegable, clave]);
+
+  if (!plegable) {
+    return (
+      <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
+        <header className="border-b border-ink/20 bg-paper-deep px-4 py-2">
+          <h3 className="font-sans text-xs font-bold uppercase tracking-wider">{titulo}</h3>
+          {ayuda && <p className="font-sans mt-0.5 text-[0.7rem] text-ink-soft">{ayuda}</p>}
+        </header>
+        <div className="space-y-4 p-4">{children}</div>
+      </section>
+    );
+  }
+
   return (
     <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
-      <header className="border-b border-ink/20 bg-paper-deep px-4 py-2">
-        <h3 className="font-sans text-xs font-bold uppercase tracking-wider">{titulo}</h3>
-        {ayuda && <p className="font-sans mt-0.5 text-[0.7rem] text-ink-soft">{ayuda}</p>}
-      </header>
-      <div className="space-y-4 p-4">{children}</div>
+      <h3 className={visible ? "border-b border-ink/20 bg-paper-deep" : "bg-paper-deep"}>
+        <button
+          type="button"
+          onClick={() => fijar(!visible)}
+          aria-expanded={visible}
+          className="font-sans flex w-full items-center gap-2 px-4 py-2 text-left text-xs font-bold uppercase tracking-wider hover:text-terracota"
+        >
+          <span aria-hidden className="inline-block w-3 text-[0.65rem]">{visible ? "▾" : "▸"}</span>
+          <span>{titulo}</span>
+          {!visible && resumen && <span className="ml-auto min-w-0 truncate text-[0.68rem] font-normal normal-case tracking-normal text-ink-soft">{resumen}</span>}
+        </button>
+      </h3>
+      {visible && (
+        <>
+          {ayuda && <p className="font-sans border-b border-ink/10 bg-paper-deep/50 px-4 pb-2 pt-1 text-[0.7rem] text-ink-soft">{ayuda}</p>}
+          <div className="space-y-4 p-4">{children}</div>
+        </>
+      )}
     </section>
+  );
+}
+
+/** Dos botoncitos para abrir o plegar de una vez todos los paneles plegables del inspector. */
+export function ControlPaneles() {
+  const enviar = (v: boolean) => window.dispatchEvent(new CustomEvent<boolean>(EVENTO_PANELES, { detail: v }));
+  return (
+    <span className="font-sans inline-flex gap-1 text-[0.68rem]">
+      <button type="button" className="border border-ink/30 px-1.5 py-0.5 font-semibold text-ink-soft hover:border-terracota hover:text-terracota" onClick={() => enviar(true)} title="Abrir todos los paneles">
+        Abrir todo
+      </button>
+      <button type="button" className="border border-ink/30 px-1.5 py-0.5 font-semibold text-ink-soft hover:border-terracota hover:text-terracota" onClick={() => enviar(false)} title="Plegar todos los paneles">
+        Plegar todo
+      </button>
+    </span>
   );
 }

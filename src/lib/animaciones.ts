@@ -16,7 +16,13 @@ export const EFECTOS = {
   revelar: { nombre: "Revelar (de izquierda a derecha)", easing: "cubic-bezier(.7,0,.2,1)" },
   cortina: { nombre: "Cortina (de arriba hacia abajo)", easing: "cubic-bezier(.7,0,.2,1)" },
   difuminar: { nombre: "Difuminar (de borroso a nítido)", easing: "ease-out" },
+  letras: { nombre: "Texto letra por letra", easing: "linear" },
+  palabras: { nombre: "Texto palabra por palabra", easing: "linear" },
 } as const;
+
+/** Efectos que solo tienen sentido en un texto (lib/animaciones-texto.ts). En otro elemento se comportan como «Aparecer». */
+export const EFECTOS_TEXTO = ["letras", "palabras"] as const;
+export const esEfectoTexto = (e: string): boolean => (EFECTOS_TEXTO as readonly string[]).includes(e);
 
 /** Efecto al pasar el cursor (o el dedo, donde no hay cursor) por encima del elemento. Se dibuja con CSS (ver globals.css, «.fx-h»). */
 export const HOVERS = {
@@ -56,6 +62,8 @@ export const DURACION_DEFECTO = 700;
 export function fotogramas(efecto: Efecto): Keyframe[] {
   switch (efecto) {
     case "aparecer":
+    case "letras": // en un texto se anima por piezas (animarTexto); si no hay texto, se queda en un simple fundido
+    case "palabras":
       return [{ opacity: 0 }, { opacity: 1 }];
     case "subir":
       return [{ opacity: 0, transform: "translateY(6cqw)" }, { opacity: 1, transform: "translateY(0)" }];

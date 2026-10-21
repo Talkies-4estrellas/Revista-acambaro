@@ -17,6 +17,8 @@ import {
   FILTROS_IMAGEN_IDS,
   SOMBRAS,
   SOMBRAS_IDS,
+  PARALLAX,
+  PARALLAX_IDS,
   FORMAS_GLOBO,
   COLAS_GLOBO,
   FUENTES,
@@ -32,7 +34,7 @@ import {
   type Pagina,
   type Peso,
 } from "@/lib/esquema";
-import { BUCLES, BUCLES_IDS, EFECTOS, EFECTOS_IDS, HOVERS, HOVERS_IDS, type Efecto } from "@/lib/animaciones";
+import { BUCLES, BUCLES_IDS, EFECTOS, EFECTOS_IDS, HOVERS, HOVERS_IDS, esEfectoTexto, type Efecto } from "@/lib/animaciones";
 import { ICONOS } from "@/lib/iconos-datos";
 import { IconoSvg } from "@/components/Lienzo";
 import { useState } from "react";
@@ -40,6 +42,7 @@ import {
   Area,
   Campo,
   CampoArchivo,
+  ControlPaneles,
   Interruptor,
   Numero,
   Panel,
@@ -358,31 +361,15 @@ export function InspectorElemento({
       )}
       <div className="flex flex-wrap items-center gap-1">
         <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">{nombre}</h3>
+        <ControlPaneles />
         <button type="button" className={btnCls} onClick={acciones.frente} title="Traer al frente">↥ Frente</button>
         <button type="button" className={btnCls} onClick={acciones.atras} title="Enviar atrás">↧ Atrás</button>
         <button type="button" className={btnCls} onClick={acciones.duplicar} title="Duplicar (Ctrl+D)">⧉</button>
         <button type="button" className={btnCls} onClick={acciones.eliminar} title="Eliminar (Supr)">✕</button>
       </div>
 
-      <Panel titulo="Posición y tamaño">
-        <div className="grid grid-cols-2 gap-3">
-          <Numero label="X" value={Math.round(el.x)} onChange={(v) => set({ x: v ?? 0 }, "x")} />
-          <Numero label="Y" value={Math.round(el.y)} onChange={(v) => set({ y: v ?? 0 }, "y")} />
-          <Numero label="Ancho" value={Math.round(el.w)} onChange={(v) => set({ w: Math.max(1, v ?? 1) }, "w")} min={1} />
-          <Numero label="Alto" value={Math.round(el.h)} onChange={(v) => set({ h: Math.max(1, v ?? 1) }, "h")} min={1} />
-          <Numero label="Giro (°)" value={Math.round(el.rot ?? 0)} onChange={(v) => set({ rot: v ? v : undefined }, "rot")} min={-360} max={360} />
-          <Numero
-            label="Opacidad (%)"
-            value={Math.round((el.opacidad ?? 1) * 100)}
-            onChange={(v) => set({ opacidad: v === undefined || v >= 100 ? undefined : Math.max(0, v) / 100 }, "opacidad")}
-            min={0}
-            max={100}
-          />
-        </div>
-      </Panel>
-
       {el.tipo === "texto" && (
-        <Panel titulo="Texto">
+        <Panel titulo="Texto" plegable>
           {el.contenido ? (
             <div className="space-y-2 border border-dashed border-ink/40 bg-white/40 dark:bg-white/5 p-3">
               <p className="font-sans text-[0.72rem] leading-relaxed text-ink-soft">
@@ -443,14 +430,6 @@ export function InspectorElemento({
             <Interruptor label="MAYÚSCULAS" value={el.mayusculas ?? false} onChange={(v) => set({ mayusculas: v || undefined })} />
           </div>
           <CampoColor label="Color del texto" value={el.color ?? "tinta"} onChange={(v) => set({ color: v })} />
-          <CampoColor label="Fondo de la caja" value={el.fondo} onChange={(v) => set({ fondo: v })} vacio="Sin fondo" />
-          <div className="grid grid-cols-2 gap-3">
-            <Numero label="Relleno interior" value={el.relleno} onChange={(v) => set({ relleno: v })} min={0} />
-            <Numero label="Esquinas redondas" value={el.radio} onChange={(v) => set({ radio: v || undefined }, "radio")} min={0} />
-            <Numero label="Grosor del borde" value={el.borde} onChange={(v) => set({ borde: v || undefined }, "borde")} min={0} />
-          </div>
-          {el.borde ? <CampoColor label="Color del borde" value={el.colorBorde ?? "tinta"} onChange={(v) => set({ colorBorde: v })} /> : null}
-          <Interruptor label="Es un botón (el revisor avisa si no lleva enlace)" value={el.boton ?? false} onChange={(v) => set({ boton: v || undefined })} />
           {acciones.ajustarAlto && (
             <button type="button" className={btnCls} onClick={acciones.ajustarAlto}>
               Ajustar el alto al texto
@@ -459,9 +438,33 @@ export function InspectorElemento({
         </Panel>
       )}
 
+      {el.tipo === "texto" && (
+        <Panel titulo="Fondo y borde" plegable abierto={!!(el.fondo || el.borde || el.boton)} resumen={el.boton ? "Botón" : el.fondo ? "Con fondo" : el.borde ? "Con borde" : "Sin fondo"}>
+            <CampoColor label="Fondo de la caja" value={el.fondo} onChange={(v) => set({ fondo: v })} vacio="Sin fondo" />
+            <div className="grid grid-cols-2 gap-3">
+              <Numero label="Relleno interior" value={el.relleno} onChange={(v) => set({ relleno: v })} min={0} />
+              <Numero label="Esquinas redondas" value={el.radio} onChange={(v) => set({ radio: v || undefined }, "radio")} min={0} />
+              <Numero label="Grosor del borde" value={el.borde} onChange={(v) => set({ borde: v || undefined }, "borde")} min={0} />
+            </div>
+            {el.borde ? <CampoColor label="Color del borde" value={el.colorBorde ?? "tinta"} onChange={(v) => set({ colorBorde: v })} /> : null}
+            <Interruptor label="Es un botón (el revisor avisa si no lleva enlace)" value={el.boton ?? false} onChange={(v) => set({ boton: v || undefined })} />
+        </Panel>
+      )}
+
       {el.tipo === "imagen" && (
-        <Panel titulo="Imagen">
-          <CampoArchivo label="Archivo" value={el.src} onChange={(v) => set({ src: v })} />
+        <Panel titulo="Imagen" plegable>
+          <CampoArchivo label={el.comparar ? "Archivo («antes», a la izquierda)" : "Archivo"} value={el.src} onChange={(v) => set({ src: v })} />
+          <CampoArchivo
+            label="Segunda imagen (comparar antes / después)"
+            value={el.comparar?.src}
+            onChange={(v) => set({ comparar: v ? { ...el.comparar, src: v } : undefined })}
+          />
+          {el.comparar && (
+            <div className="grid grid-cols-2 gap-3">
+              <Texto label="Rótulo izquierdo" value={el.comparar.antes} onChange={(v) => set({ comparar: { ...el.comparar!, antes: v || undefined } }, "comparar-antes")} placeholder="Antes" />
+              <Texto label="Rótulo derecho" value={el.comparar.despues} onChange={(v) => set({ comparar: { ...el.comparar!, despues: v || undefined } }, "comparar-despues")} placeholder="Después" />
+            </div>
+          )}
           <Texto label="Texto alternativo" value={el.alt} onChange={(v) => set({ alt: v }, "alt")} hint="Describe la imagen (accesibilidad)" />
           <Texto label="Crédito (autor y licencia)" value={el.credito} onChange={(v) => set({ credito: v || undefined }, "credito")} placeholder="Foto: Nombre, CC BY-SA 4.0" hint="Se junta con el de las demás imágenes donde pongas {creditos} en un texto (p. ej. la página de créditos)" />
           {(el.ajuste ?? "cubrir") === "cubrir" && (
@@ -474,6 +477,17 @@ export function InspectorElemento({
             <Selector label="Ajuste" value={el.ajuste ?? "cubrir"} onChange={(v) => set({ ajuste: v })} opciones={AJUSTES.map((a) => ({ valor: a, etiqueta: a === "cubrir" ? "Cubrir (recorta)" : "Contener (completa)" }))} />
             <Numero label="Esquinas redondas" value={el.radio} onChange={(v) => set({ radio: v }, "radio")} min={0} />
           </div>
+          <Selector label="Color provisional" value={el.tono} onChange={(v) => set({ tono: v })} opciones={TONOS} vacio="—" hint="Se ve mientras no haya archivo" />
+        </Panel>
+      )}
+
+      {el.tipo === "imagen" && (
+        <Panel
+          titulo="Estilo de la imagen"
+          plegable
+          abierto={!!(el.molde || el.filtro || el.capa || el.sombra || el.borde)}
+          resumen={[el.molde && "molde", el.filtro, el.capa && "capa", el.sombra && "sombra", el.borde && "borde"].filter(Boolean).join(", ") || "Sin estilo"}
+        >
           <CampoMolde value={el.molde} onChange={(m) => set({ molde: m })} />
           <div className="grid grid-cols-2 gap-3">
             <Selector label="Filtro de color" value={el.filtro} onChange={(v) => set({ filtro: v })} opciones={FILTROS_IMAGEN_IDS.map((id) => ({ valor: id, etiqueta: FILTROS_IMAGEN[id].nombre }))} vacio="Ninguno" />
@@ -482,14 +496,13 @@ export function InspectorElemento({
             <Numero label="Grosor del borde" value={el.borde} onChange={(v) => set({ borde: v || undefined }, "borde")} min={0} />
           </div>
           {el.borde ? <CampoColor label="Color del borde" value={el.colorBorde ?? "tinta"} onChange={(v) => set({ colorBorde: v })} /> : null}
-          <Selector label="Color provisional" value={el.tono} onChange={(v) => set({ tono: v })} opciones={TONOS} vacio="—" hint="Se ve mientras no haya archivo" />
         </Panel>
       )}
 
       {el.tipo === "imagen" && <PanelGlobos globos={el.globos ?? []} sel={globoSel ?? null} onSel={(i) => onGloboSel?.(i)} onChange={(g, clave) => set({ globos: g.length ? g : undefined }, clave)} />}
 
       {el.tipo === "video" && (
-        <Panel titulo="Video">
+        <Panel titulo="Video" plegable>
           <VideoEditor
             value={el}
             onChange={(v) => {
@@ -504,7 +517,7 @@ export function InspectorElemento({
       )}
 
       {el.tipo === "icono" && (
-        <Panel titulo="Icono">
+        <Panel titulo="Icono" plegable>
           <div className="flex items-center gap-3">
             <span className="block h-12 w-12 shrink-0 border border-ink/20 bg-white/60 dark:bg-white/5 p-2">
               <IconoSvg icono={el.icono} color={el.color} trazo={el.trazo} />
@@ -528,7 +541,7 @@ export function InspectorElemento({
       )}
 
       {el.tipo === "forma" && (
-        <Panel titulo="Forma">
+        <Panel titulo="Forma" plegable>
           <Selector label="Forma" value={el.forma ?? "rectangulo"} onChange={(v) => set({ forma: v })} opciones={FORMAS.map((f) => ({ valor: f, etiqueta: f === "elipse" ? "Elipse / círculo" : "Rectángulo" }))} />
           <CampoColor label="Relleno" value={el.color ?? "tinta"} onChange={(v) => set({ color: v })} />
           <CampoMolde value={el.molde} onChange={(m) => set({ molde: m })} />
@@ -540,7 +553,94 @@ export function InspectorElemento({
         </Panel>
       )}
 
-      <Panel titulo="En el celular" ayuda="Solo cuenta si la página usa “Apilar los elementos en una columna”.">
+      <Panel titulo="Posición y tamaño" plegable resumen={`${Math.round(el.x)}, ${Math.round(el.y)} · ${Math.round(el.w)}×${Math.round(el.h)}`}>
+        <div className="grid grid-cols-2 gap-3">
+          <Numero label="X" value={Math.round(el.x)} onChange={(v) => set({ x: v ?? 0 }, "x")} />
+          <Numero label="Y" value={Math.round(el.y)} onChange={(v) => set({ y: v ?? 0 }, "y")} />
+          <Numero label="Ancho" value={Math.round(el.w)} onChange={(v) => set({ w: Math.max(1, v ?? 1) }, "w")} min={1} />
+          <Numero label="Alto" value={Math.round(el.h)} onChange={(v) => set({ h: Math.max(1, v ?? 1) }, "h")} min={1} />
+          <Numero label="Giro (°)" value={Math.round(el.rot ?? 0)} onChange={(v) => set({ rot: v ? v : undefined }, "rot")} min={-360} max={360} />
+          <Numero
+            label="Opacidad (%)"
+            value={Math.round((el.opacidad ?? 1) * 100)}
+            onChange={(v) => set({ opacidad: v === undefined || v >= 100 ? undefined : Math.max(0, v) / 100 }, "opacidad")}
+            min={0}
+            max={100}
+          />
+        </div>
+      </Panel>
+
+
+      <Panel titulo="Enlace" plegable abierto={el.enlace !== undefined} resumen={el.enlace === undefined ? "Sin enlace" : typeof el.enlace === "number" ? `Página ${el.enlace}` : el.enlace.slice(0, 30)} ayuda="Al hacer clic en el elemento (en el sitio publicado).">
+        <SelectorDestino enlace={el.enlace} paginas={paginas} anclas={anclas} onChange={(enlace) => set({ enlace })} />
+        {typeof el.enlace === "string" && el.enlace !== "/suscribirse" && !el.enlace.startsWith("#") && (
+          <Texto label="Dirección" value={el.enlace} onChange={(v) => set({ enlace: v || undefined }, "enlace")} placeholder="https://…" />
+        )}
+      </Panel>
+
+      <Panel titulo="Animación de entrada" plegable abierto={!!el.animacion} resumen={el.animacion ? EFECTOS[el.animacion.efecto].nombre.replace(/ \(.*/, "") : "Ninguna"} ayuda="Se reproduce cuando el elemento entra en pantalla en la página publicada.">
+        <Selector
+          label="Efecto"
+          value={el.animacion?.efecto}
+          onChange={(v) => {
+            set({ animacion: v ? { ...el.animacion, efecto: v } : undefined });
+            if (v) acciones.probarAnimacion?.();
+          }}
+          opciones={EFECTOS_IDS.filter((id) => el.tipo === "texto" || !esEfectoTexto(id)).map((id) => ({ valor: id, etiqueta: EFECTOS[id].nombre }))}
+          vacio="Ninguna"
+        />
+        {el.animacion && esEfectoTexto(el.animacion.efecto) && (
+          <p className="font-sans text-[0.7rem] text-ink-soft">
+            En estos efectos la <strong>duración</strong> es el tiempo de toda la escritura; déjala vacía para que dependa del largo del texto.
+          </p>
+        )}
+        {el.animacion && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <Numero label="Duración (ms)" value={el.animacion.duracion ?? (esEfectoTexto(el.animacion.efecto) ? undefined : 700)} onChange={(v) => set({ animacion: { ...el.animacion, efecto: el.animacion!.efecto, duracion: v } }, "anim-duracion")} min={50} max={6000} />
+              <Numero label="Retraso (ms)" value={el.animacion.retraso ?? 0} onChange={(v) => set({ animacion: { ...el.animacion, efecto: el.animacion!.efecto, retraso: v || undefined } }, "anim-retraso")} min={0} max={20000} />
+            </div>
+            <button type="button" className={btnCls} onClick={acciones.probarAnimacion}>
+              ▶ Probar
+            </button>
+          </>
+        )}
+      </Panel>
+
+
+      <Panel titulo="Efectos de movimiento" plegable abierto={!!(el.hover || el.bucle || (el.tipo === "imagen" && el.parallax))} resumen={el.hover || el.bucle || (el.tipo === "imagen" && el.parallax) ? [el.hover && `cursor: ${el.hover}`, el.bucle, el.tipo === "imagen" && el.parallax && `parallax ${el.parallax}`].filter(Boolean).join(" · ") : "Ninguno"} ayuda="Se ven en el sitio publicado y en la vista previa (no mientras editas). El movimiento continuo se apaga solo si el lector pidió menos animaciones en su equipo.">
+        <Selector
+          label="Al pasar el cursor"
+          value={el.hover}
+          onChange={(v) => set({ hover: v })}
+          opciones={HOVERS_IDS.map((id) => ({ valor: id, etiqueta: HOVERS[id] }))}
+          vacio="Ninguno"
+        />
+        <Selector
+          label="Movimiento continuo"
+          value={el.bucle}
+          onChange={(v) => set({ bucle: v })}
+          opciones={BUCLES_IDS.map((id) => ({ valor: id, etiqueta: BUCLES[id] }))}
+          vacio="Ninguno"
+        />
+        {el.tipo === "imagen" && (
+          <Selector
+            label="Parallax al hacer scroll"
+            value={el.parallax}
+            onChange={(v) => set({ parallax: v })}
+            opciones={PARALLAX_IDS.map((id) => ({ valor: id, etiqueta: PARALLAX[id].nombre }))}
+            vacio="Sin parallax"
+            hint="La foto se mueve más lento que la página, dentro de su marco (se amplía un poco para poder moverse). Funciona mejor en fotos grandes y anchas."
+          />
+        )}
+      </Panel>
+
+
+      <Panel titulo="Revelar al tocar" plegable abierto={!!el.revelar} resumen={el.revelar ? `«${el.revelar.slice(0, 26)}»` : "No"} ayuda="El elemento queda tapado hasta que el lector lo toca (por ejemplo, la respuesta de una trivia). Se ve así en el sitio publicado y en la vista previa.">
+        <Texto label="Texto de la tapa" value={el.revelar} onChange={(v) => set({ revelar: v || undefined }, "revelar")} placeholder="Toca para ver la respuesta" hint="Déjalo vacío para que el elemento se vea siempre" />
+      </Panel>
+
+      <Panel titulo="En el celular" plegable abierto={el.movil !== undefined || el.espacioMovil !== undefined} resumen={el.movil === "ocultar" ? "Oculto" : el.movil === "solo" ? "Solo celular" : el.espacioMovil !== undefined ? `Espacio ${el.espacioMovil}` : "Automático"} ayuda="Solo cuenta si la página usa “Apilar los elementos en una columna”.">
         <Selector
           label="Mostrar en la columna"
           value={el.movil}
@@ -559,54 +659,6 @@ export function InspectorElemento({
           min={0}
           max={400}
         />
-      </Panel>
-
-      <Panel titulo="Animación de entrada" ayuda="Se reproduce cuando el elemento entra en pantalla en la página publicada.">
-        <Selector
-          label="Efecto"
-          value={el.animacion?.efecto}
-          onChange={(v) => {
-            set({ animacion: v ? { ...el.animacion, efecto: v } : undefined });
-            if (v) acciones.probarAnimacion?.();
-          }}
-          opciones={EFECTOS_IDS.map((id) => ({ valor: id, etiqueta: EFECTOS[id].nombre }))}
-          vacio="Ninguna"
-        />
-        {el.animacion && (
-          <>
-            <div className="grid grid-cols-2 gap-3">
-              <Numero label="Duración (ms)" value={el.animacion.duracion ?? 700} onChange={(v) => set({ animacion: { ...el.animacion, efecto: el.animacion!.efecto, duracion: v } }, "anim-duracion")} min={50} max={6000} />
-              <Numero label="Retraso (ms)" value={el.animacion.retraso ?? 0} onChange={(v) => set({ animacion: { ...el.animacion, efecto: el.animacion!.efecto, retraso: v || undefined } }, "anim-retraso")} min={0} max={20000} />
-            </div>
-            <button type="button" className={btnCls} onClick={acciones.probarAnimacion}>
-              ▶ Probar
-            </button>
-          </>
-        )}
-      </Panel>
-
-      <Panel titulo="Efectos de movimiento" ayuda="Se ven en el sitio publicado y en la vista previa (no mientras editas). El movimiento continuo se apaga solo si el lector pidió menos animaciones en su equipo.">
-        <Selector
-          label="Al pasar el cursor"
-          value={el.hover}
-          onChange={(v) => set({ hover: v })}
-          opciones={HOVERS_IDS.map((id) => ({ valor: id, etiqueta: HOVERS[id] }))}
-          vacio="Ninguno"
-        />
-        <Selector
-          label="Movimiento continuo"
-          value={el.bucle}
-          onChange={(v) => set({ bucle: v })}
-          opciones={BUCLES_IDS.map((id) => ({ valor: id, etiqueta: BUCLES[id] }))}
-          vacio="Ninguno"
-        />
-      </Panel>
-
-      <Panel titulo="Enlace" ayuda="Al hacer clic en el elemento (en el sitio publicado).">
-        <SelectorDestino enlace={el.enlace} paginas={paginas} anclas={anclas} onChange={(enlace) => set({ enlace })} />
-        {typeof el.enlace === "string" && el.enlace !== "/suscribirse" && !el.enlace.startsWith("#") && (
-          <Texto label="Dirección" value={el.enlace} onChange={(v) => set({ enlace: v || undefined }, "enlace")} placeholder="https://…" />
-        )}
       </Panel>
     </div>
   );
@@ -634,7 +686,11 @@ export function InspectorPagina({
   ];
   return (
     <div className="space-y-4">
-      <Panel titulo="Hoja">
+      <div className="flex items-center gap-2">
+        <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">Esta página</h3>
+        <ControlPaneles />
+      </div>
+      <Panel titulo="Hoja" plegable>
         <CampoColor label="Color de fondo" value={pagina.fondo ?? "papel"} onChange={(v) => set("fondo", v)} />
         <Numero label="Alto de la hoja (el ancho siempre es 800)" value={pagina.alto ?? 1100} onChange={(v) => set("alto", v)} min={200} max={8000} />
         <Selector
@@ -652,7 +708,7 @@ export function InspectorPagina({
         </p>
       </Panel>
       {onProbarTodo && (
-        <Panel titulo="Animaciones" ayuda="Cada elemento puede tener su animación de entrada (en sus propiedades).">
+        <Panel titulo="Animaciones" plegable abierto={false} resumen={`${(pagina.elementos ?? []).filter((e) => e.animacion).length} animados`} ayuda="Cada elemento puede tener su animación de entrada (en sus propiedades).">
           <button type="button" className={btnCls} onClick={onProbarTodo} disabled={!(pagina.elementos ?? []).some((e) => e.animacion)}>
             ▶ Probar las animaciones de la página
           </button>
@@ -661,11 +717,11 @@ export function InspectorPagina({
           </p>
         </Panel>
       )}
-      <Panel titulo="Transición" ayuda="Cómo ENTRA esta página al avanzar. Al retroceder se usa la opuesta.">
+      <Panel titulo="Transición" plegable abierto={false} resumen={pagina.transicion} ayuda="Cómo ENTRA esta página al avanzar. Al retroceder se usa la opuesta.">
         <Selector label="Giro de página" value={pagina.transicion} onChange={(v) => set("transicion", v ?? "izquierda")} opciones={opciones} />
         <p className="font-sans text-[0.7rem] text-ink-soft">Opciones: {TRANSICIONES.join(", ")}.</p>
       </Panel>
-      <Panel titulo="Índice" ayuda="La página “Índice” (plantilla) usa estos datos.">
+      <Panel titulo="Índice" plegable abierto={false} resumen={pagina.enIndice === false ? "No aparece" : pagina.titulo} ayuda="La página “Índice” (plantilla) usa estos datos.">
         <Texto label="Título en el índice" value={pagina.titulo} onChange={(v) => set("titulo", v)} />
         <Texto label="Sección" value={pagina.seccion} onChange={(v) => set("seccion", v)} />
         <Area label="Resumen" value={pagina.bajada} onChange={(v) => set("bajada", v)} rows={2} />
@@ -702,7 +758,7 @@ function PanelGlobos({ globos, sel, onSel, onChange }: { globos: Globo[]; sel: n
     onSel(globos.length);
   };
   return (
-    <Panel titulo="Texto sobre la imagen" ayuda="Globos, rótulos y parches dibujados encima de la imagen, con letra de verdad (editable). Sirven para traducir un cómic: un parche tapa el texto original y un globo escribe la traducción. Selecciona la imagen sola para moverlos con el puntero.">
+    <Panel titulo="Texto sobre la imagen" plegable abierto={globos.length > 0} resumen={globos.length ? `${globos.length} globo(s)` : "Ninguno"} ayuda="Globos, rótulos y parches dibujados encima de la imagen, con letra de verdad (editable). Sirven para traducir un cómic: un parche tapa el texto original y un globo escribe la traducción. Selecciona la imagen sola para moverlos con el puntero.">
       <div className="flex flex-wrap gap-1">
         <button type="button" className={btnCls} onClick={() => nuevo()}>+ Globo</button>
         <button type="button" className={btnCls} onClick={() => nuevo({ forma: "recuadro", texto: "Narración", w: 60, h: 8 })}>+ Recuadro</button>
