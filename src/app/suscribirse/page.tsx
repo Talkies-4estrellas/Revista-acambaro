@@ -20,7 +20,7 @@ export default function Suscribirse() {
         </p>
         <FormSuscripcion className="relative mx-auto mt-8 max-w-md" />
         <p className="font-sans mt-8 text-xs text-ink-soft">
-          <Link href="/ediciones" className="underline underline-offset-2 hover:text-terracota">
+          <Link href="/ediciones" className="inline-block py-2 underline underline-offset-2 hover:text-terracota">
             Ver las ediciones anteriores
           </Link>
         </p>

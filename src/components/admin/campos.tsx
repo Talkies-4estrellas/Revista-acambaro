@@ -14,7 +14,7 @@ import {
 export const inputCls =
   "w-full border border-ink/30 bg-white/70 dark:bg-white/5 px-3 py-2 font-sans text-sm text-ink outline-none focus:border-terracota focus:ring-1 focus:ring-terracota";
 export const btnCls =
-  "font-sans border border-ink/40 bg-paper px-2.5 py-1 text-xs font-semibold text-ink hover:bg-ink hover:text-paper disabled:opacity-30 disabled:hover:bg-paper disabled:hover:text-ink";
+  "font-sans border border-ink/40 bg-paper px-2.5 py-1 text-xs font-semibold text-ink hover:bg-ink hover:text-paper disabled:opacity-30 disabled:hover:bg-paper disabled:hover:text-ink max-md:min-h-10 max-md:px-3";
 
 /* ------------------------------ Medios ------------------------------- */
 

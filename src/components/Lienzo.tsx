@@ -142,6 +142,8 @@ export type PropsEdicion = {
   onDoubleClick?: () => void;
   /** Por ejemplo, los tiradores de redimensionado. */
   children?: React.ReactNode;
+  /** El elemento está bloqueado en el editor: no responde al ratón (se elige desde la lista de capas). */
+  bloqueado?: boolean;
   /** Imagen con globos de texto seleccionada sola: se pueden mover y redimensionar con el puntero. */
   globos?: EdicionGlobos;
 };
@@ -369,7 +371,7 @@ export function ElementoVista({
     );
 
   const marca: CSSProperties = editor
-    ? { outline: editor.seleccionado ? "2px solid #068562" : undefined, cursor: editor.editando ? "text" : "move", touchAction: "none" }
+    ? { outline: editor.seleccionado ? "2px solid #068562" : undefined, cursor: editor.editando ? "text" : editor.bloqueado ? "default" : "move", touchAction: "none" }
     : {};
 
   const interior = (
@@ -479,7 +481,7 @@ export default function LienzoVista({
         background: colorCss(fondo, "var(--paper)"),
       }}
     >
-      {elementos.map((el, i) =>
+      {elementos.filter((e) => !e.oculto).map((el, i) =>
         el.movil === "solo" ? null : <ElementoVista key={el.id ?? i} el={el} edicionId={edicionId} animar={animar} miniatura={miniatura} refs={refs} />,
       )}
     </div>
@@ -560,7 +562,7 @@ export function LienzoApilado({
   animar?: boolean;
   orden?: string[];
 }) {
-  const items = bloquesMovil(elementos, orden);
+  const items = bloquesMovil(elementos.filter((e) => !e.oculto), orden); // lo oculto no se dibuja ni ocupa lugar en la columna
   const personalizado = !!orden && orden.length > 0;
   const rango = new Map((orden ?? []).map((id, i) => [id, i]));
 

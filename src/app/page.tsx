@@ -59,7 +59,7 @@ export default function Home() {
           <section aria-label="Ediciones anteriores" className="mx-auto max-w-6xl px-5 py-14">
             <div className="flex items-baseline justify-between border-b-2 border-ink pb-2">
               <h2 className="font-display text-3xl font-black italic">Ediciones anteriores</h2>
-              <Link href="/ediciones" className="kicker text-terracota hover:underline">
+              <Link href="/ediciones" className="kicker py-2 text-terracota hover:underline">
                 Ver todas
               </Link>
             </div>
@@ -105,7 +105,7 @@ export default function Home() {
           <FormSuscripcion className="relative mx-auto mt-6 max-w-md" />
           <p className="font-sans mt-6 text-xs text-ink-soft">
             ¿Quieres saber cómo se hace esta revista?{" "}
-            <Link href="/proyecto" className="font-bold text-terracota underline underline-offset-2">
+            <Link href="/proyecto" className="inline-block py-2.5 font-bold text-terracota underline underline-offset-2">
               Conoce el proyecto
             </Link>
           </p>

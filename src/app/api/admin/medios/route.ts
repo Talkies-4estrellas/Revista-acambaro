@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   }
 }
 
-/** POST multipart: campos `edicion` y `archivo`. */
+/** POST multipart: campos `edicion` y `archivo` (y `original=1` para no optimizar la foto). Devuelve { src, optimizado? }. */
 export async function POST(req: Request) {
   try {
     verificarPeticion(req);
@@ -25,7 +25,8 @@ export async function POST(req: Request) {
     const id = verificarId(String(form.get("edicion") ?? ""));
     const archivo = form.get("archivo");
     if (!(archivo instanceof File)) throw new ErrorAdmin("Falta el archivo.");
-    return NextResponse.json({ src: await guardarMedio(id, archivo) });
+    // `original=1` conserva el archivo tal cual (sin reducir ni recomprimir).
+    return NextResponse.json(await guardarMedio(id, archivo, form.get("original") === "1"));
   } catch (e) {
     return responderError(e);
   }

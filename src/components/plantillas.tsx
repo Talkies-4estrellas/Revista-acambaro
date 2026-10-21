@@ -33,6 +33,19 @@ const FONDO: Record<Tono, string> = {
   tinta: "bg-ink text-paper",
 };
 
+/** Scroll continuo del celular para la edición `ed`, a partir de la página `n` (ver FlujoMovil). */
+function FlujoDeEdicion({ ed, n }: { ed: Edicion; n: number }) {
+  return (
+    <FlujoMovil
+      id={ed.id}
+      numero={ed.numero}
+      desde={n}
+      hrefs={ed.paginas.map((_, i) => hrefPagina(ed, i + 1))}
+      titulos={ed.paginas.map((pg) => etiqueta(pg))}
+    />
+  );
+}
+
 /** Cabecera + pie comunes; el contenido de cada plantilla va en medio. */
 function Hoja({
   ed,
@@ -50,12 +63,21 @@ function Hoja({
   return (
     <>
       <Masthead edicion={ed} compact={!full} />
-      {children}
-      <PageTurner
-        page={`${tipoPagina(ed.paginas[n - 1])} · ${n} de ${ed.paginas.length}`}
-        prev={prev && { href: hrefPagina(ed, n - 1), label: etiqueta(prev) }}
-        next={next && { href: hrefPagina(ed, n + 1), label: etiqueta(next) }}
-      />
+      {/* Celular: sin botones de abajo; se lee bajando y las páginas siguientes se agregan debajo (FlujoMovil). */}
+      {prev && (
+        <Link href={hrefPagina(ed, n - 1)} className="font-sans mx-auto block max-w-[900px] px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-ink-soft hover:text-terracota sm:hidden">
+          ↑ Página anterior
+        </Link>
+      )}
+      <div data-flujo-n={n}>{children}</div>
+      <FlujoDeEdicion ed={ed} n={n} />
+      <div className="max-sm:hidden">
+        <PageTurner
+          page={`${tipoPagina(ed.paginas[n - 1])} · ${n} de ${ed.paginas.length}`}
+          prev={prev && { href: hrefPagina(ed, n - 1), label: etiqueta(prev) }}
+          next={next && { href: hrefPagina(ed, n + 1), label: etiqueta(next) }}
+        />
+      </div>
       <Footer />
     </>
   );
@@ -84,11 +106,11 @@ function Cabecera({ p }: { p: Pagina }) {
 
 /* ------------------------------ Portada ------------------------------ */
 
-function Portada({ ed, n, pagina: p }: Props) {
+function CuerpoPortada({ ed, n, pagina: p }: Props) {
   const destino = hrefPagina(ed, p.enlace ?? Math.min(3, ed.paginas.length));
   const titulos = ed.paginas.filter(esIndice).map(etiqueta);
   return (
-    <Hoja ed={ed} n={n} full>
+    <>
       <Ticker titulos={titulos} />
       <main className="mx-auto max-w-6xl px-5">
         <section className="grid gap-8 py-10 lg:grid-cols-[1fr_20rem] lg:gap-10">
@@ -144,18 +166,26 @@ function Portada({ ed, n, pagina: p }: Props) {
           )}
         </section>
       </main>
+    </>
+  );
+}
+
+function Portada(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n} full>
+      <CuerpoPortada {...props} />
     </Hoja>
   );
 }
 
 /* ------------------------------- Índice ------------------------------ */
 
-function Indice({ ed, n, pagina: p }: Props) {
+function CuerpoIndice({ ed, n, pagina: p }: Props) {
   const entradas = ed.paginas
     .map((pg, i) => ({ pg, i }))
     .filter(({ pg }) => esIndice(pg));
   return (
-    <Hoja ed={ed} n={n}>
+    <>
       <main className="mx-auto max-w-6xl px-5 py-10">
         <p className="kicker text-terracota">Edición N.º {ed.numero}</p>
         <h1 className="font-display mt-2 text-5xl font-black italic sm:text-7xl">{p.titulo ?? "Índice"}</h1>
@@ -208,15 +238,23 @@ function Indice({ ed, n, pagina: p }: Props) {
           )}
         </div>
       </main>
+    </>
+  );
+}
+
+function Indice(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n}>
+      <CuerpoIndice {...props} />
     </Hoja>
   );
 }
 
 /* ------------------------------ Reportaje ---------------------------- */
 
-function Reportaje({ ed, n, pagina: p }: Props) {
+function CuerpoReportaje({ ed, n, pagina: p }: Props) {
   return (
-    <Hoja ed={ed} n={n}>
+    <>
       <main className="pb-6">
         <article>
           <Cabecera p={p} />
@@ -231,15 +269,23 @@ function Reportaje({ ed, n, pagina: p }: Props) {
           </div>
         </article>
       </main>
+    </>
+  );
+}
+
+function Reportaje(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n}>
+      <CuerpoReportaje {...props} />
     </Hoja>
   );
 }
 
 /* ------------------------------- Galería ----------------------------- */
 
-function GaleriaPagina({ ed, n, pagina: p }: Props) {
+function CuerpoGaleriaPagina({ ed, n, pagina: p }: Props) {
   return (
-    <Hoja ed={ed} n={n}>
+    <>
       <main className="pb-6">
         <Cabecera p={p} />
         <div className="mx-auto mt-10 max-w-5xl px-5">
@@ -251,15 +297,23 @@ function GaleriaPagina({ ed, n, pagina: p }: Props) {
           </div>
         )}
       </main>
+    </>
+  );
+}
+
+function GaleriaPagina(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n}>
+      <CuerpoGaleriaPagina {...props} />
     </Hoja>
   );
 }
 
 /* --------------------------------- Cita ------------------------------ */
 
-function Cita({ ed, n, pagina: p }: Props) {
+function CuerpoCita({ ed, n, pagina: p }: Props) {
   return (
-    <Hoja ed={ed} n={n}>
+    <>
       <main className={`flex min-h-[65vh] items-center justify-center px-6 py-16 text-center ${FONDO[p.tono ?? "terracota"]}`}>
         <figure className="max-w-4xl">
           <blockquote className="font-display text-3xl font-bold italic leading-snug sm:text-5xl">
@@ -268,15 +322,23 @@ function Cita({ ed, n, pagina: p }: Props) {
           {p.autor && <figcaption className="kicker mt-8 opacity-80">{p.autor}</figcaption>}
         </figure>
       </main>
+    </>
+  );
+}
+
+function Cita(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n}>
+      <CuerpoCita {...props} />
     </Hoja>
   );
 }
 
 /* --------------------------------- Video ----------------------------- */
 
-function VideoPagina({ ed, n, pagina: p }: Props) {
+function CuerpoVideoPagina({ ed, n, pagina: p }: Props) {
   return (
-    <Hoja ed={ed} n={n}>
+    <>
       <main className="pb-6">
         <Cabecera p={p} />
         <div className="mx-auto mt-8 max-w-5xl px-5">
@@ -289,19 +351,35 @@ function VideoPagina({ ed, n, pagina: p }: Props) {
           </div>
         )}
       </main>
+    </>
+  );
+}
+
+function VideoPagina(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n}>
+      <CuerpoVideoPagina {...props} />
     </Hoja>
   );
 }
 
 /* --------------------------------- Libre ----------------------------- */
 
-function Libre({ ed, n, pagina: p }: Props) {
+function CuerpoLibre({ ed, n, pagina: p }: Props) {
   return (
-    <Hoja ed={ed} n={n}>
+    <>
       <main className="pb-6">
         <Cabecera p={p} />
         <div className="mt-10">{p.bloques && <Bloques bloques={p.bloques} />}</div>
       </main>
+    </>
+  );
+}
+
+function Libre(props: Props) {
+  return (
+    <Hoja ed={props.ed} n={props.n}>
+      <CuerpoLibre {...props} />
     </Hoja>
   );
 }
@@ -330,12 +408,12 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
     <>
       {/* Barra superior: tres zonas fijas (volver · logo · posición). Sin el estilo «kicker», cuyo espaciado de letras
           es enorme en pantallas de 360 px y partía «← Ediciones» y «N.º 10 · 1/54» en dos líneas. */}
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-ink/40 px-4 py-2 font-sans text-[0.64rem] font-bold uppercase leading-none tracking-[0.06em] text-ink-soft sm:px-5 sm:text-[0.68rem] sm:tracking-[0.18em]">
-        <Link href="/ediciones" className="inline-flex items-center gap-1 justify-self-start whitespace-nowrap py-2 hover:text-terracota" aria-label="Volver a todas las ediciones">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-ink/40 px-4 py-2 font-sans text-[0.72rem] font-bold uppercase leading-none tracking-[0.05em] text-ink-soft sm:px-5 sm:text-[0.68rem] sm:tracking-[0.18em]">
+        <Link href="/ediciones" className="inline-flex items-center gap-1 justify-self-start whitespace-nowrap py-3 hover:text-terracota" aria-label="Volver a todas las ediciones">
           <span aria-hidden>←</span>
           <span>Ediciones</span>
         </Link>
-        <Link href="/" aria-label="ACOM-Di, Revista de Acámbaro — inicio" className="block justify-self-center">
+        <Link href="/" aria-label="ACOM-Di, Revista de Acámbaro — inicio" className="block justify-self-center py-1">
           <Logo className="h-7 w-auto sm:h-9" />
         </Link>
         <span className="flex items-center gap-1 justify-self-end whitespace-nowrap tabular-nums" title={`Edición N.º ${ed.numero}`}>
@@ -357,14 +435,7 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
         <div data-flujo-n={n} className="mx-auto max-w-[900px] sm:shadow-[0_10px_40px_-12px_rgba(28,24,20,0.35)]">
           <CuerpoLienzo ed={ed} n={n} pagina={p} />
         </div>
-        <FlujoMovil
-          id={ed.id}
-          numero={ed.numero}
-          desde={n}
-          hrefs={ed.paginas.map((_, i) => hrefPagina(ed, i + 1))}
-          titulos={ed.paginas.map((pg) => etiqueta(pg))}
-          tipos={ed.paginas.map((pg) => pg.plantilla)}
-        />
+        <FlujoDeEdicion ed={ed} n={n} />
       </main>
       <div className="max-sm:hidden">
         <PageTurner
@@ -376,6 +447,28 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
       <Footer />
     </>
   );
+}
+
+const CUERPO_COMPONENTES: Record<Exclude<Plantilla, "lienzo">, (props: Props) => React.ReactElement> = {
+  portada: CuerpoPortada,
+  indice: CuerpoIndice,
+  reportaje: CuerpoReportaje,
+  galeria: CuerpoGaleriaPagina,
+  cita: CuerpoCita,
+  video: CuerpoVideoPagina,
+  libre: CuerpoLibre,
+};
+
+/** El cuerpo de cualquier página (sin cabecera, pie ni botones): lo que agrega el scroll continuo del celular (lib/flujo-actions.tsx). */
+export function CuerpoFlujo({ ed, n, pagina }: Props) {
+  if (pagina.plantilla === "lienzo")
+    return (
+      <div className="mx-auto max-w-[900px]">
+        <CuerpoLienzo ed={ed} n={n} pagina={pagina} />
+      </div>
+    );
+  const Cuerpo = CUERPO_COMPONENTES[pagina.plantilla];
+  return <Cuerpo ed={ed} n={n} pagina={pagina} />;
 }
 
 export const PLANTILLA_COMPONENTES: Record<Plantilla, (props: Props) => React.ReactElement> = {

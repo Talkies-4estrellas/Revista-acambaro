@@ -1,11 +1,49 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cargarPaginaFlujo } from "@/lib/flujo-actions";
 
 // Sin separación ni sombra: las hojas se pegan una a otra para que el scroll se sienta continuo.
-const HOJA = "mx-auto max-w-[900px]";
+const HOJA = ""; // el ancho lo decide cada página (CuerpoFlujo): las de lienzo van en una hoja de 900 px, las clásicas ocupan todo el ancho
+
+/** Color de fondo de una página ya dibujada: el de su hoja de lienzo o, en las plantillas clásicas, el de su <main> (o el de la página). */
+function fondoDe(pagina: Element | null): string {
+  if (!pagina) return getComputedStyle(document.body).backgroundColor;
+  const candidatos = [
+    ...Array.from(pagina.querySelectorAll<HTMLElement>(".pagina-lienzo > *")).filter((e) => e.offsetParent !== null),
+    pagina.querySelector<HTMLElement>("main"),
+    pagina as HTMLElement,
+  ];
+  for (const e of candidatos) {
+    if (!e) continue;
+    const c = getComputedStyle(e).backgroundColor;
+    if (c && c !== "transparent" && c !== "rgba(0, 0, 0, 0)") return c;
+  }
+  return getComputedStyle(document.body).backgroundColor;
+}
+
+/**
+ * Franja entre dos páginas con fondos distintos: un degradado corto del color de la de arriba al de la de abajo, para que el paso no sea un corte seco.
+ * Los colores se leen de lo que realmente se dibujó (y se recalculan al cambiar entre modo claro y oscuro).
+ */
+function Union() {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const pintar = () => {
+      const antes = el.previousElementSibling ?? el.parentElement?.previousElementSibling ?? null;
+      const despues = el.nextElementSibling;
+      el.style.background = `linear-gradient(to bottom, ${fondoDe(antes)}, ${fondoDe(despues)})`;
+    };
+    pintar();
+    const obs = new MutationObserver(pintar);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return <div ref={ref} aria-hidden data-union className="h-6" />;
+}
 
 /**
  * Scroll continuo en celular: al acercarse al final de la página, la siguiente se agrega debajo (sin giro de hoja), y así hasta el final de la
@@ -19,7 +57,6 @@ export default function FlujoMovil({
   desde,
   hrefs,
   titulos,
-  tipos,
 }: {
   id: string;
   /** Número de la edición (para el título del navegador). */
@@ -28,7 +65,6 @@ export default function FlujoMovil({
   desde: number;
   hrefs: string[];
   titulos: string[];
-  tipos: string[];
 }) {
   const total = hrefs.length;
   const [movil, setMovil] = useState(false);
@@ -38,13 +74,22 @@ export default function FlujoMovil({
   const [intento, setIntento] = useState(0);
   const centinela = useRef<HTMLDivElement>(null);
   const cargando = useRef(false);
+  const lejanasRef = useRef(new Set<number>());
 
-  const hay = siguiente <= total && tipos[siguiente - 1] === "lienzo";
+  const [detenido, setDetenido] = useState(false); // la acción no devolvió la página: se ofrece un enlace para continuar
+  const [visible, setVisible] = useState(desde);
+  const [pastilla, setPastilla] = useState(false);
+  // Páginas muy atrás: en una edición larga el DOM y las fotos decodificadas se acumulaban (a 20 páginas, ~2800 nodos y 62 imágenes). Las que quedan a más de
+  // 3 pantallas arriba (o 4 abajo, si el lector regresó) se sustituyen por un espacio de la misma altura y se vuelven a dibujar si el lector regresa.
+  const [lejanas, setLejanas] = useState<Set<number>>(() => new Set());
+  const alturas = useRef(new Map<number, number>());
+  const hay = siguiente <= total && !detenido;
 
   // Solo en celular.
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 639px)");
     setMovil(mq.matches);
+    setPastilla(!document.querySelector("[data-contador]")); // las páginas de lienzo ya muestran n/total arriba; las clásicas, no
     const alCambiar = () => setMovil(mq.matches);
     mq.addEventListener("change", alCambiar);
     return () => mq.removeEventListener("change", alCambiar);
@@ -64,7 +109,7 @@ export default function FlujoMovil({
             if (contenido) {
               setPaginas((p) => [...p, { n: siguiente, nodo: contenido }]);
               setSiguiente((s) => s + 1);
-            } else setSiguiente(total + 1);
+            } else setDetenido(true);
             setEstado("reposo");
           })
           .catch(() => setEstado("error"))
@@ -87,12 +132,23 @@ export default function FlujoMovil({
       cuadro = 0;
       const linea = window.innerHeight * 0.35;
       let visible = 0;
+      const nuevas = new Set(lejanasRef.current);
       for (const s of Array.from(document.querySelectorAll<HTMLElement>("[data-flujo-n]"))) {
         const r = s.getBoundingClientRect();
-        if (r.top <= linea && r.bottom >= linea) {
-          visible = Number(s.dataset.flujoN);
-          break;
-        }
+        const num = Number(s.dataset.flujoN);
+        if (!visible && r.top <= linea && r.bottom >= linea) visible = num;
+        if (num === desde) continue; // la primera página llega del servidor, no se descarga
+        const alto = window.innerHeight;
+        const lejos = r.bottom < -alto * 3 || r.top > alto * 4; // muy arriba (ya leída) o muy abajo (el lector regresó)
+        const cerca = r.bottom > -alto * 2 && r.top < alto * 3;
+        if (!nuevas.has(num) && lejos) {
+          alturas.current.set(num, r.height);
+          nuevas.add(num);
+        } else if (nuevas.has(num) && cerca) nuevas.delete(num); // vuelve a acercarse: se dibuja otra vez
+      }
+      if (nuevas.size !== lejanasRef.current.size || [...nuevas].some((n) => !lejanasRef.current.has(n))) {
+        lejanasRef.current = nuevas;
+        setLejanas(nuevas);
       }
       // Al llegar al fondo, la última página que se alcanza a ver (el pie de «Fin de la edición» ya cuenta como estar en ella).
       if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) {
@@ -106,6 +162,7 @@ export default function FlujoMovil({
       document.title = `${titulos[visible - 1]} — Acámbaro N.º ${numero}`;
       const contador = document.querySelector("[data-contador]");
       if (contador) contador.textContent = `${visible}/${total}`;
+      setVisible(visible);
     };
     const programar = () => {
       if (!cuadro) cuadro = requestAnimationFrame(revisar);
@@ -116,14 +173,26 @@ export default function FlujoMovil({
       window.removeEventListener("scroll", programar);
       if (cuadro) cancelAnimationFrame(cuadro);
     };
-  }, [movil, hrefs, titulos, numero, total, paginas.length]);
+  }, [movil, hrefs, titulos, numero, total, paginas.length, desde]);
 
   return (
     <div className="sm:hidden">
-      {paginas.map((p) => (
-        <div key={p.n} data-flujo-n={p.n} className={HOJA}>
-          {p.nodo}
+      {pastilla && movil && (
+        <div aria-hidden className="pointer-events-none fixed bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-full bg-ink/85 px-3 py-1 font-sans text-xs font-bold tabular-nums text-paper shadow-lg">
+          {visible} / {total}
         </div>
+      )}
+      {paginas.map((p) => (
+        <Fragment key={p.n}>
+          <Union />
+          {lejanas.has(p.n) ? (
+            <div data-flujo-n={p.n} aria-hidden style={{ height: alturas.current.get(p.n) }} />
+          ) : (
+            <div data-flujo-n={p.n} className={HOJA}>
+              {p.nodo}
+            </div>
+          )}
+        </Fragment>
       ))}
 
       {hay && (

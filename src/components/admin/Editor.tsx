@@ -9,7 +9,9 @@ import {
   estadoEdicion,
   paginaDesdePlantilla,
   paginaNueva,
+  aplicarMaestra,
   type EdicionDatos,
+  type Elemento,
   type Pagina,
   type Plantilla,
 } from "@/lib/esquema";
@@ -94,6 +96,10 @@ export default function Editor({
   /** Preferencia de autoguardado de este navegador; sin elegir, se autoguarda solo si la edición es un borrador. */
   const [autoPref, setAutoPref] = useState<boolean | null>(null);
   // Los datos de la edición (número, fecha, tema, publicación) ocupan lugar: quedan plegados salvo en una edición sin tema todavía.
+  // En celular la lista de páginas ocupa media pantalla antes de llegar a la hoja: queda plegada y se cierra al elegir una página.
+  const [verPaginas, setVerPaginas] = useState(false);
+  /** Se editan los elementos que se repiten en todas las páginas (en lugar de una página). */
+  const [editandoMaestra, setEditandoMaestra] = useState(false);
   const [verDatos, setVerDatos] = useState(() => !inicial.tema?.trim());
 
   const sucio = JSON.stringify(datos) !== guardado;
@@ -241,6 +247,10 @@ export default function Editor({
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? `Error ${res.status}`);
       setMedios((m) => (m.includes(json.src) ? m : [...m, json.src].sort()));
+      if (json.optimizado) {
+        const peso = (b: number) => (b >= 1048576 ? `${(b / 1048576).toFixed(1).replace(".", ",")} MB` : `${Math.max(1, Math.round(b / 1024))} KB`);
+        setEstado({ tipo: "ok", texto: `Foto optimizada: ${peso(json.optimizado.antes)} → ${peso(json.optimizado.despues)}${json.optimizado.formato === "webp" && !/.webp$/i.test(file.name) ? " (WebP)" : ""}` });
+      }
       return json.src as string;
     },
     [id],
@@ -252,6 +262,56 @@ export default function Editor({
     setDatos((d) => ({ ...d, paginas: map ? remapRefs(paginas, map) : paginas }));
 
   const cambiarPagina = (p: Pagina) => setPaginas(datos.paginas.map((x, i) => (i === idx ? p : x)));
+
+  /* ---------------- Elementos repetidos en todas las páginas ---------------- */
+
+  const nRepetidos = datos.maestra?.elementos.length ?? 0;
+  const conMaestra = (elementos: Elemento[], capa = datos.maestra?.capa): EdicionDatos["maestra"] => (elementos.length || capa ? { elementos, ...(capa ? { capa } : {}) } : undefined);
+  /** La «página» que se edita en el modo de repetidos: usa el alto y el fondo de la actual para tener referencia. */
+  const paginaMaestra: Pagina = {
+    plantilla: "lienzo",
+    transicion: "fundido",
+    titulo: "Elementos repetidos",
+    fondo: pagina.fondo,
+    alto: pagina.alto ?? 1100,
+    movil: "apilar",
+    elementos: datos.maestra?.elementos ?? [],
+  };
+  const cambiarMaestra = (p: Pagina) => setDatos((d) => ({ ...d, maestra: conMaestra(p.elementos ?? [], d.maestra?.capa) }));
+  const cambiarCapaMaestra = (capa: "encima" | "debajo") => setDatos((d) => ({ ...d, maestra: conMaestra(d.maestra?.elementos ?? [], capa) }));
+  /** Pasa elementos de esta página a los repetidos (aparecen en todas las páginas de lienzo). */
+  const repetirEnTodas = (els: Elemento[]) => {
+    const ids = new Set(els.map((e) => e.id));
+    setDatos((d) => ({
+      ...d,
+      maestra: conMaestra([...(d.maestra?.elementos ?? []), ...els], d.maestra?.capa),
+      paginas: d.paginas.map((p, i) => (i === idx ? { ...p, elementos: (p.elementos ?? []).filter((e) => !ids.has(e.id)) } : p)),
+    }));
+    setEstado({ tipo: "ok", texto: `${els.length === 1 ? "1 elemento se repite" : `${els.length} elementos se repiten`} ahora en todas las páginas` });
+  };
+  /** Lo contrario: saca elementos de los repetidos y los deja solo en la página actual. */
+  const dejarEnEstaPagina = (els: Elemento[]) => {
+    const ids = new Set(els.map((e) => e.id));
+    setDatos((d) => ({
+      ...d,
+      maestra: conMaestra((d.maestra?.elementos ?? []).filter((e) => !ids.has(e.id)), d.maestra?.capa),
+      paginas: d.paginas.map((p, i) => (i === idx ? { ...p, elementos: [...(p.elementos ?? []), ...els] } : p)),
+    }));
+  };
+  // Las miniaturas muestran cada página ya con los repetidos; se guarda el resultado por página para no redibujarlas todas en cada cambio.
+  const cacheVistas = useRef(new WeakMap<Pagina, { m: unknown; r: Pagina }>());
+  const paginasVistas = useMemo(
+    () =>
+      datos.paginas.map((p) => {
+        if (!datos.maestra) return p;
+        const c = cacheVistas.current.get(p);
+        if (c && c.m === datos.maestra) return c.r;
+        const r = aplicarMaestra(p, datos.maestra);
+        cacheVistas.current.set(p, { m: datos.maestra, r });
+        return r;
+      }),
+    [datos.paginas, datos.maestra],
+  );
 
   /**
    * Usa una plantilla: como página nueva (después de la actual) o reemplazando el contenido de la actual.
@@ -377,7 +437,7 @@ export default function Editor({
                   ? `Guardado a las ${guardadoEn.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}`
                   : "Todo guardado"}
             </span>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
               {estado && (
                 <span
                   role="status"
@@ -482,13 +542,43 @@ export default function Editor({
         {/* Cuerpo */}
         <div className={`grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)] ${conPrevia ? "xl:grid-cols-[15rem_minmax(0,1fr)_28rem]" : ""}`}>
           {/* Páginas */}
-          <nav aria-label="Páginas" className="flex max-h-[22rem] min-h-0 flex-col border-b border-ink/30 bg-paper-deep/50 md:max-h-none md:border-b-0 md:border-r">
+          <button
+            type="button"
+            onClick={() => setVerPaginas((v) => !v)}
+            aria-expanded={verPaginas}
+            className="font-sans flex w-full items-center gap-2 border-b border-ink/30 bg-paper-deep/50 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider md:hidden"
+          >
+            <span aria-hidden>{verPaginas ? "▾" : "▸"}</span>
+            <span>Páginas ({datos.paginas.length})</span>
+            <span className="ml-auto min-w-0 truncate font-normal normal-case tracking-normal text-ink-soft">
+              {idx + 1}. {titulos[idx]}
+            </span>
+          </button>
+          <nav aria-label="Páginas" className={`${verPaginas ? "flex" : "hidden"} max-h-[22rem] min-h-0 flex-col border-b border-ink/30 bg-paper-deep/50 md:flex md:max-h-none md:border-b-0 md:border-r`}>
+            <button
+              type="button"
+              onClick={() => {
+                setEditandoMaestra((v) => !v);
+                setVerPaginas(false);
+              }}
+              aria-pressed={editandoMaestra}
+              title="Encabezado, pie, número de página…: se editan una vez y aparecen en todas las páginas de lienzo"
+              className={`font-sans flex w-full items-center gap-2 border-b border-ink/30 px-3 py-2 text-left text-xs font-bold uppercase tracking-wider ${editandoMaestra ? "bg-ink text-paper" : "hover:bg-paper-deep"}`}
+            >
+              <span aria-hidden>↻</span>
+              <span>Elementos repetidos</span>
+              <span className={`ml-auto font-normal normal-case tracking-normal ${editandoMaestra ? "" : "text-ink-soft"}`}>{nRepetidos ? `${nRepetidos}` : "ninguno"}</span>
+            </button>
             <PanelPaginas
-              paginas={datos.paginas}
+              paginas={paginasVistas}
               seleccionada={idx}
               edicionId={id}
               creditos={creditos}
-              onSeleccionar={setSel}
+              onSeleccionar={(i) => {
+                setSel(i);
+                setEditandoMaestra(false);
+                setVerPaginas(false);
+              }}
               onReordenar={reordenarPagina}
             />
             <div className="space-y-2 border-t border-ink/30 p-3">
@@ -536,7 +626,27 @@ export default function Editor({
                 <strong>Anuncios seguidos:</strong> {textoSeguidos(seguidos)}. Conviene intercalar contenido entre un anuncio y otro para que la publicidad no canse al lector.
               </p>
             )}
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            {editandoMaestra && (
+              <div className="font-sans mb-3 border-l-4 border-terracota bg-terracota/10 px-3 py-2 text-xs">
+                <p>
+                  <strong>Elementos repetidos.</strong> Lo que pongas aquí aparece en <strong>todas</strong> las páginas de lienzo (menos las que lo omitan en su panel «Hoja»). Se muestra atenuado el contenido de la página{" "}
+                  {idx + 1} como referencia. En un texto, <code>{"{n}"}</code> es el número de la página donde cae.
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <label className="flex items-center gap-2">
+                    Se dibuja
+                    <select className={`${inputCls} !w-auto`} value={datos.maestra?.capa ?? "encima"} onChange={(e) => cambiarCapaMaestra(e.target.value as "encima" | "debajo")}>
+                      <option value="encima">encima del contenido</option>
+                      <option value="debajo">detrás del contenido</option>
+                    </select>
+                  </label>
+                  <button type="button" className={`${btnCls} !bg-ink !text-paper`} onClick={() => setEditandoMaestra(false)}>
+                    ✓ Terminar
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className={`mb-2 flex flex-wrap items-center justify-between gap-2 ${editandoMaestra ? "hidden" : ""}`}>
               <h2 className="font-display text-xl font-black">
                 Página {idx + 1} <span className="text-base font-bold italic text-ink-soft">· {ETIQUETAS_PLANTILLA[pagina.plantilla]}</span>
               </h2>
@@ -548,7 +658,7 @@ export default function Editor({
                 <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={quitarPagina}>✕ Quitar</button>
               </div>
             </div>
-            <details className="mb-3 border border-ink/20 bg-paper-deep/40" open={anclaRepetida || undefined}>
+            <details className={`mb-3 border border-ink/20 bg-paper-deep/40 ${editandoMaestra ? "hidden" : ""}`} open={anclaRepetida || undefined}>
               <summary className="font-sans cursor-pointer select-none px-3 py-1.5 text-xs font-bold text-ink-soft hover:text-ink">
                 ⚙ Identificador de la página{pagina.ancla ? `: #${pagina.ancla}` : " (opcional)"}
               </summary>
@@ -577,8 +687,28 @@ export default function Editor({
               )}
               </div>
             </details>
-            {esLienzo ? (
-              <EditorLienzo key={idx} pagina={pagina} onChange={cambiarPagina} onPlantillas={() => setVerPlantillas(true)} paginas={titulos} anclas={anclas} indice={idx} creditos={creditos} edicionId={id} />
+            {editandoMaestra ? (
+              <EditorLienzo
+                key="repetidos"
+                pagina={paginaMaestra}
+                onChange={cambiarMaestra}
+                paginas={titulos}
+                anclas={anclas}
+                indice={idx}
+                creditos={creditos}
+                edicionId={id}
+                fantasma={esLienzo ? (pagina.elementos ?? []) : undefined}
+                fantasmaDetras
+                etiquetaMover={esLienzo ? "↧ Solo en esta página" : undefined}
+                onMover={esLienzo ? dejarEnEstaPagina : undefined}
+              />
+            ) : esLienzo ? (
+              <EditorLienzo key={idx} pagina={pagina} onChange={cambiarPagina}
+                fantasma={datos.maestra && !pagina.sinMaestra ? datos.maestra.elementos : undefined}
+                fantasmaDetras={datos.maestra?.capa === "debajo"}
+                etiquetaMover="↻ Repetir en todas"
+                onMover={repetirEnTodas}
+                repetidos={nRepetidos} onPlantillas={() => setVerPlantillas(true)} paginas={titulos} anclas={anclas} indice={idx} creditos={creditos} edicionId={id} />
             ) : (
               <FormPagina key={idx} pagina={pagina} onChange={cambiarPagina} titulos={titulos} />
             )}

@@ -127,8 +127,8 @@ export default function ResumenEdicion({ origenes, sugerido }: { origenes: Orige
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="min-w-0">
           <p className="font-sans mb-1 text-xs font-bold uppercase tracking-wider text-ink-soft">Páginas de la edición</p>
           <ul className="max-h-96 space-y-px overflow-y-auto border border-ink/20 bg-paper">
             {paginas.map((p, i) => (
@@ -143,7 +143,7 @@ export default function ResumenEdicion({ origenes, sugerido }: { origenes: Orige
             ))}
           </ul>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="font-sans mb-1 text-xs font-bold uppercase tracking-wider text-ink-soft">
             En el resumen · {sel.length} página(s)
             {seguidos.length > 0 && <span className="ml-2 normal-case text-terracota"> · hay anuncios seguidos (págs. {seguidos.join(", ")})</span>}
@@ -170,7 +170,7 @@ export default function ResumenEdicion({ origenes, sugerido }: { origenes: Orige
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Texto label="Identificador (nombre del archivo)" value={id} onChange={setId} hint="Letras, números, - y _." />
         <Campo label="Fecha de la edición">
           <input type="date" required className={inputCls} value={fecha} onChange={(e) => setFecha(e.target.value)} />

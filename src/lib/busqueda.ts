@@ -1,5 +1,5 @@
 import { etiqueta, getPublicadas, hrefPagina, type Edicion, type Pagina } from "./ediciones";
-import { SECCION_PUBLICIDAD } from "./esquema";
+import { SECCION_PUBLICIDAD, esRepetido } from "./esquema";
 
 /**
  * Búsqueda en el sitio: recorre el texto de todas las páginas de las ediciones publicadas (títulos, textos de
@@ -93,6 +93,7 @@ function textosDePagina(p: Pagina): { texto: string; peso: number }[] {
     }
   });
   p.elementos?.forEach((e) => {
+    if (esRepetido(e) || e.oculto) return; // repetidos y ocultos no cuentan como contenido de la página // pie, encabezado y demás repetidos de la edición: no cuentan como contenido de la página
     if (e.tipo === "texto") add(e.texto, e.tam && e.tam >= 40 ? 4 : 1);
     else if (e.tipo === "imagen" || e.tipo === "icono") add(e.alt, 1);
   });

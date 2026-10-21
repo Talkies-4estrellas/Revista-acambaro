@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Masthead from "@/components/Masthead";
 import Footer from "@/components/Footer";
+
+export const metadata: Metadata = { title: "Página no encontrada — Acámbaro", robots: { index: false } };
 
 export default function NoEncontrada() {
   return (

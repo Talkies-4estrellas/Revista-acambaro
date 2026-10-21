@@ -73,6 +73,12 @@ body {
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
+/* En celular los rótulos no bajan de 12 px (antes 10,9 px, muy chicos para leer en el teléfono). */
+@media (max-width: 639px) {
+  .kicker {
+    font-size: 0.78rem;
+  }
+}
 /* En pantallas de ~360 px el espaciado amplio partía los rótulos en varias líneas. */
 @media (max-width: 480px) {
   .kicker {

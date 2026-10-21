@@ -250,6 +250,34 @@ En el panel de cada elemento, **Efectos de movimiento** (se ven en el sitio publ
   (déjala vacía y se calcula según lo largo que sea el texto); el **Retraso** es la espera antes de empezar. **▶ Probar** lo muestra en la hoja. Si el lector pidió
   menos animaciones en su equipo, el texto aparece completo de una vez.
 
+## Bloquear y ocultar capas
+
+En la lista de **Capas** (panel de la derecha), cada fila trae dos botones:
+- **🔓 / 🔒 Bloquear:** el elemento deja de responder al ratón en la hoja (no se mueve ni se borra por accidente, y «Seleccionar todo» o arrastrar un recuadro lo ignoran); sigue viéndose igual en la página. Para
+  cambiarlo, elígelo en la lista de capas (aparece «🔒 Bloqueado») y desbloquéalo. También con el interruptor del panel «Posición y tamaño» o con el botón **🔒** sobre la hoja (bloquea lo seleccionado). Ideal para el fondo o el marco de una página.
+- **👁 / 🚫 Ocultar:** el elemento **no se ve en la página publicada**, ni en el celular, ni en el buscador; en el editor desaparece de la hoja y queda tachado en las capas. Sirve para guardar una versión alternativa sin borrarla.
+
+## Elementos que se repiten en todas las páginas (encabezado, pie, número de página)
+
+Para algo que debe estar en **todas** las páginas (el nombre de la revista, una línea, el número de página, una marca de agua), no lo copies a mano en cada una:
+1. Selecciona el elemento (o varios) en una página y pulsa **↻ Repetir en todas** (barra sobre la hoja). Sale de esa página y pasa a los **elementos repetidos**.
+2. Para cambiarlos, abre **↻ Elementos repetidos** (sobre la lista de páginas): la hoja muestra solo ellos, con el contenido de la página actual atenuado de referencia. Elige si se dibujan **encima o detrás**
+   del contenido y pulsa **✓ Terminar**. Con **↧ Solo en esta página** devuelves lo seleccionado a la página donde estás.
+3. En cada página los ves atenuados (no se pueden tocar). En un texto, **`{n}`** es el número de la página donde cae: un pie «pág. {n}» dice 2, 3, 4… según la página.
+4. Si una página no debe llevarlos (la portada), en su panel **Hoja** apaga «Mostrar los N elementos repetidos en esta página».
+Solo cuentan en las páginas de lienzo. Los repetidos no aparecen en los resultados del buscador. Al **duplicar una edición** o armar una **edición resumida** se conservan.
+
+## Fotos optimizadas al subir
+
+Al subir una foto (jpg, png o webp) de más de 150 KB, el panel la **reduce y comprime** solo: la gira según la cámara, la limita a 2000 px de ancho, quita los datos ocultos (ubicación, cámara) y la guarda más ligera; un PNG sin
+transparencia pasa a WebP y los PNG con transparencia siguen siendo PNG. Arriba aparece, por ejemplo, «Foto optimizada: 4,2 MB → 380 KB (WebP)». GIF, video y archivos ya ligeros no se tocan. (El archivo que ya estaba subido no cambia.)
+
+## Editar desde el celular
+
+En pantallas de menos de 768 px el editor se adapta: la hoja se abre **ajustada al ancho** (con **Entera** la ves completa) y las **propiedades van en un cajón** abajo: se abre solo al tocar un elemento
+(muestra sus propiedades; en un texto, **✎ Escribir** para teclear de una vez) y se cierra con **✕ Cerrar**; el botón flotante **⚙** lo vuelve a abrir (sin elemento seleccionado muestra la hoja y las capas).
+La lista de páginas está plegada («▸ Páginas (24)») y las reglas, la cuadrícula y los imanes se ocultan. En PC todo sigue como antes.
+
 ## Editar con el dedo (tableta o celular)
 
 Con la pantalla táctil, un dedo mueve y redimensiona elementos (los tiradores se agrandan en pantallas táctiles); un dedo sobre el fondo gris desplaza la

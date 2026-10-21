@@ -27,7 +27,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
       onClick={alternar}
       aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       title={oscuro ? "Modo claro" : "Modo oscuro"}
-      className={`inline-flex h-8 w-8 items-center justify-center text-base leading-none hover:text-terracota ${className}`}
+      className={`inline-flex h-10 w-10 items-center justify-center text-base leading-none hover:text-terracota sm:h-8 sm:w-8 ${className}`}
     >
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {oscuro ? (

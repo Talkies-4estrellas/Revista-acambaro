@@ -4,6 +4,8 @@ import { BUCLES_IDS, EFECTOS_IDS, HOVERS_IDS } from "./animaciones";
 import { ICONOS } from "./iconos-datos";
 import { TRANSICIONES, type Transicion } from "./transiciones";
 import {
+  aplicarMaestra,
+  type Maestra,
   CAPAS_IMAGEN_IDS,
   PARALLAX_IDS,
   FILTROS_IMAGEN_IDS,
@@ -178,6 +180,7 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   }
   if (e.grupo !== undefined && !(typeof e.grupo === "string" && /^[\w-]{1,40}$/.test(e.grupo)))
     fail(c, '"grupo" debe ser un identificador corto (letras, números, - y _)');
+  for (const campo of ["bloqueado", "oculto"] as const) if (e[campo] !== undefined && typeof e[campo] !== "boolean") fail(c, `"${campo}" debe ser verdadero o falso`);
   checkEnum(e.hover, HOVERS_IDS, c, "hover");
   checkEnum(e.filtro, FILTROS_IMAGEN_IDS, c, "filtro");
   checkEnum(e.capa, CAPAS_IMAGEN_IDS, c, "capa");
@@ -292,6 +295,7 @@ export function validarPagina(raw: unknown, ctx: string, total: number): Pagina 
     raw.bloques.forEach((b) => checkBloque(b, ctx));
   }
 
+  if (raw.sinMaestra !== undefined && typeof raw.sinMaestra !== "boolean") fail(ctx, '"sinMaestra" debe ser verdadero o falso');
   if (raw.ancla !== undefined && !(typeof raw.ancla === "string" && /^[\w-]{1,40}$/.test(raw.ancla)))
     fail(ctx, '"ancla" debe ser un identificador corto (letras, números, - y _)');
   checkColor(raw.fondo, ctx, "fondo");
@@ -404,7 +408,7 @@ function paginaConError(raw: unknown, mensaje: string): Pagina {
     elementos: [
       { tipo: "texto", id: "error-t", x: 80, y: 420, w: 640, h: 70, texto: "Esta página no está disponible por ahora", fuente: "display", tam: 34, peso: 900, alinear: "centro", color: "tinta" },
       ...(dev
-        ? [{ tipo: "texto" as const, id: "error-d", x: 80, y: 510, w: 640, h: 200, texto: mensaje.replace(/^[ediciones] /, ""), fuente: "sans" as const, tam: 16, alinear: "centro" as const, color: "terracota" }]
+        ? [{ tipo: "texto" as const, id: "error-d", x: 80, y: 510, w: 640, h: 200, texto: mensaje.replace(/^\[ediciones\] /, ""), fuente: "sans" as const, tam: 16, alinear: "centro" as const, color: "terracota" }]
         : []),
     ],
   };
@@ -431,6 +435,23 @@ export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?:
     fail(ctx, '"publicarEn" debe tener formato AAAA-MM-DDTHH:mm (ej. "2026-10-20T09:00")');
 
   const total = raw.paginas.length;
+  // Elementos que se repiten en todas las páginas: se validan como los de una página de lienzo y se agregan a cada una (aplicarMaestra) antes de resolver referencias.
+  let maestra: Maestra | undefined;
+  if (raw.maestra !== undefined) {
+    try {
+      if (!isObj(raw.maestra) || !Array.isArray(raw.maestra.elementos)) fail(ctx, '"maestra" debe ser un objeto con una lista "elementos"');
+      checkEnum(raw.maestra.capa, ["encima", "debajo"] as const, ctx, "maestra.capa");
+      const envuelta = validarPagina(
+        { plantilla: "lienzo", transicion: "fundido", titulo: "Elementos repetidos", fondo: "papel", alto: 8000, elementos: raw.maestra.elementos },
+        `${ctx} (elementos repetidos)`,
+        total,
+      );
+      maestra = { elementos: envuelta.elementos ?? [], ...(raw.maestra.capa ? { capa: raw.maestra.capa as "encima" | "debajo" } : {}) };
+    } catch (e) {
+      if (!tolerante) throw e;
+      console.error(e instanceof Error ? e.message : String(e)); // en el sitio, unos repetidos dañados no tumban la edición
+    }
+  }
   return {
     id,
     numero: (raw.numero as string | undefined) ?? "",
@@ -440,7 +461,8 @@ export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?:
     ...(raw.publicarEn ? { publicarEn: raw.publicarEn as string } : {}),
     ...(raw.numeroFijo === true ? { numeroFijo: true } : {}),
     paginas: resolverReferencias(
-      raw.paginas.map((p, i) => {
+      raw.paginas
+        .map((p, i) => {
         if (!tolerante) return validarPagina(p, `${ctx}, página ${i + 1}`, total);
         try {
           return validarPagina(p, `${ctx}, página ${i + 1}`, total);
@@ -449,7 +471,8 @@ export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?:
           console.error(msg);
           return paginaConError(p, msg);
         }
-      }),
+      })
+        .map((p) => aplicarMaestra(p, maestra)),
       ctx,
       tolerante,
     ),
@@ -492,3 +515,4 @@ export const getPublicadas = () => {
   return getEdiciones().filter((e) => estadoEdicion(e, ahora) === "publicada");
 };
 export const getUltima = () => getPublicadas()[0];
+

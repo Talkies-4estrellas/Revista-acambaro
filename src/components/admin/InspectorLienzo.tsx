@@ -568,6 +568,8 @@ export function InspectorElemento({
             max={100}
           />
         </div>
+        <Interruptor label="🔒 Bloqueado (no se mueve por accidente)" value={el.bloqueado ?? false} onChange={(v) => set({ bloqueado: v || undefined })} />
+        <Interruptor label="🚫 Oculto (no se ve en la página publicada)" value={el.oculto ?? false} onChange={(v) => set({ oculto: v || undefined })} />
       </Panel>
 
 
@@ -670,9 +672,12 @@ export function InspectorPagina({
   pagina,
   onChange,
   onProbarTodo,
+  repetidos,
 }: {
   pagina: Pagina;
   onChange: (p: Pagina) => void;
+  /** Cuántos elementos repetidos tiene la edición (si hay, se ofrece omitirlos en esta página). */
+  repetidos?: number;
   /** Reproduce las animaciones de todos los elementos de la página. */
   onProbarTodo?: () => void;
 }) {
@@ -706,6 +711,9 @@ export function InspectorPagina({
         <p className="font-sans text-[0.7rem] text-ink-soft">
           Con “Reducir la hoja”, el texto se encoge con ella: para el cuerpo usa 22 o más.
         </p>
+        {repetidos ? (
+          <Interruptor label={`Mostrar los ${repetidos} elementos repetidos en esta página`} value={!pagina.sinMaestra} onChange={(v) => set("sinMaestra", v ? undefined : true)} />
+        ) : null}
       </Panel>
       {onProbarTodo && (
         <Panel titulo="Animaciones" plegable abierto={false} resumen={`${(pagina.elementos ?? []).filter((e) => e.animacion).length} animados`} ayuda="Cada elemento puede tener su animación de entrada (en sus propiedades).">

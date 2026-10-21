@@ -6,17 +6,27 @@ import { buscar, partirResaltado } from "@/lib/busqueda";
 
 export const metadata: Metadata = { title: "Buscar — Acámbaro", robots: { index: false, follow: true } };
 
-export default async function Buscar({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
+/** Resultados por página (la lista completa en un teléfono pasaba de 7000 px de alto). */
+const POR_PAGINA = 10;
+const MAX_RESULTADOS = 100;
+
+const primero = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+export default async function Buscar({ searchParams }: { searchParams: Promise<{ q?: string | string[]; pag?: string | string[] }> }) {
   const sp = await searchParams;
-  const q = (Array.isArray(sp.q) ? sp.q[0] : sp.q)?.slice(0, 80).trim() ?? "";
-  const resultados = q.length >= 2 ? buscar(q) : [];
+  const q = primero(sp.q)?.slice(0, 80).trim() ?? "";
+  const todos = q.length >= 2 ? buscar(q, undefined, MAX_RESULTADOS) : [];
+  const paginas = Math.max(1, Math.ceil(todos.length / POR_PAGINA));
+  const pag = Math.min(paginas, Math.max(1, Number.parseInt(primero(sp.pag) ?? "1", 10) || 1));
+  const resultados = todos.slice((pag - 1) * POR_PAGINA, pag * POR_PAGINA);
+  const enlace = (n: number) => `/buscar?q=${encodeURIComponent(q)}${n > 1 ? `&pag=${n}` : ""}`;
 
   return (
     <>
-      <Masthead compact />
-      <main className="mx-auto max-w-3xl px-5 py-10">
-        <h1 className="font-display text-5xl font-black italic sm:text-6xl">Buscar</h1>
-        <form action="/buscar" role="search" className="mt-6 flex gap-2">
+      <Masthead compact sinBusquedaEnCelular />
+      <main className="mx-auto max-w-3xl px-5 py-6 sm:py-10">
+        <h1 className="font-display text-4xl font-black italic sm:text-6xl">Buscar</h1>
+        <form action="/buscar" role="search" className="mt-4 flex gap-2 sm:mt-6">
           <label htmlFor="q" className="sr-only">
             Buscar en la revista
           </label>
@@ -27,7 +37,7 @@ export default async function Buscar({ searchParams }: { searchParams: Promise<{
             defaultValue={q}
             autoFocus={!q}
             placeholder="Locomotora, pan, estación…"
-            className="font-sans min-w-0 flex-1 border border-ink bg-paper px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-terracota"
+            className="font-sans min-w-0 flex-1 border border-ink bg-paper px-4 py-3 text-base outline-none focus:ring-2 focus:ring-terracota sm:text-sm"
           />
           <button type="submit" className="kicker bg-ink px-6 py-3 text-paper hover:bg-terracota">
             Buscar
@@ -39,21 +49,21 @@ export default async function Buscar({ searchParams }: { searchParams: Promise<{
           <p className="font-sans mt-6 text-sm text-ink-soft" role="status">
             {resultados.length === 0
               ? `Sin resultados para “${q}”. Prueba con otra palabra o menos palabras.`
-              : `${resultados.length} ${resultados.length === 1 ? "resultado" : "resultados"} para “${q}”`}
+              : `${todos.length}${todos.length >= MAX_RESULTADOS ? "+" : ""} ${todos.length === 1 ? "resultado" : "resultados"} para “${q}”${paginas > 1 ? ` · página ${pag} de ${paginas}` : ""}`}
           </p>
         )}
 
         <ol className="mt-4">
           {resultados.map((r) => (
             <li key={r.href} className="border-t border-ink/60">
-              <Link href={r.href} className="group block py-5">
+              <Link href={r.href} className="group block py-4 sm:py-5">
                 <span className="kicker block text-terracota">
                   Edición N.º {r.numero} · {r.tema} · <span className="whitespace-nowrap">pág. {r.pagina}</span>
                 </span>
-                <span className="font-display mt-1 block text-2xl font-bold leading-snug group-hover:underline decoration-terracota decoration-2 underline-offset-4">
+                <span className="font-display mt-1 block text-xl font-bold leading-snug group-hover:underline decoration-terracota decoration-2 underline-offset-4 sm:text-2xl">
                   {r.titulo}
                 </span>
-                <span className="mt-1 block text-sm leading-relaxed text-ink-soft">
+                <span className="mt-1 line-clamp-3 block text-sm leading-relaxed text-ink-soft sm:line-clamp-none">
                   {partirResaltado(r.fragmento, q).map((p, i) =>
                     p.resaltar ? (
                       <mark key={i} className="bg-ocre/40 text-ink">
@@ -68,6 +78,28 @@ export default async function Buscar({ searchParams }: { searchParams: Promise<{
             </li>
           ))}
         </ol>
+
+        {paginas > 1 && (
+          <nav aria-label="Páginas de resultados" className="mt-6 flex items-center justify-between gap-3 border-t border-ink/60 pt-5">
+            {pag > 1 ? (
+              <Link href={enlace(pag - 1)} className="kicker inline-flex min-h-11 items-center border border-ink px-4 hover:bg-ink hover:text-paper">
+                ← Anteriores
+              </Link>
+            ) : (
+              <span />
+            )}
+            <span className="font-sans text-xs tabular-nums text-ink-soft">
+              {pag} / {paginas}
+            </span>
+            {pag < paginas ? (
+              <Link href={enlace(pag + 1)} className="kicker inline-flex min-h-11 items-center bg-ink px-4 text-paper hover:bg-terracota">
+                Más resultados →
+              </Link>
+            ) : (
+              <span />
+            )}
+          </nav>
+        )}
       </main>
       <Footer />
     </>

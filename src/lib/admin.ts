@@ -133,6 +133,7 @@ export function leerCrudo(id: string): EdicionDatos | null {
     publicada: raw.publicada !== false,
     publicarEn: typeof raw.publicarEn === "string" ? raw.publicarEn : undefined,
     numeroFijo: raw.numeroFijo === true ? true : undefined,
+    ...(raw.maestra && typeof raw.maestra === "object" ? { maestra: raw.maestra } : {}),
     paginas: Array.isArray(raw.paginas) ? raw.paginas : [],
   };
 }
@@ -248,15 +249,17 @@ export function crearEdicion(
   if (fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin(`Ya existe una edición con el id "${id}".`, 409);
 
   let paginas: EdicionDatos["paginas"] = [{ ...paginaNueva("lienzo"), titulo: "Portada" }];
+  let maestra: EdicionDatos["maestra"];
   if (duplicarDe) {
     const origen = leerCrudo(duplicarDe);
     if (!origen) throw new ErrorAdmin("La edición base no existe.", 404);
     paginas = origen.paginas;
+    maestra = origen.maestra; // también los elementos que se repiten en todas las páginas
   }
   try {
     const otras = entradasNumeracion();
     const n = calcularNumeracion([...otras, { id, fecha: base.fecha, publicada: false }]).get(id);
-    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, paginas });
+    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, ...(maestra ? { maestra } : {}), paginas });
   } catch (e) {
     throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
   }
@@ -278,7 +281,7 @@ export function crearResumen(id: string, base: { fecha: string; tema: string }, 
   }
   try {
     const n = calcularNumeracion([...entradasNumeracion(), { id, fecha: base.fecha, publicada: false }]).get(id);
-    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, paginas: resultado.paginas });
+    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, ...(origen.maestra ? { maestra: origen.maestra } : {}), paginas: resultado.paginas });
   } catch (e) {
     throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
   }
@@ -319,7 +322,50 @@ export function listarMedios(id: string): string[] {
     .map((f) => `/media/${id}/${f}`);
 }
 
-export async function guardarMedio(id: string, file: File): Promise<string> {
+/* ----------------------- Optimización de fotos al subir ----------------------- */
+
+/** Ancho máximo de una foto subida: la hoja mide 800 unidades; 2000 px sobra para pantallas de alta densidad. */
+const ANCHO_MAX_FOTO = 2000;
+/** Fotos que ya son pequeñas se dejan como están (cada recompresión pierde calidad). */
+const PESO_MIN_OPTIMIZAR = 150 * 1024;
+
+export type MedioGuardado = {
+  src: string;
+  /** Si la foto se redujo: peso original y final (bytes), formato y ancho final. */
+  optimizado?: { antes: number; despues: number; formato: string; ancho?: number };
+};
+
+/**
+ * Reduce y comprime una foto (jpg, png o webp) si vale la pena: gira según la orientación de la cámara, la limita a 2000 px de ancho, quita los
+ * metadatos (ubicación, cámara…) y la recomprime. Un PNG sin transparencia grande pasa a WebP (mucho más ligero); los PNG con transparencia siguen
+ * siendo PNG. GIF, AVIF, video y webp animado no se tocan. Devuelve null si no se puede o no se ahorra al menos un 5 %.
+ * `sharp` (lo trae Next) se carga al usarlo: si no estuviera, la foto se guarda sin optimizar.
+ */
+async function optimizarFoto(datos: Buffer, ext: string): Promise<{ buffer: Buffer; ext: string; ancho?: number } | null> {
+  if (!["jpg", "jpeg", "png", "webp"].includes(ext) || datos.length < PESO_MIN_OPTIMIZAR) return null;
+  try {
+    const sharp = (await import("sharp")).default;
+    const meta = await sharp(datos, { failOn: "none" }).metadata();
+    if ((meta.pages ?? 1) > 1) return null; // animada
+    let tuberia = sharp(datos, { failOn: "none" }).rotate().resize({ width: ANCHO_MAX_FOTO, withoutEnlargement: true });
+    let salida = ext === "jpeg" ? "jpg" : ext;
+    // Muchos PNG (capturas de pantalla) traen canal alfa aunque todo sea opaco: solo cuenta como transparente si de verdad lo es.
+    const opaca = ext === "png" ? !meta.hasAlpha || (await sharp(datos, { failOn: "none" }).stats()).isOpaque : false;
+    if (ext === "png" && opaca) {
+      tuberia = tuberia.webp({ quality: 85 });
+      salida = "webp";
+    } else if (ext === "png") tuberia = tuberia.png({ compressionLevel: 9, effort: 8 });
+    else if (ext === "webp") tuberia = tuberia.webp({ quality: 82 });
+    else tuberia = tuberia.jpeg({ quality: 82, mozjpeg: true });
+    const { data, info } = await tuberia.toBuffer({ resolveWithObject: true });
+    if (data.length > datos.length * 0.95) return null;
+    return { buffer: data, ext: salida, ancho: info.width };
+  } catch {
+    return null; // cualquier problema: se conserva el archivo original
+  }
+}
+
+export async function guardarMedio(id: string, file: File, conservarOriginal = false): Promise<MedioGuardado> {
   const dir = dirMedios(id);
   const ext = path.extname(file.name).slice(1).toLowerCase();
   if (!(ext in TIPOS_MEDIO)) throw new ErrorAdmin(`Formato no permitido (.${ext}). Usa: ${Object.keys(TIPOS_MEDIO).join(", ")}.`);
@@ -335,10 +381,17 @@ export async function guardarMedio(id: string, file: File): Promise<string> {
       .toLowerCase()
       .slice(0, 60) || "archivo";
 
-  fs.mkdirSync(dir, { recursive: true });
-  let nombre = `${base}.${ext}`;
-  for (let n = 2; fs.existsSync(path.join(dir, nombre)); n++) nombre = `${base}-${n}.${ext}`;
+  const original = Buffer.from(await file.arrayBuffer());
+  const optimizada = conservarOriginal ? null : await optimizarFoto(original, ext);
+  const extFinal = optimizada?.ext ?? ext;
 
-  fs.writeFileSync(path.join(dir, nombre), Buffer.from(await file.arrayBuffer()));
-  return `/media/${id}/${nombre}`;
+  fs.mkdirSync(dir, { recursive: true });
+  let nombre = `${base}.${extFinal}`;
+  for (let n = 2; fs.existsSync(path.join(dir, nombre)); n++) nombre = `${base}-${n}.${extFinal}`;
+
+  fs.writeFileSync(path.join(dir, nombre), optimizada?.buffer ?? original);
+  return {
+    src: `/media/${id}/${nombre}`,
+    ...(optimizada ? { optimizado: { antes: original.length, despues: optimizada.buffer.length, formato: extFinal, ancho: optimizada.ancho } } : {}),
+  };
 }

@@ -356,6 +356,10 @@ type ElementoBase = {
   animacion?: AnimacionEl;
   /** Tapa el elemento con este texto hasta que el lector lo toca (p. ej. la respuesta de una trivia). */
   revelar?: string;
+  /** Bloqueado en el editor: no se puede seleccionar con el ratón ni mover o borrar por accidente (se desbloquea desde la lista de capas o su panel). No cambia cómo se ve la página. */
+  bloqueado?: boolean;
+  /** Oculto: no se dibuja en el sitio ni en las vistas previas (ni cuenta en el buscador). Sirve para guardar una versión alternativa sin borrarla. */
+  oculto?: boolean;
   /** Efecto al pasar el cursor por encima (se ve en el sitio publicado y en la vista previa, no al editar). */
   hover?: Hover;
   /** Movimiento continuo (flotar, latir…); se ve en el sitio publicado y en la vista previa. */
@@ -733,11 +737,45 @@ export type Pagina = {
   movil?: "escala" | "apilar";
   /** Orden manual de la columna del celular: ids de elementos. Los que no estén aquí van al final, por su posición. */
   ordenMovil?: string[];
+  /** Esta página NO lleva los elementos repetidos de la edición (la portada, por ejemplo). */
+  sinMaestra?: boolean;
   /** Guías de alineación del editor (posiciones en unidades de la hoja). No se dibujan en el sitio publicado. */
   guias?: { v?: number[]; h?: number[] };
 };
 
 /** Contenido de un archivo de edición (el `id` es el nombre del archivo). */
+/**
+ * Elementos que se repiten en todas las páginas de lienzo de una edición (encabezado, pie, número de página, marca de agua…): se editan una sola vez
+ * y se agregan a cada página al leer la edición. Sus textos pueden llevar {n} (número de la página donde caen). Una página los omite con `sinMaestra`.
+ */
+export type Maestra = {
+  elementos: Elemento[];
+  /** «debajo»: detrás del contenido de cada página; «encima» (por defecto): delante. */
+  capa?: "encima" | "debajo";
+};
+
+/** Los elementos repetidos llegan a cada página con el id con este prefijo (para no confundirlos con los propios). */
+export const PREFIJO_REPETIDO = "m-";
+export const esRepetido = (e: { id?: string }) => !!e.id?.startsWith(PREFIJO_REPETIDO);
+
+/**
+ * La página `p` con los elementos repetidos de la edición ya agregados (devuelve la misma página si no aplica: no es de lienzo, la omite o no hay).
+ * En la columna del celular, los de arriba de la hoja van al principio y el resto al final. Función pura: la usan el sitio y el editor.
+ */
+export function aplicarMaestra(p: Pagina, m: Maestra | undefined): Pagina {
+  if (!m || m.elementos.length === 0 || p.plantilla !== "lienzo" || p.sinMaestra) return p;
+  const copias = m.elementos.map((e, i) => ({ ...e, id: `${PREFIJO_REPETIDO}${e.id ?? i}` }) as Elemento);
+  const propios = p.elementos ?? [];
+  let ordenMovil = p.ordenMovil;
+  if (ordenMovil) {
+    const alto = p.alto ?? ALTO_LIENZO;
+    const arriba = copias.filter((e) => e.y + e.h / 2 < alto / 3).map((e) => e.id as string);
+    const abajo = copias.filter((e) => e.y + e.h / 2 >= alto / 3).map((e) => e.id as string);
+    ordenMovil = [...arriba, ...ordenMovil, ...abajo];
+  }
+  return { ...p, elementos: m.capa === "debajo" ? [...copias, ...propios] : [...propios, ...copias], ...(ordenMovil ? { ordenMovil } : {}) };
+}
+
 export type EdicionDatos = {
   numero: string;
   /** AAAA-MM-DD */
@@ -751,6 +789,8 @@ export type EdicionDatos = {
   numeroFijo?: boolean;
   /** Publicación programada: AAAA-MM-DDTHH:mm, hora de Ciudad de México. Antes de ese momento la edición no aparece. */
   publicarEn?: string;
+  /** Elementos que se repiten en todas las páginas de lienzo. */
+  maestra?: Maestra;
   paginas: Pagina[];
 };
 
@@ -909,3 +949,4 @@ export function paginaDesdePlantilla(p: Pagina): Pagina {
   }
   return copia;
 }
+

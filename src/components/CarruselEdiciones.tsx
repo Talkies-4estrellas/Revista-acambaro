@@ -87,8 +87,10 @@ export default function CarruselEdiciones({ children, className, etiqueta }: { c
               onClick={() => ir(i)}
               aria-label={`Edición ${i + 1} de ${total}`}
               aria-current={i === activo}
-              className={`h-2 rounded-full transition-all ${i === activo ? "w-6 bg-terracota" : "w-2 bg-ink/30"}`}
-            />
+              className="flex h-9 min-w-7 items-center justify-center px-0.5" // el punto es chico, pero el área para tocarlo no
+            >
+              <span aria-hidden className={`block h-2 rounded-full transition-all ${i === activo ? "w-6 bg-terracota" : "w-2 bg-ink/30"}`} />
+            </button>
           ))}
         </div>
       )}
