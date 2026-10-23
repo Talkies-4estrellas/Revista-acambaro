@@ -211,8 +211,13 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   if (e.enlace !== undefined) {
     const ok = Number.isInteger(e.enlace)
       ? (e.enlace as number) >= 1 && (e.enlace as number) <= total
-      : typeof e.enlace === "string" && /^(https?:\/\/|\/(?!\/)|#[\w-]{1,40}$)/.test(e.enlace);
-    if (!ok) fail(c, `"enlace" debe ser un número de página entre 1 y ${total}, un "#identificador" de página, una dirección https:// o una ruta del sitio (ej. "/suscribirse")`);
+      : typeof e.enlace === "string" && /^(https?:\/\/|mailto:[^\s@]+@[^\s@]+$|tel:\+?[\d\s().-]{5,30}$|\/(?!\/)|#[\w-]{1,40}$)/.test(e.enlace);
+    if (!ok) fail(c, `"enlace" debe ser un número de página entre 1 y ${total}, un "#identificador" de página, una dirección https://, un correo (mailto:), un teléfono (tel:) o una ruta del sitio (ej. "/suscribirse")`);
+  }
+  if (e.dato !== undefined) {
+    if (!isObj(e.dato) || typeof e.dato.fecha !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(e.dato.fecha)) fail(c, '"dato" necesita una "fecha" AAAA-MM-DD');
+    if (e.dato.fuente !== undefined && !(typeof e.dato.fuente === "string" && e.dato.fuente.length <= 200)) fail(c, '"dato.fuente" debe ser un texto de hasta 200 caracteres');
+    checkNum(e.dato.dias, c, "dato.dias", 1, 365);
   }
   checkUrl(e.src, c, "src");
   checkUrl(e.poster, c, "poster");
@@ -509,7 +514,7 @@ export function getEdiciones(): Edicion[] {
 }
 
 export const getEdicion = (id: string) => getEdiciones().find((e) => e.id === id);
-/** Ediciones visibles al público ahora mismo: publicadas y cuya hora programada ya llegó. */
+/** Ediciones visibles al público ahora mismo: publicadas y con su hora programada ya cumplida. */
 export const getPublicadas = () => {
   const ahora = Date.now();
   return getEdiciones().filter((e) => estadoEdicion(e, ahora) === "publicada");

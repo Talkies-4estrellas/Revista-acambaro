@@ -14,6 +14,7 @@
 | `L-ARecurso 8/` | Recursos de marca (arte original) |
 | `scripts/generar-iconos.mjs` | Genera el catálogo de iconos del editor (`src/lib/iconos-datos.ts`) |
 | `Doc/` | Esta carpeta: documentación y sesiones |
+| `Doc/anuncios-google/` | Imágenes de referencia con los lugares posibles para anuncios de Google (no implementado) |
 
 ---
 
@@ -23,7 +24,7 @@
 | `content/ediciones/NN.json` | Una edición por archivo (el nombre es el id). 01–13 de ejemplo; **14** = N.º 10 «Los Azufres» (55 págs.); **15** = edición demo resumida (24 págs.) |
 | `content/plantillas/` | Plantillas de página guardadas por el usuario (se comparten entre ediciones) |
 | `content/elementos/` | «Mis elementos»: grupos de elementos guardados por el usuario (se comparten entre ediciones; sus imágenes en `public/media/_plantillas/el-<id>/`) |
-| `content/clics.json` | Conteo de clics en enlaces externos (anuncios) |
+| `content/clics.json`, `content/vistas.json` | Conteo de clics en enlaces y de vistas por página (estadísticas) |
 | `content/suscriptores.json` | Suscriptores del newsletter |
 | `content/papelera/` | Borradores borrados desde el panel (recuperables) |
 | `content/respaldos/<id>/` | Versiones anteriores de cada edición (una copia antes de guardar, como mucho cada 3 min; las últimas 40). No se sube al repositorio |
@@ -51,7 +52,7 @@
 | `/admin/[id]` | `app/admin/[id]/page.tsx` | Editor de una edición |
 | `/admin/clics`, `/admin/newsletter` | `app/admin/clics`, `app/admin/newsletter` | Estadística de clics y suscriptores/correo |
 | `/api/admin/*` | `app/api/admin/...` | Ediciones, medios, plantillas, clics, suscriptores (solo en local) |
-| `/api/clic`, `/api/suscribir`, `/api/baja` | `app/api/...` | Registro de clics y newsletter (públicos) |
+| `/api/clic`, `/api/vista`, `/api/suscribir`, `/api/baja` | `app/api/...` | Registro de clics y vistas, y newsletter (públicos) |
 | `globals.css` | `app/globals.css` | Variables de color (modo claro/oscuro), `.paleta-clara`, contenedores del lienzo |
 | `layout.tsx` | `app/layout.tsx` | Raíz: fuentes, script del tema (claro/oscuro) |
 
@@ -70,7 +71,7 @@
 | `plantillas-anuncio.ts` | 7 plantillas de publicidad |
 | `plantillas-editorial.ts` | 3 **collages de anuncios** + 3 plantillas de noticias y cómic |
 | `busqueda.ts` | Índice de búsqueda |
-| `clics.ts`, `suscriptores.ts`, `newsletter.ts` | Clics, suscriptores y correo de cada edición |
+| `clics.ts`, `vistas.ts`, `suscriptores.ts`, `newsletter.ts` | Clics, vistas, suscriptores y correo de cada edición |
 | `animaciones.ts`, `transiciones.ts`, `iconos-datos.ts` | Catálogos del editor |
 
 ## `src/components/` — Interfaz
@@ -84,7 +85,7 @@
 | `Logo.tsx`, `ThemeToggle.tsx` | Logotipo con versión oscura; botón claro/oscuro |
 | `PortadaMini.tsx`, `Ticker.tsx`, `Bloques.tsx`, `Placeholder.tsx` | Portadas pequeñas, cinta y bloques de las plantillas clásicas |
 | `CarruselEdiciones.tsx` | Carrusel «cover flow» de las ediciones anteriores en celular (portada central grande, laterales giradas, puntos) |
-| `EnlaceMedido.tsx`, `FormSuscripcion.tsx`, `AnimacionesLienzo.tsx` | Clics medidos, formulario, animaciones de entrada |
+| `EnlaceMedido.tsx`, `ContarVistas.tsx`, `FormSuscripcion.tsx`, `AnimacionesLienzo.tsx` | Clics medidos, formulario, animaciones de entrada |
 | `admin/Editor.tsx` | Editor de edición (barra, páginas, identificador de página, revisor) |
 | `admin/EditorLienzo.tsx`, `InspectorLienzo.tsx` | Editor de hoja y propiedades de elementos (enlace «Lleva a», «En el celular») |
 | `admin/Versiones.tsx` | Historial: lista las versiones anteriores del servidor y carga una en el editor |

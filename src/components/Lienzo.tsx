@@ -431,11 +431,11 @@ export function ElementoVista({
   // En el sitio: el elemento puede ser un enlace a otra página o a una dirección externa.
   // En miniaturas no hay enlaces: la miniatura suele ir dentro de otro enlace y un <a> dentro de un <a> es HTML inválido.
   if (el.enlace !== undefined && edicionId && !miniatura) {
-    const externo = typeof el.enlace === "string" && !el.enlace.startsWith("/");
+    const externo = typeof el.enlace === "string" && !el.enlace.startsWith("/") && !/^(mailto|tel):/i.test(el.enlace);
     const href = typeof el.enlace === "string" ? el.enlace : `/ediciones/${edicionId}/${el.enlace}`;
     const props = externo ? { target: "_blank", rel: "noopener noreferrer" } : {};
-    // Los enlaces externos con id se cuentan (ver lib/clics.ts); el resto se comporta como antes.
-    if (externo && el.id && !editor)
+    // Los enlaces a direcciones, correo, teléfono y rutas del sitio con id se cuentan (ver lib/clics.ts); los saltos a páginas de la edición no.
+    if (typeof el.enlace === "string" && el.id && !editor)
       return (
         <EnlaceMedido href={href} edicion={edicionId} elemento={el.id} style={{ ...caja, display: "block", color: "inherit", textDecoration: "none" }}>
           {animado}

@@ -157,6 +157,7 @@ const COLOR_NIVEL: Record<Aviso["nivel"], string> = {
 export default function RevisorDiseno({
   edicionId,
   paginas,
+  fecha,
   sucio,
   paginaActual,
   onIr,
@@ -164,6 +165,8 @@ export default function RevisorDiseno({
 }: {
   edicionId: string;
   paginas: Pagina[];
+  /** Fecha de la edición (AAAA-MM-DD): los datos con fecha se miden contra ella. */
+  fecha?: string;
   /** Hay cambios sin guardar: la revisión visual mira la última versión guardada. */
   sucio: boolean;
   /** Índice (desde 0) de la página abierta en el editor. */
@@ -171,7 +174,7 @@ export default function RevisorDiseno({
   onIr: (indice: number) => void;
   onCerrar: () => void;
 }) {
-  const datosAvisos = useMemo(() => revisarDatos(paginas), [paginas]);
+  const datosAvisos = useMemo(() => revisarDatos(paginas, fecha), [paginas, fecha]);
   const [visuales, setVisuales] = useState<Aviso[]>([]);
   const [progreso, setProgreso] = useState<{ hecho: number; total: number } | null>(null);
   const [terminado, setTerminado] = useState(false);

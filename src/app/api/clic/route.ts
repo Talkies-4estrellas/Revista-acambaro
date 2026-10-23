@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { registrarClic } from "@/lib/clics";
 
-/** Cuenta un clic en un enlace externo de la revista. Siempre responde 204: no debe estorbar a quien lee. */
+/** Cuenta un clic en un enlace de la revista (dirección, correo, teléfono o ruta del sitio). Siempre responde 204: no debe estorbar a quien lee. */
 export async function POST(req: Request) {
   const origin = req.headers.get("origin");
   if (origin) {

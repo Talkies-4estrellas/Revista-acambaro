@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 
 /**
- * Enlace externo de la revista que avisa al servidor cuando alguien lo toca (para el conteo de clics de los
- * anunciantes). El aviso va con sendBeacon: no retrasa la apertura del enlace ni falla si el servidor no responde.
+ * Enlace de la revista que avisa al servidor cuando alguien lo toca (para el conteo de clics de los anunciantes).
+ * Cubre direcciones https, correo, teléfono y rutas del sitio; el aviso va con sendBeacon: no retrasa la apertura del
+ * enlace ni falla si el servidor no responde. Solo las direcciones https se abren en otra pestaña.
  */
 export default function EnlaceMedido({ href, edicion, elemento, style, children }: { href: string; edicion: string; elemento?: string; style?: CSSProperties; children: ReactNode }) {
   const avisar = () => {
@@ -16,8 +18,16 @@ export default function EnlaceMedido({ href, edicion, elemento, style, children 
       // Sin conteo; el enlace funciona igual.
     }
   };
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} style={style} onClick={avisar} onAuxClick={avisar}>
+        {children}
+      </Link>
+    );
+  }
+  const web = /^https?:\/\//i.test(href);
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={style} onClick={avisar} onAuxClick={avisar}>
+    <a href={href} {...(web ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={style} onClick={avisar} onAuxClick={avisar}>
       {children}
     </a>
   );

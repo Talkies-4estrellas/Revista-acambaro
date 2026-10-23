@@ -37,7 +37,7 @@ import {
 import { BUCLES, BUCLES_IDS, EFECTOS, EFECTOS_IDS, HOVERS, HOVERS_IDS, esEfectoTexto, type Efecto } from "@/lib/animaciones";
 import { ICONOS } from "@/lib/iconos-datos";
 import { IconoSvg } from "@/components/Lienzo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Area,
   Campo,
@@ -258,7 +258,28 @@ export function InspectorMultiple({
 
 const num = (v: number | undefined, d: number) => (Number.isFinite(v as number) ? (v as number) : d);
 
-/** «Lleva a»: con muchas páginas (ediciones largas) añade un buscador por número, título o identificador. */
+type TipoDestino = "" | "pagina" | "ancla" | "suscribirse" | "inicio" | "buscar" | "edicion" | "correo" | "telefono" | "whatsapp" | "ruta" | "externo";
+
+/** A qué clase de destino apunta un enlace (para elegir el campo de edición adecuado). */
+function tipoDestino(enlace: Elemento["enlace"]): TipoDestino {
+  if (enlace === undefined || enlace === "") return "";
+  if (typeof enlace === "number") return "pagina";
+  if (enlace.startsWith("#")) return "ancla";
+  if (enlace === "/suscribirse") return "suscribirse";
+  if (enlace === "/") return "inicio";
+  if (enlace === "/buscar") return "buscar";
+  if (/^\/ediciones\/[\w-]*(\/\d+)?$/.test(enlace)) return "edicion";
+  if (/^mailto:/i.test(enlace)) return "correo";
+  if (/^tel:/i.test(enlace)) return "telefono";
+  if (/^https:\/\/wa\.me\//i.test(enlace)) return "whatsapp";
+  if (enlace.startsWith("/")) return "ruta";
+  return "externo";
+}
+
+type EdicionLista = { id: string; numero: string; tema: string; paginas: number; publicada: boolean };
+let cacheEdiciones: EdicionLista[] | null = null;
+
+/** «Lleva a»: páginas de esta edición, otra edición, inicio, correo, teléfono, WhatsApp o una dirección externa. Con muchas páginas añade un buscador. */
 function SelectorDestino({
   enlace,
   paginas,
@@ -271,20 +292,40 @@ function SelectorDestino({
   onChange: (enlace: Elemento["enlace"]) => void;
 }) {
   const [filtro, setFiltro] = useState("");
-  const valor =
-    typeof enlace === "number"
-      ? String(enlace)
-      : enlace === "/suscribirse"
-        ? "suscribirse"
-        : typeof enlace === "string" && enlace.startsWith("#")
-          ? enlace
-          : enlace
-            ? "externo"
-            : "";
+  const [ediciones, setEdiciones] = useState<EdicionLista[]>(cacheEdiciones ?? []);
+  const tipo = tipoDestino(enlace);
+  const texto = typeof enlace === "string" ? enlace : "";
+  useEffect(() => {
+    if (tipo !== "edicion" || cacheEdiciones) return;
+    let vivo = true;
+    fetch("/api/admin/ediciones")
+      .then((r) => r.json())
+      .then((d: { ediciones?: EdicionLista[] }) => {
+        cacheEdiciones = d.ediciones ?? [];
+        if (vivo) setEdiciones(cacheEdiciones);
+      })
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [tipo]);
+
+  const valor = tipo === "pagina" ? String(enlace) : tipo === "ancla" ? texto : tipo === "ruta" ? "externo" : tipo;
   const f = filtro.trim().toLowerCase();
   const opciones = paginas
     .map((t, i) => ({ t, i, valor: anclas?.[i] ? `#${anclas[i]}` : String(i + 1), ancla: anclas?.[i] }))
     .filter((o) => !f || o.valor === valor || `${o.i + 1} ${o.t} ${o.ancla ?? ""}`.toLowerCase().includes(f));
+
+  const [, edId = "", edPag = ""] = /^\/ediciones\/([\w-]*)(?:\/(\d+))?$/.exec(texto) ?? [];
+  const destinoEdicion = (id: string, pag: string) => (id ? (pag ? `/ediciones/${id}/${pag}` : `/ediciones/${id}`) : "/ediciones/");
+  const wa = /^https:\/\/wa\.me\/(\d*)(?:\?text=(.*))?$/i.exec(texto);
+  const waNum = wa?.[1] ?? "";
+  let waMsg = "";
+  try {
+    waMsg = decodeURIComponent(wa?.[2] ?? "");
+  } catch {}
+  const destinoWa = (num: string, msg: string) => `https://wa.me/${num.replace(/\D/g, "")}${msg.trim() ? `?text=${encodeURIComponent(msg.trim())}` : ""}`;
+
   return (
     <>
       {paginas.length > 12 && (
@@ -298,20 +339,80 @@ function SelectorDestino({
           value={valor}
           onChange={(e) => {
             const v = e.target.value;
-            onChange(v === "" ? undefined : v === "externo" ? "https://" : v === "suscribirse" ? "/suscribirse" : v.startsWith("#") ? v : Number(v));
+            if (v === "") onChange(undefined);
+            else if (v === "externo") onChange("https://");
+            else if (v === "suscribirse") onChange("/suscribirse");
+            else if (v === "inicio") onChange("/");
+            else if (v === "buscar") onChange("/buscar");
+            else if (v === "edicion") onChange(destinoEdicion(cacheEdiciones?.find((x) => x.publicada)?.id ?? "", ""));
+            else if (v === "correo") onChange("mailto:");
+            else if (v === "telefono") onChange("tel:");
+            else if (v === "whatsapp") onChange("https://wa.me/");
+            else onChange(v.startsWith("#") ? v : Number(v));
           }}
         >
           <option value="">Sin enlace</option>
-          {opciones.map((o) => (
-            <option key={o.i} value={o.valor}>
-              Página {o.i + 1}: {o.t}
-              {o.ancla ? ` · #${o.ancla}` : ""}
-            </option>
-          ))}
-          <option value="suscribirse">Formulario de suscripción (newsletter)</option>
-          <option value="externo">Dirección externa…</option>
+          <optgroup label="Esta edición">
+            {opciones.map((o) => (
+              <option key={o.i} value={o.valor}>
+                Página {o.i + 1}: {o.t}
+                {o.ancla ? ` · #${o.ancla}` : ""}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Otras partes de la revista">
+            <option value="edicion">Otra edición (y su página)…</option>
+            <option value="inicio">Inicio de la revista</option>
+            <option value="buscar">Buscador</option>
+            <option value="suscribirse">Formulario de suscripción (newsletter)</option>
+          </optgroup>
+          <optgroup label="Contacto y fuera de la revista">
+            <option value="correo">Escribir un correo…</option>
+            <option value="telefono">Llamar por teléfono…</option>
+            <option value="whatsapp">Abrir WhatsApp…</option>
+            <option value="externo">Otra dirección web…</option>
+          </optgroup>
         </select>
       </Campo>
+      {tipo === "edicion" && (
+        <>
+          <Campo label="Edición">
+            <select className={inputCls} value={edId} onChange={(e) => onChange(destinoEdicion(e.target.value, edPag))}>
+              {!ediciones.some((x) => x.id === edId) && <option value={edId}>{edId ? `Edición ${edId}` : "Elige una edición…"}</option>}
+              {ediciones.map((x) => (
+                <option key={x.id} value={x.id}>
+                  N.º {x.numero} · {x.tema}
+                  {x.publicada ? "" : " (borrador)"}
+                </option>
+              ))}
+            </select>
+          </Campo>
+          <Campo label="Página (vacío = portada)">
+            <input className={inputCls} inputMode="numeric" value={edPag} onChange={(e) => onChange(destinoEdicion(edId, e.target.value.replace(/\D/g, "").slice(0, 3)))} placeholder="Ej. 5" />
+          </Campo>
+          <p className="font-sans text-[0.7rem] text-ink-soft">Solo funciona si esa edición está publicada. El enlace queda fijo al número de página: si luego la mueves, vuelve a elegirla.</p>
+        </>
+      )}
+      {tipo === "correo" && (
+        <Campo label="Correo">
+          <input className={inputCls} type="email" value={texto.replace(/^mailto:/i, "")} onChange={(e) => onChange(`mailto:${e.target.value.trim()}`)} placeholder="anuncios@ejemplo.com" />
+        </Campo>
+      )}
+      {tipo === "telefono" && (
+        <Campo label="Teléfono">
+          <input className={inputCls} type="tel" value={texto.replace(/^tel:/i, "")} onChange={(e) => onChange(`tel:${e.target.value.replace(/[^\d+\s().-]/g, "")}`)} placeholder="+52 417 000 0000" />
+        </Campo>
+      )}
+      {tipo === "whatsapp" && (
+        <>
+          <Campo label="Número (con lada de país)">
+            <input className={inputCls} inputMode="tel" value={waNum} onChange={(e) => onChange(destinoWa(e.target.value, waMsg))} placeholder="5214170000000" />
+          </Campo>
+          <Campo label="Mensaje inicial (opcional)">
+            <input className={inputCls} value={waMsg} onChange={(e) => onChange(destinoWa(waNum, e.target.value))} placeholder="Hola, vi su anuncio en ACOM-Di…" />
+          </Campo>
+        </>
+      )}
     </>
   );
 }
@@ -573,9 +674,39 @@ export function InspectorElemento({
       </Panel>
 
 
+      <Panel
+        titulo="Dato con fecha"
+        plegable
+        abierto={el.dato !== undefined}
+        resumen={el.dato ? el.dato.fecha : "Sin fecha"}
+        ayuda="Para cifras, precios o noticias que envejecen: anota de cuándo es el dato y de dónde salió. El revisor avisa cuando pasan días de más antes de publicar."
+      >
+        <Interruptor label="Este elemento es un dato que envejece" value={el.dato !== undefined} onChange={(v) => set({ dato: v ? { fecha: new Date().toISOString().slice(0, 10) } : undefined })} />
+        {el.dato && (
+          <>
+            <Campo label="Fecha del dato">
+              <input className={inputCls} type="date" value={el.dato.fecha} onChange={(e) => e.target.value && set({ dato: { ...el.dato!, fecha: e.target.value } }, "dato")} />
+            </Campo>
+            <Texto label="Fuente" value={el.dato.fuente} onChange={(v) => set({ dato: { ...el.dato!, fuente: v || undefined } }, "dato")} placeholder="INEGI, Uno TV… (con enlace si lo tienes)" />
+            <Campo label="Vale por (días)">
+              <input
+                className={inputCls}
+                type="number"
+                min={1}
+                max={365}
+                value={el.dato.dias ?? 7}
+                onChange={(e) => set({ dato: { ...el.dato!, dias: Math.min(365, Math.max(1, Number(e.target.value) || 7)) } }, "dato")}
+              />
+            </Campo>
+            <button type="button" className="font-sans w-full border border-ink px-2 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper" onClick={() => set({ dato: { ...el.dato!, fecha: new Date().toISOString().slice(0, 10) } })}>
+              ✓ Verificado hoy
+            </button>
+          </>
+        )}
+      </Panel>
       <Panel titulo="Enlace" plegable abierto={el.enlace !== undefined} resumen={el.enlace === undefined ? "Sin enlace" : typeof el.enlace === "number" ? `Página ${el.enlace}` : el.enlace.slice(0, 30)} ayuda="Al hacer clic en el elemento (en el sitio publicado).">
         <SelectorDestino enlace={el.enlace} paginas={paginas} anclas={anclas} onChange={(enlace) => set({ enlace })} />
-        {typeof el.enlace === "string" && el.enlace !== "/suscribirse" && !el.enlace.startsWith("#") && (
+        {(tipoDestino(el.enlace) === "externo" || tipoDestino(el.enlace) === "ruta") && typeof el.enlace === "string" && (
           <Texto label="Dirección" value={el.enlace} onChange={(v) => set({ enlace: v || undefined }, "enlace")} placeholder="https://…" />
         )}
       </Panel>

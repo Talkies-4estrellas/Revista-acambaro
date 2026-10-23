@@ -14,8 +14,12 @@ const RELLENO = /000 000|Nombre y apellido|lorem ipsum|WhatsApp · correo|https?
  * Revisión que solo mira los datos de la edición (no necesita dibujar nada): anuncios seguidos, enlaces y textos de
  * ejemplo sin reemplazar, imágenes sin texto alternativo. Es instantánea y se puede repetir en cada cambio.
  */
-export function revisarDatos(paginas: Pagina[]): Aviso[] {
+export function revisarDatos(paginas: Pagina[], fechaEdicion?: string, hoy = new Date()): Aviso[] {
   const avisos: Aviso[] = [];
+  // Los datos con fecha se comparan con el día en que la gente leerá la edición: el de publicación si aún no llega, o hoy.
+  const hoyIso = hoy.toISOString().slice(0, 10);
+  const lectura = fechaEdicion && /^\d{4}-\d{2}-\d{2}$/.test(fechaEdicion) && fechaEdicion > hoyIso ? fechaEdicion : hoyIso;
+  const dias = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)) / 86_400_000);
 
   for (const n of anunciosSeguidos(paginas)) {
     avisos.push({ pagina: n, nivel: "info", tipo: "Anuncios seguidos", texto: "Esta página es un anuncio y junto a ella hay otro. Conviene intercalar contenido para que la publicidad no canse." });
@@ -45,6 +49,18 @@ export function revisarDatos(paginas: Pagina[]): Aviso[] {
     const sinCredito = elementos.filter((e) => e.tipo === "imagen" && !!e.src && e.src.startsWith("/media/") && !/logo|brand|emblema/i.test(e.src) && e.w * e.h > 40000 && !(e.credito ?? "").trim());
     if (usaCreditos && sinCredito.length) {
       avisos.push({ pagina: n, nivel: "info", tipo: "Foto sin crédito", texto: `${sinCredito.length} imagen(es) sin crédito en su ficha. Si la foto no es tuya, escribe el autor y la licencia (Crédito) y usa {creditos} en la página de créditos.` });
+    }
+
+    const viejos = elementos.filter((e) => e.dato && dias(e.dato.fecha, lectura) > (e.dato.dias ?? 7));
+    if (viejos.length) {
+      const peor = viejos.reduce((m, e) => (dias(e.dato!.fecha, lectura) > dias(m.dato!.fecha, lectura) ? e : m));
+      const muestra = peor.tipo === "texto" ? peor.texto.replace(/\s+/g, " ").slice(0, 40) : (peor.tipo === "imagen" ? peor.alt : "") ?? "";
+      avisos.push({
+        pagina: n,
+        nivel: "aviso",
+        tipo: "Dato desactualizado",
+        texto: `${viejos.length} dato(s) con fecha vieja (el más antiguo, de hace ${dias(peor.dato!.fecha, lectura)} días${muestra ? `: «${muestra}»` : ""}${peor.dato!.fuente ? `, fuente: ${peor.dato!.fuente}` : ""}). Verifica la cifra y pulsa «Verificado hoy» en su ficha.`,
+      });
     }
 
     const botonesSinEnlace = elementos.filter((e) => e.tipo === "texto" && e.boton && (e.enlace === undefined || e.enlace === ""));

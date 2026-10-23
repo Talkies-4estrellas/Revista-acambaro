@@ -1,5 +1,17 @@
 import { NextResponse } from "next/server";
+import { getEdiciones } from "@/lib/ediciones";
 import { ErrorAdmin, crearEdicion, crearResumen, verificarId, verificarPeticion } from "@/lib/admin";
+
+/** Lista corta de ediciones (para elegir a cuál lleva un enlace). */
+export async function GET(req: Request) {
+  try {
+    verificarPeticion(req);
+    const lista = getEdiciones().map((e) => ({ id: e.id, numero: e.numero, tema: e.tema, paginas: e.paginas.length, publicada: e.publicada }));
+    return NextResponse.json({ ediciones: lista });
+  } catch (e) {
+    return responderError(e);
+  }
+}
 
 export async function POST(req: Request) {
   try {

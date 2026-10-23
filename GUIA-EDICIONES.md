@@ -257,6 +257,10 @@ En la lista de **Capas** (panel de la derecha), cada fila trae dos botones:
   cambiarlo, elígelo en la lista de capas (aparece «🔒 Bloqueado») y desbloquéalo. También con el interruptor del panel «Posición y tamaño» o con el botón **🔒** sobre la hoja (bloquea lo seleccionado). Ideal para el fondo o el marco de una página.
 - **👁 / 🚫 Ocultar:** el elemento **no se ve en la página publicada**, ni en el celular, ni en el buscador; en el editor desaparece de la hoja y queda tachado en las capas. Sirve para guardar una versión alternativa sin borrarla.
 
+## Datos que envejecen (cifras, precios, noticias)
+
+En un elemento, panel **Dato con fecha**: activa «Este elemento es un dato que envejece», anota la **fecha del dato**, la **fuente** y cuántos **días vale** (7 por omisión). Al pulsar **✓ Revisar diseño**, el revisor avisa («Dato desactualizado») de los datos con más días de la cuenta respecto al día de lectura (hoy, o la fecha de la edición si es posterior). Cuando verifiques la cifra, entra al elemento y pulsa **✓ Verificado hoy**. El editor no trae las cifras solo: solo te recuerda cuáles revisar.
+
 ## Elementos que se repiten en todas las páginas (encabezado, pie, número de página)
 
 Para algo que debe estar en **todas** las páginas (el nombre de la revista, una línea, el número de página, una marca de agua), no lo copies a mano en cada una:
@@ -540,6 +544,7 @@ Van dentro de `reportaje`, `galeria`, `video` y `libre`, en el orden en que se e
 
 - En el editor, **Plantillas → Publicidad** trae siete formatos de anuncio (página completa, dos medias, mosaico de 4, campaña de temporada, contenido patrocinado, cupones y «Con el apoyo de»). Todas llevan la etiqueta «Publicidad» y la sección «Publicidad».
 - Para que un anuncio cuente clics, selecciona su imagen o texto y escribe su dirección en **Enlace** (`https://…`, o `https://wa.me/52…` para WhatsApp).
-- **Reporte:** `/admin/clics` (botón «↗ Clics» del panel) muestra clics por edición y por enlace (últimos 7 días, últimos 30 y total) y se exporta a CSV.
-- Solo se cuentan enlaces externos de ediciones **publicadas**; un mismo visitante suma una vez cada 10 minutos por enlace. Tus propias pruebas en el sitio también suman.
-- Los datos se guardan en `content/clics.json` (no se sube a git). En Vercel el disco es de solo lectura: define la variable `CLICS_WEBHOOK_URL` y cada clic se enviará por POST (JSON: `fecha, edicion, pagina, elemento, url, etiqueta, anuncio`) a una hoja de cálculo o servicio (Zapier, Make, Google Apps Script…). Sin webhook, en Vercel los clics no se guardan.
+- **Adónde puede llevar cualquier elemento** (imagen, cuadro, texto o icono; panel **Enlace → Lleva a**): una página de esta edición, **otra edición** (eliges la edición y, si quieres, la página), el inicio, el buscador, la suscripción, un **correo** (`mailto:`), un **teléfono** (`tel:`), **WhatsApp** (número y mensaje inicial) o cualquier dirección web.
+- **Reporte:** `/admin/clics` (botón «↗ Estadísticas» del panel) muestra, por edición, las **vistas** de cada página, los **clics** por enlace (últimos 7 días, 30 y total), la **tasa de clics** (clics ÷ vistas de la página del enlace) y las páginas más vistas; los clics se exportan a CSV. Una página cuenta como vista cuando estuvo un segundo con la mitad o más a la vista; en el celular cuenta cada página que se baja.
+- Se cuentan los enlaces a direcciones, correo, teléfono, WhatsApp y rutas del sitio (los saltos entre páginas de la misma edición no). Solo cuentan ediciones **publicadas**; un mismo visitante suma una vez cada 10 minutos por enlace. Tus propias pruebas en el sitio también suman.
+- Los datos se guardan en `content/clics.json` y `content/vistas.json` (no se suben a git). En Vercel el disco es de solo lectura: define la variable `CLICS_WEBHOOK_URL` y cada clic se enviará por POST (JSON: `fecha, edicion, pagina, elemento, url, etiqueta, anuncio`) a una hoja de cálculo o servicio (Zapier, Make, Google Apps Script…). Sin webhook, en Vercel los clics no se guardan.

@@ -87,7 +87,7 @@ export default function Admin() {
         <h1 className="font-display mt-1 text-5xl font-black italic">Ediciones</h1>
         <div className="flex gap-2">
           <Link href="/admin/clics" className="font-sans border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
-            ↗ Clics
+            ↗ Estadísticas
           </Link>
           <Link href="/admin/newsletter" className="font-sans border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
             ✉ Newsletter

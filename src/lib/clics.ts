@@ -5,7 +5,7 @@ import { getPublicadas } from "./ediciones";
 /**
  * Clics en enlaces externos de la revista (anuncios, redes, sitios de anunciantes). Se cuentan por elemento
  * y por día en content/clics.json (privado: no está en public/ ni se sube a git).
- * Si defines CLICS_WEBHOOK_URL, cada clic también se envía por POST (JSON) a esa dirección; es lo que hay que
+ * Las vistas de página están en vistas.ts. Si defines CLICS_WEBHOOK_URL, cada clic (evento "clic") también se envía por POST (JSON) a esa dirección; es lo que hay que
  * usar en un hosting de solo lectura (p. ej. Vercel), donde no se puede escribir el archivo.
  * Solo se cuentan enlaces que existen de verdad en una edición publicada: el servidor los busca, no confía en el cliente.
  */
@@ -59,7 +59,7 @@ function buscarEnlace(edicionId: string, elementoId: string, url: string) {
     const p = ed.paginas[i];
     const el = p.elementos?.find((x) => x.id === elementoId && typeof x.enlace === "string" && x.enlace === url);
     if (el) {
-      const etiqueta = el.tipo === "imagen" ? (el.alt ?? "") : el.tipo === "texto" ? el.texto : el.tipo === "icono" ? (el.alt ?? el.icono) : "";
+      const etiqueta = el.tipo === "imagen" ? (el.alt ?? "") : el.tipo === "texto" ? el.texto : el.tipo === "icono" ? (el.alt ?? el.icono) : el.tipo === "forma" ? "Cuadro o forma" : "";
       return { pagina: i + 1, etiqueta: etiqueta.replace(/\s+/g, " ").trim().slice(0, 80), anuncio: p.seccion === "Publicidad" };
     }
   }
@@ -69,7 +69,7 @@ function buscarEnlace(edicionId: string, elementoId: string, url: string) {
 /** Devuelve false si el clic no corresponde a un enlace externo real o es un repetido reciente. */
 export async function registrarClic(edicion: unknown, elemento: unknown, url: unknown, visitante: string): Promise<boolean> {
   if (typeof edicion !== "string" || typeof elemento !== "string" || typeof url !== "string") return false;
-  if (edicion.length > 40 || elemento.length > 60 || url.length > 2000 || !/^https?:\/\//i.test(url)) return false;
+  if (edicion.length > 40 || elemento.length > 60 || url.length > 2000 || !/^(https?:\/\/|mailto:|tel:|\/(?!\/))/i.test(url)) return false;
   const hallado = buscarEnlace(edicion, elemento, url);
   if (!hallado) return false;
 
@@ -109,7 +109,7 @@ export async function registrarClic(edicion: unknown, elemento: unknown, url: un
       await fetch(webhook, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ fecha, edicion, pagina: hallado.pagina, elemento, url, etiqueta: hallado.etiqueta, anuncio: hallado.anuncio }),
+        body: JSON.stringify({ evento: "clic", fecha, edicion, pagina: hallado.pagina, elemento, url, etiqueta: hallado.etiqueta, anuncio: hallado.anuncio }),
         signal: AbortSignal.timeout(5000),
       });
     } catch {

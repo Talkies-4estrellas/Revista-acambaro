@@ -739,7 +739,7 @@ export default function Editor({
         </div>
       </div>
       {verVersiones && <Versiones edicionId={id} sucio={sucio} onRestaurar={restaurarVersion} onCerrar={() => setVerVersiones(false)} />}
-      {verRevisor && <RevisorDiseno edicionId={id} paginas={datos.paginas} sucio={sucio} paginaActual={idx} onIr={setSel} onCerrar={() => setVerRevisor(false)} />}
+      {verRevisor && <RevisorDiseno edicionId={id} paginas={datos.paginas} fecha={datos.fecha} sucio={sucio} paginaActual={idx} onIr={setSel} onCerrar={() => setVerRevisor(false)} />}
       {verPlantillas && (
         <PlantillasModal
           paginaActual={pagina}

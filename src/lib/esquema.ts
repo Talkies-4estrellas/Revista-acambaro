@@ -352,6 +352,8 @@ type ElementoBase = {
   enlace?: number | string;
   /** Los elementos con el mismo valor forman un grupo: se seleccionan y mueven juntos. */
   grupo?: string;
+  /** Dato que envejece (una cifra, un precio, una noticia): de cuándo es y de dónde salió. El revisor avisa si pasan más de `dias` (7 si falta) antes de publicar. */
+  dato?: { fecha: string; fuente?: string; dias?: number };
   /** Animación de entrada: se reproduce cuando el elemento entra en pantalla. */
   animacion?: AnimacionEl;
   /** Tapa el elemento con este texto hasta que el lector lo toca (p. ej. la respuesta de una trivia). */

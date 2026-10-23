@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import ContarVistas from "@/components/ContarVistas";
 import PageFlow from "@/components/PageFlow";
 import { etiqueta, getEdicion, getEdiciones, hrefPagina } from "@/lib/ediciones";
 
@@ -27,6 +28,7 @@ export default async function EdicionLayout({
     <>
       {children}
       <PageFlow pages={pages} />
+      <ContarVistas edicion={ed.id} />
     </>
   );
 }

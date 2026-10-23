@@ -72,7 +72,7 @@ Archivo `content/ediciones/NN.json`:
 - **Orden en el celular**, **vista previa móvil**, publicación programada, numeración automática, clics y newsletter (ver guía).
 
 ## Publicidad y clics
-Los enlaces externos de los elementos se miden (`/api/clic`, `content/clics.json`; opcional `CLICS_WEBHOOK_URL`). Los anuncios llevan
+Los enlaces de los elementos (https, `mailto:`, `tel:`, WhatsApp y rutas del sitio) se miden (`/api/clic`, `content/clics.json`; opcional `CLICS_WEBHOOK_URL`, con campo `evento`). Las vistas de página (`ContarVistas` en el layout de la edición → `/api/vista` → `content/vistas.json`, `lib/vistas.ts`) alimentan `/admin/clics` (tasa = clics ÷ vistas de la página). El selector «Lleva a» (`SelectorDestino` en `InspectorLienzo.tsx`) arma el destino; `GET /api/admin/ediciones` lista las ediciones. El campo de elemento `dato {fecha, fuente?, dias?}` lo usa `revisarDatos(paginas, fecha)` (`lib/revision.ts`) para el aviso «Dato desactualizado». Los anuncios llevan
 `seccion: "Publicidad"`. Las marcas de la edición 14 usan logos y fotos descargados de Wikimedia Commons (créditos en la página de
 créditos); las marcas propias (AcambaGo, Erudito Galery, Josman/Fercadi) y sus textos de oferta son de ejemplo.
 
