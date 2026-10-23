@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "verificar-admin": "node scripts/verificar-admin.mjs",
+    "prebuild": "node scripts/verificar-admin.mjs",
     "build": "next build",
     "start": "next start"
   },

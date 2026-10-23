@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import BibliotecaMedios from "./BibliotecaMedios";
 import {
   ANCHOS,
   PROPORCIONES,
@@ -20,6 +21,8 @@ export const btnCls =
 
 type MediosCtx = {
   medios: string[];
+  /** Edición abierta (la biblioteca de medios la usa para separar «esta edición» de las demás). */
+  edicionId?: string;
   subir: (file: File) => Promise<string>;
 };
 export const MediosContext = createContext<MediosCtx>({
@@ -204,7 +207,8 @@ export function CampoArchivo({
   tipo?: "imagen" | "video";
   hint?: string;
 }) {
-  const { medios, subir } = useContext(MediosContext);
+  const { medios, subir, edicionId } = useContext(MediosContext);
+  const [verBiblioteca, setVerBiblioteca] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const [estado, setEstado] = useState<{ cargando: boolean; error?: string }>({ cargando: false });
   const lista = medios.filter((m) => (tipo === "video" ? esVideo(m) : !esVideo(m)));
@@ -244,6 +248,11 @@ export function CampoArchivo({
         <button type="button" className={`${btnCls} shrink-0`} disabled={estado.cargando} onClick={() => input.current?.click()}>
           {estado.cargando ? "Subiendo…" : "Subir"}
         </button>
+        {edicionId && (
+          <button type="button" className={`${btnCls} shrink-0`} onClick={() => setVerBiblioteca(true)} title="Elegir entre todos los archivos ya subidos">
+            Biblioteca
+          </button>
+        )}
         <input
           ref={input}
           type="file"
@@ -252,6 +261,7 @@ export function CampoArchivo({
           onChange={alElegir}
         />
       </div>
+      {verBiblioteca && edicionId && <BibliotecaMedios edicionId={edicionId} tipo={tipo} onElegir={(src) => onChange(src)} onCerrar={() => setVerBiblioteca(false)} />}
       {estado.error && <p className="font-sans mt-1 text-xs text-terracota">{estado.error}</p>}
       {hint && <p className="font-sans mt-1 text-[0.7rem] text-ink-soft">{hint}</p>}
       {value && tipo === "imagen" && !esVideo(value) && (

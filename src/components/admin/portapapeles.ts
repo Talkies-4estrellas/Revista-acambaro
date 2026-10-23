@@ -3,7 +3,7 @@
  * una marca, así se pueden pegar en otra página, otra edición o incluso otra pestaña del panel. Además se
  * guarda una copia interna por si el navegador no deja acceder al portapapeles.
  */
-import { ICONOS } from "@/lib/iconos-datos";
+import { CATALOGO } from "@/lib/catalogo-iconos";
 import type { Elemento } from "@/lib/esquema";
 
 export const MARCA_PORTAPAPELES = "revista-acambaro/elementos";
@@ -51,7 +51,7 @@ export function desdeTexto(texto: string): Carga | null {
         if (typeof o.tipo !== "string" || !TIPOS.includes(o.tipo)) return false;
         if (![o.x, o.y, o.w, o.h].every((n) => typeof n === "number" && Number.isFinite(n))) return false;
         if ((o.w as number) <= 0 || (o.h as number) <= 0) return false;
-        if (o.tipo === "icono" && !(typeof o.icono === "string" && o.icono in ICONOS)) return false;
+        if (o.tipo === "icono" && !(typeof o.icono === "string" && o.icono in CATALOGO)) return false;
         if (o.tipo === "texto" && typeof o.texto !== "string") return false;
         return true;
       })

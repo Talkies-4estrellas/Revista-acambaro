@@ -3,15 +3,19 @@
 import { useMemo, useState } from "react";
 import { ElementoVista, IconoSvg } from "@/components/Lienzo";
 import { CATEGORIAS_ICONO, ICONOS } from "@/lib/iconos-datos";
+import { CATEGORIAS_FIGURA, FIGURAS } from "@/lib/figuras-datos";
 import { ANCHO_LIENZO, BOTONES, type ElementoGuardado, LOGOS, MOLDES, MOLDES_IDS, elementoBoton, estiloMolde, type GrupoBoton, type LogoId, type MoldeId, type PresetElemento } from "@/lib/esquema";
 import { BLOQUES, CATEGORIAS_BLOQUE } from "@/lib/bloques";
 import { btnCls, inputCls } from "./campos";
+import { GaleriaMedios } from "./BibliotecaMedios";
 
 export const TIPO_BIBLIOTECA = "application/x-lienzo";
 
-export type ModoBiblioteca = "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios";
+export type ModoBiblioteca = "subidos" | "figuras" | "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios";
 
 const TITULOS: Record<ModoBiblioteca, string> = {
+  subidos: "Subidos",
+  figuras: "Figuras",
   texto: "Texto",
   formas: "Formas",
   bloques: "Bloques listos",
@@ -87,6 +91,8 @@ export default function BibliotecaLienzo({
   onBloque,
   onPreset,
   mios,
+  edicionId,
+  onSubido,
   seleccionados,
   onGuardarSeleccion,
   onMio,
@@ -108,6 +114,9 @@ export default function BibliotecaLienzo({
   onPreset: (id: PresetElemento) => void;
   /** «Mis elementos» guardados (null mientras se cargan). */
   mios: ElementoGuardado[] | null;
+  /** Edición abierta y qué hacer al tocar un archivo de «Subidos» (agregarlo a la hoja). */
+  edicionId: string;
+  onSubido: (src: string) => void;
   /** Cuántos elementos hay seleccionados en la hoja. */
   seleccionados: number;
   onGuardarSeleccion: () => void;
@@ -129,17 +138,26 @@ export default function BibliotecaLienzo({
     });
   }, [busqueda, categoria]);
 
+  const figuras = useMemo(() => {
+    const q = normalizar(busqueda.trim());
+    return Object.entries(FIGURAS).filter(([id, d]) => {
+      if (categoria !== "Todas" && d.categoria !== categoria) return false;
+      if (!q) return true;
+      return normalizar(`${d.nombre} ${d.etiquetas} ${id}`).includes(q);
+    });
+  }, [busqueda, categoria]);
+
   return (
     <section aria-label={TITULOS[modo]} className="flex h-full min-h-0 flex-col border border-ink/40 bg-white/50 dark:bg-white/5">
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
         <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">{TITULOS[modo]}</h3>
-        {modo === "iconos" && (
+        {(modo === "iconos" || modo === "figuras") && (
           <input
             type="search"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar: café, mapa…"
-            aria-label="Buscar iconos"
+            placeholder={modo === "figuras" ? "Buscar: cinta, marco…" : "Buscar: café, mapa…"}
+            aria-label={modo === "figuras" ? "Buscar figuras" : "Buscar iconos"}
             className={`${inputCls} !w-40`}
           />
         )}
@@ -147,9 +165,11 @@ export default function BibliotecaLienzo({
           ✕
         </button>
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className={modo === "subidos" ? "flex min-h-0 flex-1 flex-col" : "min-h-0 flex-1 overflow-y-auto"}>
 
-      {modo === "mios" ? (
+      {modo === "subidos" ? (
+        <GaleriaMedios edicionId={edicionId} onUsar={onSubido} arrastrable />
+      ) : modo === "mios" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Guarda aquí lo que armes (el anuncio de un cliente, una firma, un sello…) para usarlo en cualquier edición. Selecciona uno o varios elementos en la hoja y pulsa el botón.
@@ -285,6 +305,48 @@ export default function BibliotecaLienzo({
               </div>
             ))}
           </div>
+        </div>
+      ) : modo === "figuras" ? (
+        <div className="p-3">
+          <div className="mb-2 flex flex-wrap gap-1">
+            {["Todas", ...CATEGORIAS_FIGURA].map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCategoria(c)}
+                aria-pressed={categoria === c}
+                className={`font-sans border px-2 py-0.5 text-[0.68rem] font-semibold ${categoria === c ? "border-terracota bg-ink text-paper" : "border-ink/30 bg-paper hover:bg-paper-deep"}`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
+            {reemplazando ? "Elige la figura que sustituirá a la seleccionada." : "Haz clic para agregarla o arrástrala a la hoja. Cambia su color y su tamaño (en las de línea, también el grosor); los marcos y los divisores se estiran al tamaño que quieras."}
+          </p>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(4.2rem,1fr))] gap-1.5">
+            {figuras.map(([id, d]) => (
+              <button
+                key={id}
+                type="button"
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(TIPO_BIBLIOTECA, `icono:${id}`);
+                  e.dataTransfer.effectAllowed = "copy";
+                }}
+                onClick={() => onIcono(id)}
+                title={d.nombre}
+                aria-label={d.nombre}
+                className="flex aspect-square cursor-grab items-center justify-center border border-ink/20 bg-paper p-2 text-ink hover:border-terracota hover:text-terracota"
+              >
+                <span className="pointer-events-none block h-full w-full">
+                  <IconoSvg icono={id} color="currentColor" />
+                </span>
+              </button>
+            ))}
+            {figuras.length === 0 && <p className="font-sans col-span-full text-xs italic text-ink-soft">No hay figuras con esa búsqueda.</p>}
+          </div>
+          <p className="font-sans mt-2 text-[0.65rem] text-ink-soft">Figuras dibujadas para la revista: cintas, burbujas, sellos, formas, flechas, divisores, marcos y motivos de naturaleza.</p>
         </div>
       ) : modo === "iconos" ? (
         <div className="p-3">

@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { bloquesMovil, type BloqueMovil } from "@/components/Lienzo";
-import { ICONOS } from "@/lib/iconos-datos";
+import { CATALOGO } from "@/lib/catalogo-iconos";
 import type { Elemento, Pagina } from "@/lib/esquema";
 import { btnCls } from "./campos";
 
@@ -17,7 +17,7 @@ function etiqueta(e: Elemento): string {
     case "video":
       return "Video";
     case "icono":
-      return ICONOS[e.icono]?.nombre ?? e.icono;
+      return CATALOGO[e.icono]?.nombre ?? e.icono;
     case "forma":
       return e.h <= 14 ? "Línea" : "Forma";
   }

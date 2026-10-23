@@ -238,9 +238,49 @@ lo usaste no cambian). Las imágenes se copian aparte, así que siguen funcionan
   En el editor se ve normal y con la etiqueta «Se revela al tocar».
 - No hay «acordeón» (secciones que se abren y empujan lo de abajo): la hoja tiene posiciones fijas. Para preguntas y respuestas usa **Revelar al tocar** en cada respuesta.
 
+## Revisor de accesibilidad
+
+En el mismo panel de **✓ Revisar y accesibilidad**, la pestaña **Accesibilidad** junta los problemas que hacen difícil la revista a personas con baja visión, con lectores de pantalla o que leen en el celular. Cada hallazgo dice en qué página está y por qué importa; **Ir →** te lleva a la página y, cuando se puede, **✓ Arreglar** lo corrige con un clic:
+- **Contraste insuficiente** (WCAG AA): el texto se compara con lo que hay debajo (el fondo de la página, un cuadro de color o degradado, el fondo del propio texto) y se avisa si no llega a 4,5:1 (3:1 en texto grande, de 24 o más, o de 19 en negrita). Cuenta la opacidad del texto. Ofrece ponerlo en tinta o en blanco, o quitarle la transparencia. Los colores de la marca en verde (terracota) sobre papel quedan en 4,2:1: es un caso «casi».
+- **Texto sobre foto** sin capa clara/oscura ni sombra: no se puede medir, pero se sugiere ayudar a la lectura.
+- **Texto muy pequeño** (menos de 12; «Arreglar» lo sube a 14) y **mayúsculas largas** (más de 70 caracteres).
+- **Descripciones de imágenes**: sin descripción, o que parecen un nombre de archivo («IMG_2034.jpg»).
+- **Enlaces**: una imagen con enlace sin descripción, textos como «clic aquí» o «más», y elementos con enlace demasiado pequeños para tocarlos con el dedo (menos de 24 de lado es aviso; menos de 36, sugerencia).
+- **Contenido que desaparece** solo a los pocos segundos (animación de salida) cuando es un texto largo.
+- **Páginas sin título**: los lectores de pantalla, el índice y el buscador las anuncian sin nombre.
+Los resultados también alimentan la **lista antes de publicar** (como sugerencias ○). Es una guía automática: no mide fotos ni sustituye probar la revista con un lector de pantalla. Las animaciones y el movimiento ya se apagan solos si el lector pide menos movimiento en su equipo.
+
+## Recortar, acercar y quitar el fondo de una foto
+
+Selecciona una foto y, en su panel **Imagen**:
+- **✂ Recortar con el ratón** (o **doble clic** en la foto): entras al modo de encuadre. **Arrastra la foto dentro de su marco** y usa el deslizador **Zoom** (hasta 400 %) de la barra que aparece sobre la hoja. **Restablecer** la deja como estaba; **✓ Listo** o **Esc** terminan. También puedes poner el **Zoom (%)** y el **enfoque** con números. El marco (tamaño y molde) no cambia: solo qué parte de la foto se ve.
+- **🪄 Quitar fondo de color…**: sirve para fondos de **un solo color** (el blanco de una foto de producto, el verde de un estudio). Toca en la imagen el color que quieres quitar, ajusta la **tolerancia** (cuánto se parecen los colores que también se quitan) y el **suavizado del borde**; el damero muestra lo que quedará transparente. Con «Solo el fondo unido a los bordes» no se borra, por ejemplo, el blanco de una camisa. Al aplicar se guarda una **copia nueva** («…-sin-fondo.png», con transparencia) y la foto queda usándola; la original sigue en **Subidos**. Se hace en tu navegador, sin servicios externos; con fondos con degradados, sombras o texturas el resultado no es limpio (para esos hace falta recortar la foto con una herramienta externa).
+- **Opacidad** (en «Posición y tamaño») sigue disponible para transparentar cualquier elemento.
+
+## Figuras decorativas
+
+En el riel de herramientas, **Figuras** abre 71 figuras vectoriales dibujadas para la revista, en 9 categorías: cintas y etiquetas (cinta con pliegues, banderín, escudo, corona, medalla…), burbujas y globos (diálogo, pensamiento, grito, llamada), estrellas y sellos (estrellas, estallidos de oferta, sellos), formas (triángulo, hexágono, corazón, rayo, nube…), manchas y olas (fondos orgánicos y bordes de ola), flechas decorativas, divisores (onda, zigzag, **greca escalonada**, ornamento, **guirnalda de banderines**, **papel picado**…), marcos y bordes, y naturaleza y clima (sol, hoja, flor, montañas, pino, nopal). Buscador y categorías como en Iconos; clic para agregar o arrastrar a la hoja.
+Son elementos de tipo icono: se les cambia el **color** y el **tamaño**, y a las de línea el **grosor**; **Cambiar…** sustituye una figura por otra. Los **marcos** y los divisores se estiran al tamaño que les des (los demás conservan su proporción). Se pueden animar, enlazar y copiar su estilo como cualquier elemento. Son dibujos propios (sin material de terceros), sin crédito que citar.
+
+## Buscar y reemplazar
+
+Botón **🔎 Reemplazar** de la barra (o Ctrl+Alt+H): cambia un texto, un teléfono, un enlace o el nombre de un anunciante en **toda la edición** de una vez. Escribes lo que buscas y con qué reemplazarlo; el panel lista cada lugar donde aparece (página, tipo y un fragmento con lo que cambiaría), todos marcados. Desmarca los que no quieras tocar y pulsa **Reemplazar**.
+- Busca en: textos (también los que tienen negritas, colores o tamaños distintos y los globos sobre imágenes), títulos de página y tema, enlaces, descripciones de imágenes, créditos y fuentes de datos, y los elementos que se repiten en todas las páginas. Puedes apagar cualquiera de estos ámbitos.
+- Opciones: distinguir mayúsculas y solo palabras completas. Con «Reemplazar con» vacío, borra lo encontrado.
+- El cambio queda **sin guardar** en el editor (se guarda con Guardar o con el autoguardado) y **↶ Deshacer** lo revierte mientras no hagas otro reemplazo. Los estilos de cada tramo se conservan.
+- Un reemplazo que dejaría un enlace inválido se omite y se avisa. Una palabra partida entre dos estilos distintos (por ejemplo «Azu» en negrita y «fres» normal) no se encuentra.
+
+## Animación de salida
+
+En el panel **Animación de salida** de un elemento eliges un efecto (los de entrada al revés: desvanecer, subir, bajar, zoom, girar, cortina…) y **cuánto tarda en irse** desde que aparece (3 s por omisión; cuenta desde que termina su animación de entrada) y cuánto dura el efecto. Sirve para avisos o textos que solo deben verse un momento; una vez que se va no vuelve hasta recargar la página. **▶ Probar** muestra la entrada, una pausa (acortada a 2 s) y la salida. Con «reducir movimiento» activado en el equipo del lector, el elemento se queda visible.
+
+## Copiar y pegar estilo
+
+Con **un** elemento seleccionado, el botón **🖌** (o Ctrl+Alt+C) copia su estilo: fuente, tamaño, color, fondo, borde, esquinas, sombras, degradados, filtros, opacidad, animaciones de entrada y de salida y efectos de movimiento; **no** copia el texto, la foto, la posición, el tamaño, el enlace ni «revelar». Selecciona uno o varios elementos y pulsa **🎨** (o Ctrl+Alt+V) para aplicarlo. Entre tipos distintos solo pasan los ajustes que ambos tienen (por ejemplo, de texto a cuadro: color, borde, animaciones). Lo que el origen no tiene se **quita** del destino, así que copiar el estilo de un elemento liso deja lisos a los demás. El estilo copiado se recuerda en este navegador y sirve en otras páginas y ediciones. Los elementos bloqueados no se tocan.
+
 ## Efectos de movimiento
 
-En el panel de cada elemento, **Efectos de movimiento** (se ven en el sitio publicado y en la vista previa, no mientras editas):
+En el panel de cada elemento, **Efectos de movimiento** (en el sitio publicado y en la vista previa funcionan solos; mientras editas, **elegir uno lo muestra en la hoja** y **▶ Ver el movimiento** lo repite; el parallax solo se ve al hacer scroll en el sitio o en la vista previa):
 - **Al pasar el cursor:** se levanta con sombra, acerca (en una foto, el zoom queda dentro de su marco), se inclina, se ilumina o se hunde.
 - **Movimiento continuo:** flota, late, se balancea o parpadea con un brillo. Se apaga solo si el lector pidió menos animaciones en su equipo.
 - En una **foto**, **Parallax al hacer scroll** (suave, medio o marcado): la imagen se mueve más lento que la página, dentro de su marco (se amplía un poco para poder moverse,
@@ -256,6 +296,25 @@ En la lista de **Capas** (panel de la derecha), cada fila trae dos botones:
 - **🔓 / 🔒 Bloquear:** el elemento deja de responder al ratón en la hoja (no se mueve ni se borra por accidente, y «Seleccionar todo» o arrastrar un recuadro lo ignoran); sigue viéndose igual en la página. Para
   cambiarlo, elígelo en la lista de capas (aparece «🔒 Bloqueado») y desbloquéalo. También con el interruptor del panel «Posición y tamaño» o con el botón **🔒** sobre la hoja (bloquea lo seleccionado). Ideal para el fondo o el marco de una página.
 - **👁 / 🚫 Ocultar:** el elemento **no se ve en la página publicada**, ni en el celular, ni en el buscador; en el editor desaparece de la hoja y queda tachado en las capas. Sirve para guardar una versión alternativa sin borrarla.
+
+## Lista antes de publicar
+
+**✓ Revisar y accesibilidad** (antes «Revisar diseño») abre «Revisor, accesibilidad y lista antes de publicar». Arriba hay una lista con ✓ / ✗ / ○: el número tiene tema y fecha; sin textos ni enlaces de ejemplo; todos los botones llevan a algún lado; datos con fecha al día; sin páginas vacías ni imágenes sin foto; enlaces a otras ediciones válidos; y, como sugerencias (○), imágenes con descripción, fotos con crédito, anuncios intercalados y sin textos vacíos u ocultos. Con la **revisión visual** (botón del mismo panel) se añade «sin textos encimados ni letra chica». Cada hallazgo trae «Ir →» a su página.
+Al cambiar **Publicación** de Borrador a Publicada o Programada, si hay pendientes (✗) el editor los muestra y pregunta si abrir la lista (Aceptar) o publicar de todos modos (Cancelar).
+
+## Subidos (galería lateral) y biblioteca de medios
+
+En el riel de herramientas, **Subidos** abre una galería como la de Canva: buscador, botón **Subir archivos**, pestañas **Imágenes / Videos** y miniaturas en columnas sin recortar. **Un clic agrega la foto a la hoja** (con su proporción y su texto alternativo tomado del nombre) o la **arrastras** a donde quieras; si la sueltas sobre una imagen ya puesta, la reemplaza. Muestra los archivos de todas las ediciones (primero los de esta); pasa el cursor para ver el nombre y el peso. No muestra si un archivo «ya se usa» ni ofrece borrarlo: es solo para elegir.
+
+Botón **🖼 Medios** de la barra: la misma galería en una ventana (clic en una foto copia su ruta). Puedes subir varios archivos a la vez. En los campos de imagen y video, el botón **Biblioteca** elige entre todo lo ya subido sin volver a subirlo.
+
+## Efectos del texto: sombras y degradados
+
+En un texto, panel **Efectos del texto**: sombra (suave, marcada, desplazada, brillo, neón, contorno) y **degradado en las letras** (atardecer, fuego, oro, bosque, lago, ACOM-Di, noche, plata) con un deslizador de dirección. El degradado sustituye al color del texto y cubre el ancho del texto, no el de la caja. Los **cuadros** (formas) también tienen degradado de relleno.
+
+## Editar en dos pestañas
+
+Si abres la misma edición en dos pestañas o ventanas (o se cambia el archivo a mano), el editor lo detecta (cada 20 s y al volver a la pestaña) y muestra un aviso: **Cargar la versión nueva**, **Guardar encima** (pisa la otra; su copia queda en «Versiones») o **Seguir aquí**. El servidor se niega a guardar sobre cambios que no has visto, así el autoguardado de una pestaña no borra lo de otra. Tus cambios sin guardar siempre quedan en la copia de recuperación del navegador.
 
 ## Datos que envejecen (cifras, precios, noticias)
 

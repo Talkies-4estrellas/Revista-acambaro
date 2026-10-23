@@ -23,9 +23,12 @@ import {
 import { MediosContext, btnCls } from "./campos";
 import { elementosBloque } from "@/lib/bloques";
 import { animarTexto } from "@/lib/animaciones-texto";
+import { aplicarEstilo, copiarEstilo, type EstiloCopiado } from "@/lib/estilo";
+import { desplazarEnfoque } from "@/lib/recorte";
+import QuitarFondo from "./QuitarFondo";
 import BibliotecaLienzo, { type ModoBiblioteca } from "./BibliotecaLienzo";
-import { fotogramas, opcionesAnimacion, type Efecto } from "@/lib/animaciones";
-import { ICONOS } from "@/lib/iconos-datos";
+import { DESPUES_DEFECTO, fotogramas, fotogramasSalida, opcionesAnimacion, opcionesSalida, pruebaBucle, pruebaHover, type Bucle, type Efecto, type Hover } from "@/lib/animaciones";
+import { CATALOGO } from "@/lib/catalogo-iconos";
 import { mapaAnclas } from "@/lib/referencias";
 import EditorTexto from "./EditorTexto";
 import Reglas, { GROSOR_REGLA } from "./Reglas";
@@ -83,6 +86,8 @@ const RIEL: { id: string; etiqueta: string; titulo: string; modo?: ModoBibliotec
   { id: "texto", etiqueta: "Texto", titulo: "Titular, párrafo y etiqueta", modo: "texto", icono: <Trazo><path d="M5 7V5h14v2M12 5v14M9 19h6" /></Trazo> },
   { id: "imagen", etiqueta: "Imagen", titulo: "Agregar una imagen (clic o arrastra a la hoja)", preset: "imagen", icono: <Vector id="image" /> },
   { id: "video", etiqueta: "Video", titulo: "Agregar un video (clic o arrastra a la hoja)", preset: "video", icono: <Vector id="film" /> },
+  { id: "subidos", etiqueta: "Subidos", titulo: "Tus fotos y videos ya subidos: clic o arrastra a la hoja", modo: "subidos", icono: <Trazo><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 7.97H17" /><path d="M12 12v8M9 15l3-3 3 3" /></Trazo> },
+  { id: "figuras", etiqueta: "Figuras", titulo: "Figuras decorativas: cintas, burbujas, sellos, flechas, divisores, marcos…", modo: "figuras", icono: <Trazo><path d="M12 3l2.6 5.600 6.100.700-4.500 4.200 1.200 6L12 16.500 6.600 19.500l1.200-6L3.300 9.300l6.100-.7z" /></Trazo> },
   { id: "formas", etiqueta: "Formas", titulo: "Rectángulo, círculo y línea", modo: "formas", icono: <Trazo><rect x="3" y="3" width="11" height="11" rx="1" /><circle cx="16" cy="16" r="5" /></Trazo> },
   { id: "bloques", etiqueta: "Bloques", titulo: "Bloques listos: tarjeta de producto, cupón, testimonio, cifra, evento…", modo: "bloques", icono: <Trazo><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></Trazo> },
   { id: "botones", etiqueta: "Botones", titulo: "Botones prediseñados, con su efecto al pasar el cursor", modo: "botones", icono: <Trazo><rect x="3" y="7.5" width="18" height="9" rx="4.5" /><path d="M8.5 12h7" /></Trazo> },
@@ -137,7 +142,7 @@ function resumen(el: Elemento) {
     case "video":
       return "Video";
     case "icono":
-      return `Icono — ${ICONOS[el.icono]?.nombre ?? el.icono}`;
+      return `Icono — ${CATALOGO[el.icono]?.nombre ?? el.icono}`;
     case "forma":
       return el.forma === "elipse" ? "Círculo" : el.h <= 8 || el.w <= 8 ? "Línea" : "Rectángulo";
   }
@@ -232,6 +237,11 @@ export default function EditorLienzo({
     setLateralEstado(v);
   };
   const [biblioteca, setBiblioteca] = useState<null | { modo: ModoBiblioteca; reemplazar?: boolean }>(null);
+  /** Foto que se está encuadrando con el ratón (arrastrar para mover, deslizador para acercar) y foto a la que se le quita el fondo. */
+  const [recortando, setRecortando] = useState<string | null>(null);
+  const recortandoRef = useRef<string | null>(null);
+  recortandoRef.current = recortando;
+  const [quitandoFondo, setQuitandoFondo] = useState<string | null>(null);
   const [editando, setEditando] = useState<string | null>(null);
   const [globoSel, setGloboSel] = useState<number | null>(null);
   // Celular (< 768 px): las propiedades van en un cajón inferior que se abre al seleccionar algo.
@@ -747,14 +757,58 @@ export default function EditorLienzo({
     const raiz = lienzo.current;
     if (!raiz) return;
     for (const el of getEls()) {
-      if (!el.animacion || (ids && !ids.includes(el.id!))) continue;
+      if (!(el.animacion || el.salida) || (ids && !ids.includes(el.id!))) continue;
       const caja = raiz.querySelector<HTMLElement>(`[data-elid="${el.id}"]`);
       const nodo = caja?.firstElementChild;
-      if (caja && nodo instanceof HTMLElement && el.tipo === "texto" && animarTexto(nodo, caja, el.animacion)) continue;
+      const salida = el.salida;
+      // Salida: se ve la entrada (si la tiene), una pausa corta (como mucho 2 s) y la salida; después el elemento vuelve a mostrarse.
+      const programarSalida = (esperaEntrada: number) => {
+        if (!salida || !(nodo instanceof HTMLElement) || typeof nodo.animate !== "function") return;
+        window.setTimeout(() => {
+          const a = nodo.animate(fotogramasSalida(salida.efecto), opcionesSalida(salida));
+          a.finished.then(() => window.setTimeout(() => a.cancel(), 700)).catch(() => {});
+        }, esperaEntrada + Math.min(2000, salida.despues ?? DESPUES_DEFECTO));
+      };
+      if (!el.animacion) {
+        programarSalida(0);
+        continue;
+      }
+      if (caja && nodo instanceof HTMLElement && el.tipo === "texto" && animarTexto(nodo, caja, el.animacion)) {
+        programarSalida((el.animacion.retraso ?? 0) + (el.animacion.duracion ?? 1500));
+        continue;
+      }
       if (nodo instanceof HTMLElement && typeof nodo.animate === "function") {
         nodo.animate(fotogramas(el.animacion.efecto), opcionesAnimacion(el.animacion));
+        programarSalida((el.animacion.retraso ?? 0) + (el.animacion.duracion ?? 700));
       }
     }
+  };
+
+  /** Pruebas de movimiento en curso por elemento: al lanzar otra se cancela la anterior. */
+  const pruebasMov = useRef(new Map<string, Animation[]>());
+
+  /** Vista previa en la hoja del movimiento continuo y del efecto al pasar el cursor del elemento (`forzar` = el valor que se acaba de elegir). */
+  const probarMovimiento = (id: string, forzar?: { hover?: Hover; bucle?: Bucle }) => {
+    const raiz = lienzo.current;
+    const el = getEls().find((e) => e.id === id);
+    const nodo = raiz?.querySelector<HTMLElement>(`[data-elid="${id}"]`)?.firstElementChild;
+    if (!el || !(nodo instanceof HTMLElement) || typeof nodo.animate !== "function") return;
+    pruebasMov.current.get(id)?.forEach((a) => a.cancel());
+    const bucle = forzar?.bucle ?? (forzar ? undefined : el.bucle);
+    const hover = forzar?.hover ?? (forzar ? undefined : el.hover);
+    const lista: Animation[] = [];
+    if (bucle) {
+      const p = pruebaBucle(bucle);
+      lista.push(nodo.animate(p.fotogramas, p.opciones));
+    }
+    if (hover) {
+      const p = pruebaHover(hover);
+      // Si hay movimiento continuo a la vez, se suma a él en lugar de pisarlo.
+      const objetivo = hover === "acercar" && (el.tipo === "imagen" || el.tipo === "video") ? (nodo.querySelector<HTMLElement>("img, video") ?? nodo) : nodo;
+      const fot = objetivo === nodo ? p.fotogramas : p.fotogramas.map((f) => (f.transform && f.transform !== "none" ? { ...f, transform: "scale(1.1)" } : f));
+      lista.push(objetivo.animate(fot, { duration: 1600, easing: "ease-in-out", composite: bucle ? "add" : "replace" }));
+    }
+    pruebasMov.current.set(id, lista);
   };
 
   /** Mismo efecto para toda la selección, de arriba abajo (y de izquierda a derecha), con pausa creciente. */
@@ -787,6 +841,63 @@ export default function EditorLienzo({
     guardarInterno(carga);
     avisar(els.length === 1 ? "1 elemento copiado" : `${els.length} elementos copiados`);
     return carga;
+  };
+
+  /* --------------------------- Copiar y pegar estilo --------------------------- */
+
+  /** Estilo copiado con la brocha; se recuerda en este navegador para usarlo también en otras páginas y ediciones. */
+  const [estiloCopiado, setEstiloCopiado] = useState<EstiloCopiado | null>(null);
+  const estiloRef = useRef<EstiloCopiado | null>(null);
+  estiloRef.current = estiloCopiado;
+  useEffect(() => {
+    try {
+      const crudo = localStorage.getItem("revista:estilo");
+      if (crudo) {
+        const e = JSON.parse(crudo) as EstiloCopiado;
+        if (e && typeof e.tipo === "string" && e.valores && typeof e.valores === "object") setEstiloCopiado(e);
+      }
+    } catch {
+      // sin localStorage: el estilo copiado dura mientras el editor esté abierto
+    }
+  }, []);
+
+  const copiarEstiloSel = () => {
+    const ids = selRef.current;
+    const el = ids.length === 1 ? getEls().find((e) => e.id === ids[0]) : undefined;
+    if (!el) {
+      avisar("Selecciona un solo elemento para copiar su estilo");
+      return;
+    }
+    const estilo = copiarEstilo(el);
+    setEstiloCopiado(estilo);
+    try {
+      localStorage.setItem("revista:estilo", JSON.stringify(estilo));
+    } catch {}
+    const n = Object.keys(estilo.valores).length;
+    avisar(n ? `Estilo copiado (${n} ajuste${n === 1 ? "" : "s"}): pégalo en otros elementos` : "Estilo copiado: este elemento no tiene ajustes (al pegarlo quita los de los demás)");
+  };
+
+  const pegarEstiloSel = () => {
+    const estilo = estiloRef.current;
+    const ids = selRef.current;
+    if (!estilo) {
+      avisar("Primero copia el estilo de un elemento");
+      return;
+    }
+    if (ids.length === 0) {
+      avisar("Selecciona los elementos a los que aplicar el estilo");
+      return;
+    }
+    let cambiados = 0;
+    aplicar(
+      getEls().map((e) => {
+        if (!ids.includes(e.id!) || e.bloqueado) return e;
+        const r = aplicarEstilo(e, estilo);
+        if (r.cambios > 0) cambiados++;
+        return r.elemento;
+      }),
+    );
+    avisar(cambiados ? `Estilo aplicado a ${cambiados} elemento${cambiados === 1 ? "" : "s"}` : "Nada que cambiar: ya tienen ese estilo o son de otro tipo");
   };
 
   const cortar = (): Carga | null => {
@@ -989,6 +1100,37 @@ export default function EditorLienzo({
       v: bx ? [bx.guia] : [],
       h: by ? [by.guia] : [],
     };
+  }
+
+  /** Encuadre con el ratón: la foto sigue al puntero dentro de su marco (cambia el enfoque). */
+  function empezarRecorte(e: React.PointerEvent, el: Elemento) {
+    if (e.button !== 0 || el.tipo !== "imagen") return;
+    e.stopPropagation();
+    const img = lienzo.current?.querySelector<HTMLImageElement>(`[data-elid="${el.id}"] img`);
+    if (!img || !img.naturalWidth) return;
+    const natural = { w: img.naturalWidth, h: img.naturalHeight };
+    const s = escala();
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    const base = el.enfoque ?? { x: 50, y: 50 };
+    let guardado = false;
+    const move = (ev: PointerEvent) => {
+      const dx = (ev.clientX - x0) / s;
+      const dy = (ev.clientY - y0) / s;
+      if (!guardado) {
+        if (Math.hypot(dx, dy) * s < 2) return;
+        guardarHistorial();
+        guardado = true;
+      }
+      const enfoque = desplazarEnfoque({ w: el.w, h: el.h }, natural, el.zoom ?? 1, el.ajuste ?? "cubrir", base, dx, dy);
+      setEls(getEls().map((it) => (it.id === el.id ? ({ ...it, enfoque } as Elemento) : it)));
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
   }
 
   function empezarMover(e: React.PointerEvent, el: Elemento) {
@@ -1378,10 +1520,39 @@ export default function EditorLienzo({
     }
   }
 
+  /** Coloca en la hoja un archivo que ya estaba subido (galería «Subidos»): foto con su proporción, o video. Sin posición, al centro de lo que se ve. */
+  async function colocarSubido(src: string, x?: number, y?: number) {
+    const esVideo = /\.(mp4|webm)$/i.test(src);
+    const marco = x !== undefined && y !== undefined && !esVideo ? elementoEn(x, y, ["imagen"]) : undefined;
+    if (marco) {
+      aplicar(getEls().map((it) => (it.id === marco.id ? ({ ...it, src } as Elemento) : it)));
+      setSel([marco.id!]);
+      return;
+    }
+    const base = elementoNuevo(esVideo ? "video" : "imagen", x, y);
+    let el: Elemento = { ...base, src } as Elemento;
+    if (!esVideo) {
+      const d = await dimensionesImagen(src);
+      if (d) {
+        const w = Math.min(440, d.w);
+        const h = Math.round((w * d.h) / d.w);
+        const cx = base.x + base.w / 2;
+        const cy = base.y + base.h / 2;
+        el = { ...el, w, h, x: Math.max(0, Math.round(cx - w / 2)), y: Math.max(0, Math.round(cy - h / 2)), alt: decodeURIComponent(src.split("/").pop() ?? "").replace(/\.[^.]+$/, "") } as Elemento;
+      }
+    }
+    aplicar([...getEls(), el]);
+    setSel([el.id!]);
+  }
+
   async function alSoltar(e: React.DragEvent) {
     e.preventDefault();
     const { x, y } = posicionEn(e);
     const dato = e.dataTransfer.getData(TIPO_DND);
+    if (dato.startsWith("subido:")) {
+      await colocarSubido(dato.slice(7), x, y);
+      return;
+    }
     if (dato.startsWith("icono:")) {
       agregarIcono(dato.slice(6), x, y);
       return;
@@ -1430,8 +1601,8 @@ export default function EditorLienzo({
 
   /* ------------------------------ Teclado ----------------------------- */
 
-  const acc = useRef({ deshacer, rehacer, eliminar, duplicar, agrupar, desagrupar, aplicar, editando });
-  acc.current = { deshacer, rehacer, eliminar, duplicar, agrupar, desagrupar, aplicar, editando };
+  const acc = useRef({ deshacer, rehacer, eliminar, duplicar, agrupar, desagrupar, aplicar, editando, copiarEstiloSel, pegarEstiloSel });
+  acc.current = { deshacer, rehacer, eliminar, duplicar, agrupar, desagrupar, aplicar, editando, copiarEstiloSel, pegarEstiloSel };
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {
       const t = ev.target;
@@ -1461,7 +1632,17 @@ export default function EditorLienzo({
         else zoomCentro(vistaRef.current.s * (k === "-" ? 0.8 : 1.25));
         return;
       }
+      if (k === "escape" && recortandoRef.current) {
+        setRecortando(null);
+        return;
+      }
       if (a.editando) return;
+      if (ctrl && ev.altKey && (k === "c" || k === "v")) {
+        ev.preventDefault();
+        if (k === "c") a.copiarEstiloSel();
+        else a.pegarEstiloSel();
+        return;
+      }
       if (!ctrl && k === "h") {
         setMano((m) => !m);
         return;
@@ -1584,6 +1765,8 @@ export default function EditorLienzo({
             )}
             <button type="button" className={btnCls} onClick={alternarBloqueoSeleccion} disabled={sel.length === 0} title="Bloquear la selección para no moverla por accidente (se desbloquea en la lista de capas)" aria-label="Bloquear la selección">🔒</button>
             <button type="button" className={btnCls} onClick={guardarSeleccion} disabled={sel.length === 0} title="Guardar la selección en Mis elementos (para usarla en cualquier edición)" aria-label="Guardar la selección en Mis elementos">☆</button>
+            <button type="button" className={btnCls} onClick={copiarEstiloSel} disabled={sel.length !== 1} title="Copiar el estilo de este elemento (fuente, color, borde, sombras, animaciones…) sin su contenido (Ctrl+Alt+C)" aria-label="Copiar estilo">🖌</button>
+            <button type="button" className={btnCls} onClick={pegarEstiloSel} disabled={sel.length === 0 || !estiloCopiado} title="Pegar el estilo copiado en los elementos seleccionados (Ctrl+Alt+V)" aria-label="Pegar estilo">🎨</button>
             <button type="button" className={btnCls} onClick={copiarBoton} disabled={sel.length === 0} title="Copiar (Ctrl+C): se puede pegar en otra página o edición" aria-label="Copiar">⧉</button>
               <button type="button" className={btnCls} onClick={cortarBoton} disabled={sel.length === 0} title="Cortar (Ctrl+X)" aria-label="Cortar">✂</button>
               <button type="button" className={btnCls} onClick={pegarBoton} title="Pegar (Ctrl+V). Ctrl+Mayús+V pega en el mismo lugar" aria-label="Pegar">▣</button>
@@ -1595,6 +1778,51 @@ export default function EditorLienzo({
             </span>
         </div>
         {aviso && <p role="status" className="font-sans mb-2 text-xs font-bold text-terracota">{aviso}</p>}
+        {(() => {
+          const foto = recortando ? elementos.find((e) => e.id === recortando) : undefined;
+          if (!foto || foto.tipo !== "imagen") return null;
+          return (
+            <div role="status" className="font-sans mb-2 flex flex-wrap items-center gap-3 border border-ocre bg-ocre/20 px-3 py-1.5 text-xs">
+              <strong>✂ Encuadrando la foto:</strong>
+              <span>arrástrala dentro de su marco.</span>
+              <label className="flex items-center gap-2">
+                Zoom
+                <input
+                  type="range"
+                  min={100}
+                  max={400}
+                  step={5}
+                  value={Math.round((foto.zoom ?? 1) * 100)}
+                  onChange={(e) => {
+                    const z = Number(e.target.value) / 100;
+                    aplicar(getEls().map((it) => (it.id === foto.id ? ({ ...it, zoom: z > 1 ? z : undefined } as Elemento) : it)), `${foto.id}:zoom`);
+                  }}
+                  className="w-40 accent-[#068562]"
+                  aria-label="Zoom de la foto"
+                />
+                {Math.round((foto.zoom ?? 1) * 100)} %
+              </label>
+              <button type="button" className={btnCls} onClick={() => aplicar(getEls().map((it) => (it.id === foto.id ? ({ ...it, zoom: undefined, enfoque: undefined } as Elemento) : it)))}>
+                Restablecer
+              </button>
+              <button type="button" className={`${btnCls} !bg-ink !text-paper`} onClick={() => setRecortando(null)}>
+                ✓ Listo (Esc)
+              </button>
+            </div>
+          );
+        })()}
+        {quitandoFondo &&
+          (() => {
+            const foto = elementos.find((e) => e.id === quitandoFondo);
+            if (!foto || foto.tipo !== "imagen" || !foto.src) return null;
+            return (
+              <QuitarFondo
+                src={foto.src}
+                onAplicar={(src) => aplicar(getEls().map((it) => (it.id === foto.id ? ({ ...it, src } as Elemento) : it)))}
+                onCerrar={() => setQuitandoFondo(null)}
+              />
+            );
+          })()}
 
         <div className="flex flex-col gap-2 lg:flex-row">
           {/* Riel de herramientas */}
@@ -1649,6 +1877,8 @@ export default function EditorLienzo({
                 onBloque={(id) => agregarBloque(id)}
                 onPreset={(id) => agregar(id)}
                 mios={mios}
+                edicionId={edicionId ?? ""}
+                onSubido={(src) => colocarSubido(src)}
                 seleccionados={seleccion.length}
                 onGuardarSeleccion={guardarSeleccion}
                 onMio={(id) => agregarMio(id)}
@@ -1751,11 +1981,12 @@ export default function EditorLienzo({
                                 ),
                             }
                           : undefined,
-                      onPointerDown: el.bloqueado ? undefined : (e) => empezarMover(e, el),
+                      onPointerDown: el.bloqueado ? undefined : (e) => (recortando === el.id ? empezarRecorte(e, el) : empezarMover(e, el)),
                       onDoubleClick: el.bloqueado ? undefined : () => {
-                        // Doble clic "entra" al grupo: selecciona solo este elemento; en un texto, además lo edita.
+                        // Doble clic "entra" al grupo: selecciona solo este elemento; en un texto, además lo edita; en una foto, la deja encuadrar.
                         setSel([el.id!]);
                         if (el.tipo === "texto") setEditando(el.id!);
+                        else if (el.tipo === "imagen" && el.src && !el.comparar) setRecortando(el.id!);
                       },
                       children: (
                         <>
@@ -1777,6 +2008,9 @@ export default function EditorLienzo({
                             >
                               🔒 Bloqueado
                             </span>
+                          )}
+                          {recortando === el.id && (
+                            <span className="pointer-events-none absolute inset-0 cursor-move border-2 border-dashed border-ocre" style={{ boxShadow: "0 0 0 9999px rgba(28,24,20,.0)" }} />
                           )}
                           {el.revelar && (
                             <span
@@ -2095,7 +2329,10 @@ export default function EditorLienzo({
               eliminar,
               ajustarAlto: unico.tipo === "texto" ? ajustarAltoTexto : undefined,
               probarAnimacion: () => reproducir([unico.id!]),
-              cambiarIcono: unico.tipo === "icono" ? () => setBiblioteca({ modo: "iconos", reemplazar: true }) : undefined,
+              recortar: unico.tipo === "imagen" && unico.src && !unico.comparar ? () => setRecortando(unico.id!) : undefined,
+              quitarFondo: unico.tipo === "imagen" && unico.src ? () => setQuitandoFondo(unico.id!) : undefined,
+              probarMovimiento: (forzar) => probarMovimiento(unico.id!, forzar),
+              cambiarIcono: unico.tipo === "icono" ? () => setBiblioteca({ modo: unico.icono.startsWith("fig-") ? "figuras" : "iconos", reemplazar: true }) : undefined,
               seleccionarGrupo:
                 unico.grupo && elementos.filter((e) => e.grupo === unico.grupo).length > 1
                   ? () => setSel(expandir([unico.id!]))

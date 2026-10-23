@@ -11,6 +11,9 @@ import {
   PARALLAX,
   SOMBRAS,
   colorCss,
+  degradadoCss,
+  sombraTextoCss,
+  sombraTextoFiltro,
   estiloMolde,
   fuenteCss,
   type Elemento,
@@ -19,7 +22,7 @@ import {
   type Tramo,
 } from "@/lib/esquema";
 import { createElement } from "react";
-import { ICONOS } from "@/lib/iconos-datos";
+import { CATALOGO } from "@/lib/catalogo-iconos";
 import { resolverTextoReferencias, tieneReferencias } from "@/lib/referencias";
 import { Inline, Video } from "./Bloques";
 import GlobosVista, { type EdicionGlobos } from "./Globos";
@@ -107,7 +110,7 @@ export function IconoSvg({
   alt?: string;
   className?: string;
 }) {
-  const d = ICONOS[icono];
+  const d = CATALOGO[icono];
   // Sin clase, el icono llena su caja (en el lienzo). Con clase (h-10 w-10…), el tamaño lo manda la clase: un estilo en línea le ganaría y el icono saldría enorme.
   const estilo: CSSProperties = { display: "block", ...(className ? {} : { width: "100%", height: "100%" }), color: colorCss(color, "var(--ink)") };
   if (!d)
@@ -118,13 +121,14 @@ export function IconoSvg({
     );
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox={`0 0 ${d.caja?.[0] ?? 24} ${d.caja?.[1] ?? 24}`}
+      preserveAspectRatio={d.ajuste === "estirar" ? "none" : undefined}
       role="img"
       aria-label={alt ?? d.nombre}
       className={className}
       style={estilo}
       {...(d.estilo === "trazo"
-        ? { fill: "none", stroke: "currentColor", strokeWidth: trazo ?? 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }
+        ? { fill: "none", stroke: "currentColor", strokeWidth: trazo ?? d.trazoBase ?? 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }
         : { fill: "currentColor" })}
     >
       {d.nodos.map(([etiqueta, atributos], i) => createElement(etiqueta, { key: i, ...atributos }))}
@@ -250,7 +254,16 @@ export function ElementoVista({
         </div>
       ) : (
         <div style={estilo}>
-          <div style={{ whiteSpace: "pre-wrap" }} data-texto>
+          <div
+            style={{
+              whiteSpace: "pre-wrap",
+              // Degradado en las letras: el fondo se recorta al texto; la sombra va como filtro para que no quede tapada.
+              ...(el.degradado
+                ? { width: "fit-content", maxWidth: "100%", alignSelf: el.alinear === "centro" ? "center" : el.alinear === "derecha" ? "flex-end" : el.alinear === "justificado" ? "stretch" : "flex-start", backgroundImage: degradadoCss(el.degradado, el.anguloDegradado), WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent", filter: el.sombraTexto ? sombraTextoFiltro(el.sombraTexto) : undefined }
+                : { textShadow: el.sombraTexto ? sombraTextoCss(el.sombraTexto) : undefined }),
+            }}
+            data-texto
+          >
             {el.contenido ? <ParrafosVista contenido={refs ? resolverContenido(el.contenido, refs) : el.contenido} base={base} /> : <Inline text={refs ? resolverTexto(el.texto, refs) : el.texto} />}
           </div>
         </div>
@@ -263,6 +276,14 @@ export function ElementoVista({
         <div className="fx-par" data-parallax={el.parallax} style={{ width: "100%", height: "100%", transform: `scale(${PARALLAX[el.parallax].escala})`, willChange: "transform" }}>
           {foto}
         </div>
+      ) : (
+        foto
+      );
+    // Zoom: la foto se acerca desde el punto de enfoque (el mismo con el que se coloca), así el enfoque recorre la foto completa.
+    const zoom = el.zoom && el.zoom > 1 ? Math.min(5, el.zoom) : 1;
+    const conZoom = (foto: React.ReactNode) =>
+      zoom > 1 ? (
+        <div style={{ width: "100%", height: "100%", transform: `scale(${zoom})`, transformOrigin: el.enfoque ? `${el.enfoque.x}% ${el.enfoque.y}%` : "50% 50%" }}>{foto}</div>
       ) : (
         foto
       );
@@ -297,7 +318,7 @@ export function ElementoVista({
               display: "block",
             }}
           />
-        ) : el.src ? conParallax(
+        ) : el.src ? conParallax(conZoom(
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={el.src}
@@ -312,7 +333,7 @@ export function ElementoVista({
               filter: el.filtro && el.filtro in FILTROS_IMAGEN ? FILTROS_IMAGEN[el.filtro].css : undefined,
               display: "block",
             }}
-          />,
+          />),
         ) : (
           <Placeholder tone={el.tono ?? "ocre"} label={el.alt ?? "Imagen"} showLabel={false} className="h-full w-full" />
         )}
@@ -346,7 +367,7 @@ export function ElementoVista({
         style={{
           width: "100%",
           height: "100%",
-          background: colorCss(el.color, "var(--ink)"),
+          background: el.degradado ? degradadoCss(el.degradado, el.anguloDegradado) : colorCss(el.color, "var(--ink)"),
           borderRadius: el.molde ? undefined : el.forma === "elipse" ? "50%" : el.radio ? cq(el.radio) : undefined,
           border: el.borde && !el.molde ? `${cq(el.borde)} solid ${colorCss(el.colorBorde, "var(--ink)")}` : undefined,
           boxSizing: "border-box",
@@ -415,12 +436,15 @@ export function ElementoVista({
   // Con animación de entrada, el contenido va en un envoltorio que arranca invisible; el cliente lo anima al verse.
   // (El envoltorio es independiente de la caja, que ya lleva el giro y la opacidad del elemento.)
   const animado =
-    animar && el.animacion ? (
+    animar && (el.animacion || el.salida) ? (
       <div
-        data-anim={el.animacion.efecto}
-        data-dur={el.animacion.duracion}
-        data-ret={el.animacion.retraso}
-        style={{ width: "100%", height: "100%", opacity: 0 }}
+        data-anim={el.animacion?.efecto}
+        data-dur={el.animacion?.duracion}
+        data-ret={el.animacion?.retraso}
+        data-salida={el.salida?.efecto}
+        data-sal-dur={el.salida?.duracion}
+        data-sal-desp={el.salida?.despues}
+        style={{ width: "100%", height: "100%", opacity: el.animacion ? 0 : undefined }}
       >
         {conEfectos}
       </div>

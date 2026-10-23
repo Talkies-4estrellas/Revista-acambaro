@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { EFECTOS, EFECTOS_IDS, fotogramas, opcionesAnimacion, type Efecto } from "@/lib/animaciones";
+import { DESPUES_DEFECTO, EFECTOS, EFECTOS_IDS, fotogramas, fotogramasSalida, opcionesAnimacion, opcionesSalida, type Efecto } from "@/lib/animaciones";
 import { animarTexto } from "@/lib/animaciones-texto";
 
 /**
@@ -14,13 +14,30 @@ export default function AnimacionesLienzo() {
   useEffect(() => {
     // Se ignoran las copias de la página anterior que usa el giro de página (dentro de [data-pageflow]).
     // Con el scroll continuo del celular se montan varias instancias (una por página): cada una se queda con los elementos que aún nadie reclamó.
-    const nodos = Array.from(document.querySelectorAll<HTMLElement>("[data-anim]:not([data-anim-obs])")).filter((n) => !n.closest("[data-pageflow]"));
+    const nodos = Array.from(document.querySelectorAll<HTMLElement>("[data-anim]:not([data-anim-obs]), [data-salida]:not([data-anim-obs])")).filter((n) => !n.closest("[data-pageflow]"));
     if (nodos.length === 0) return;
     nodos.forEach((n) => n.setAttribute("data-anim-obs", ""));
     const soltar = () => nodos.forEach((n) => n.removeAttribute("data-anim-obs")); // por si el efecto se vuelve a montar (modo estricto)
 
     const mostrar = (n: HTMLElement) => {
       n.style.opacity = "1";
+    };
+    const temporizadores: number[] = [];
+    /** Salida: pasado el tiempo, el elemento se va con su efecto y queda oculto. Sin entrada propia, cuenta desde que aparece en pantalla. */
+    const programarSalida = (n: HTMLElement, esperaExtra = 0) => {
+      const efecto = n.dataset.salida as Efecto | undefined;
+      if (!efecto || !(efecto in EFECTOS) || typeof n.animate !== "function") return;
+      const desp = Number(n.dataset.salDesp);
+      const dur = Number(n.dataset.salDur);
+      temporizadores.push(
+        window.setTimeout(
+          () => {
+            const a = n.animate(fotogramasSalida(efecto), opcionesSalida({ efecto, duracion: Number.isFinite(dur) && dur > 0 ? dur : undefined }));
+            a.finished.then(() => (n.style.opacity = "0")).catch(() => (n.style.opacity = "0"));
+          },
+          esperaExtra + (Number.isFinite(desp) && n.dataset.salDesp !== undefined ? desp : DESPUES_DEFECTO),
+        ),
+      );
     };
     const sinMovimiento =
       window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof IntersectionObserver === "undefined";
@@ -31,8 +48,14 @@ export default function AnimacionesLienzo() {
 
     const reproducir = (n: HTMLElement) => {
       const efecto = n.dataset.anim as Efecto;
+      // Solo salida (sin animación de entrada): ya está visible; basta con programar su salida.
+      if (n.dataset.anim === undefined) {
+        programarSalida(n);
+        return;
+      }
       if (!EFECTOS_IDS.includes(efecto) || !(efecto in EFECTOS) || typeof n.animate !== "function") {
         mostrar(n);
+        programarSalida(n);
         return;
       }
       const dur = Number(n.dataset.dur);
@@ -43,7 +66,10 @@ export default function AnimacionesLienzo() {
           n.firstElementChild,
           n,
           { efecto, duracion: Number.isFinite(dur) && dur > 0 ? dur : undefined, retraso: Number.isFinite(ret) && ret > 0 ? ret : undefined },
-          () => mostrar(n),
+          () => {
+            mostrar(n);
+            programarSalida(n);
+          },
         );
         if (hecho) return;
       }
@@ -60,6 +86,7 @@ export default function AnimacionesLienzo() {
         .then(() => {
           mostrar(n);
           anim.cancel();
+          programarSalida(n);
         })
         .catch(() => mostrar(n));
     };
@@ -77,6 +104,7 @@ export default function AnimacionesLienzo() {
     nodos.forEach((n) => obs.observe(n));
     return () => {
       obs.disconnect();
+      temporizadores.forEach((t) => clearTimeout(t));
       soltar();
     };
   }, []);

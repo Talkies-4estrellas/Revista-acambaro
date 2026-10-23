@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { BUCLES_IDS, EFECTOS_IDS, HOVERS_IDS } from "./animaciones";
-import { ICONOS } from "./iconos-datos";
+import { CATALOGO } from "./catalogo-iconos";
 import { TRANSICIONES, type Transicion } from "./transiciones";
 import {
   aplicarMaestra,
@@ -10,6 +10,8 @@ import {
   PARALLAX_IDS,
   FILTROS_IMAGEN_IDS,
   SOMBRAS_IDS,
+  SOMBRAS_TEXTO_IDS,
+  DEGRADADOS_IDS,
   AJUSTES,
   COLAS_GLOBO,
   FORMAS_GLOBO,
@@ -164,7 +166,7 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   const c = `${ctx} (elemento "${e.tipo}")`;
   if (!["texto", "imagen", "video", "forma", "icono"].includes(e.tipo))
     fail(c, 'el tipo debe ser "texto", "imagen", "video", "forma" o "icono"');
-  if (e.tipo === "icono" && !(typeof e.icono === "string" && e.icono in ICONOS))
+  if (e.tipo === "icono" && !(typeof e.icono === "string" && e.icono in CATALOGO))
     fail(c, `"icono" vale "${String(e.icono)}", que no está en el catálogo (lib/iconos-datos.ts)`);
   checkEnum(e.molde, MOLDES_IDS, c, "molde");
   checkEnum(e.movil, VISIBILIDAD_MOVIL, c, "movil");
@@ -185,7 +187,11 @@ function checkElemento(e: unknown, ctx: string, total: number) {
   checkEnum(e.filtro, FILTROS_IMAGEN_IDS, c, "filtro");
   checkEnum(e.capa, CAPAS_IMAGEN_IDS, c, "capa");
   checkEnum(e.sombra, SOMBRAS_IDS, c, "sombra");
+  checkEnum(e.sombraTexto, SOMBRAS_TEXTO_IDS, c, "sombraTexto");
+  checkEnum(e.degradado, DEGRADADOS_IDS, c, "degradado");
+  checkNum(e.anguloDegradado, c, "anguloDegradado", 0, 360);
   checkEnum(e.parallax, PARALLAX_IDS, c, "parallax");
+  checkNum(e.zoom, c, "zoom", 1, 5);
   if (e.revelar !== undefined && !(typeof e.revelar === "string" && e.revelar.length >= 1 && e.revelar.length <= 80)) fail(c, '"revelar" debe ser un texto de 1 a 80 caracteres');
   if (e.comparar !== undefined) {
     if (!isObj(e.comparar)) fail(c, '"comparar" debe ser un objeto con "src"');
@@ -205,6 +211,13 @@ function checkElemento(e: unknown, ctx: string, total: number) {
     if (e.animacion.efecto === undefined) fail(c, '"animacion" necesita un "efecto"');
     checkNum(e.animacion.duracion, c, "animacion.duracion", 50, 6000);
     checkNum(e.animacion.retraso, c, "animacion.retraso", 0, 20000);
+  }
+  if (e.salida !== undefined) {
+    if (!isObj(e.salida)) fail(c, '"salida" debe ser un objeto con "efecto"');
+    checkEnum(e.salida.efecto, EFECTOS_IDS, c, "salida.efecto");
+    if (e.salida.efecto === undefined) fail(c, '"salida" necesita un "efecto"');
+    checkNum(e.salida.duracion, c, "salida.duracion", 50, 6000);
+    checkNum(e.salida.despues, c, "salida.despues", 0, 60000);
   }
   checkNum(e.rot, c, "rot", -360, 360);
   checkNum(e.opacidad, c, "opacidad", 0, 1);

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Pagina } from "@/lib/esquema";
-import { PESO_NIVEL, revisarDatos, type Aviso } from "@/lib/revision";
+import { revisarAccesibilidad } from "@/lib/accesibilidad";
+import { PESO_NIVEL, listaAntesDePublicar, revisarDatos, type Aviso } from "@/lib/revision";
 import { btnCls } from "./campos";
 
 /* ---------------------------------------------------------------------------------------------------------------------
@@ -158,23 +159,32 @@ export default function RevisorDiseno({
   edicionId,
   paginas,
   fecha,
+  tema,
+  publicadas,
   sucio,
   paginaActual,
   onIr,
+  onArreglar,
   onCerrar,
 }: {
   edicionId: string;
   paginas: Pagina[];
   /** Fecha de la edición (AAAA-MM-DD): los datos con fecha se miden contra ella. */
   fecha?: string;
+  tema?: string;
+  /** Qué ediciones están publicadas (id → sí/no), para avisar de enlaces a ediciones que no existen. */
+  publicadas?: Map<string, boolean>;
   /** Hay cambios sin guardar: la revisión visual mira la última versión guardada. */
   sucio: boolean;
   /** Índice (desde 0) de la página abierta en el editor. */
   paginaActual: number;
   onIr: (indice: number) => void;
+  /** Aplica el arreglo de un aviso (si lo trae) a la edición. */
+  onArreglar?: (aviso: Aviso) => void;
   onCerrar: () => void;
 }) {
-  const datosAvisos = useMemo(() => revisarDatos(paginas, fecha), [paginas, fecha]);
+  const datosAvisos = useMemo(() => [...revisarDatos(paginas, fecha, { publicadas }), ...revisarAccesibilidad({ paginas })], [paginas, fecha, publicadas]);
+  const [grupo, setGrupo] = useState<"todo" | "diseno" | "accesibilidad">("todo");
   const [visuales, setVisuales] = useState<Aviso[]>([]);
   const [progreso, setProgreso] = useState<{ hecho: number; total: number } | null>(null);
   const [terminado, setTerminado] = useState(false);
@@ -216,16 +226,40 @@ export default function RevisorDiseno({
     () => [...datosAvisos, ...visuales].sort((a, b) => a.pagina - b.pagina || PESO_NIVEL[a.nivel] - PESO_NIVEL[b.nivel]),
     [datosAvisos, visuales],
   );
-  const cuenta = (n: Aviso["nivel"]) => todos.filter((a) => a.nivel === n).length;
+  const lista = useMemo(() => listaAntesDePublicar({ tema, fecha }, datosAvisos, terminado ? visuales : undefined), [tema, fecha, datosAvisos, visuales, terminado]);
+  const pendientes = lista.filter((p) => !p.ok && !p.opcional).length;
+  const visibles = todos.filter((a) => grupo === "todo" || (a.grupo ?? "diseno") === grupo);
+  const cuentaGrupo = (g: "diseno" | "accesibilidad") => todos.filter((a) => (a.grupo ?? "diseno") === g).length;
+  const cuenta = (n: Aviso["nivel"]) => visibles.filter((a) => a.nivel === n).length;
   const corriendo = progreso !== null;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-ink/60 p-4 sm:p-8" onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}>
       <div role="dialog" aria-modal="true" aria-label="Revisor de diseño" className="w-full max-w-3xl border-2 border-ink bg-paper shadow-2xl">
         <header className="flex items-center justify-between gap-3 border-b border-ink/30 bg-paper-deep px-5 py-3">
-          <h2 className="font-display text-2xl font-black">Revisor de diseño</h2>
+          <h2 className="font-display text-2xl font-black">Revisor, accesibilidad y lista antes de publicar</h2>
           <button type="button" className={btnCls} onClick={() => { cancelar.current = true; onCerrar(); }}>✕ Cerrar</button>
         </header>
+
+        <section className="border-b border-ink/20 px-5 py-4" aria-label="Lista antes de publicar">
+          <p className={`font-sans text-xs font-bold uppercase tracking-wider ${pendientes === 0 ? "text-oliva" : "text-terracota"}`}>
+            {pendientes === 0 ? "✓ Lista para publicar" : `Antes de publicar: ${pendientes} pendiente${pendientes === 1 ? "" : "s"}`}
+          </p>
+          <ul className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+            {lista.map((p) => (
+              <li key={p.clave} className="font-sans flex items-start gap-2 text-xs">
+                <span aria-hidden className={`mt-px shrink-0 font-bold ${p.ok ? "text-oliva" : p.opcional ? "text-ink-soft" : "text-terracota"}`}>
+                  {p.ok ? "✓" : p.opcional ? "○" : "✗"}
+                </span>
+                <span className="min-w-0">
+                  <span className={p.ok ? "text-ink-soft" : "font-semibold"}>{p.titulo}</span>
+                  {!p.ok && p.detalle && <span className="block text-ink-soft">{p.detalle}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="font-sans mt-2 text-[0.7rem] text-ink-soft">✗ conviene resolverlo antes de publicar · ○ es una sugerencia; no impide publicar.</p>
+        </section>
 
         <section className="border-b border-ink/20 px-5 py-4">
           <p className="font-sans text-xs leading-relaxed text-ink-soft">
@@ -265,22 +299,49 @@ export default function RevisorDiseno({
 
         <section className="px-5 py-4">
           <p className="font-sans mb-3 text-xs font-bold uppercase tracking-wider text-ink-soft">
-            {todos.length === 0 ? "Sin hallazgos por ahora" : `${todos.length} hallazgo(s) · ${cuenta("error")} por corregir · ${cuenta("aviso")} por revisar · ${cuenta("info")} sugerencias`}
+            {visibles.length === 0 ? "Sin hallazgos por ahora" : `${visibles.length} hallazgo(s) · ${cuenta("error")} por corregir · ${cuenta("aviso")} por revisar · ${cuenta("info")} sugerencias`}
           </p>
+          <div className="mb-3 flex flex-wrap gap-1.5" role="tablist" aria-label="Tipo de hallazgo">
+            {(
+              [
+                ["todo", `Todo (${todos.length})`],
+                ["diseno", `Diseño y contenido (${cuentaGrupo("diseno")})`],
+                ["accesibilidad", `Accesibilidad (${cuentaGrupo("accesibilidad")})`],
+              ] as const
+            ).map(([id, etiqueta]) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={grupo === id}
+                onClick={() => setGrupo(id)}
+                className={`font-sans rounded-full border px-3 py-1 text-xs font-semibold ${grupo === id ? "border-ink bg-ink text-paper" : "border-ink/30 text-ink-soft hover:border-ink"}`}
+              >
+                {etiqueta}
+              </button>
+            ))}
+          </div>
           <ul className="space-y-2">
-            {todos.map((a, i) => (
+            {visibles.map((a, i) => (
               <li key={i} className="flex items-start gap-3 border border-ink/20 bg-white/50 px-3 py-2 dark:bg-white/5">
                 <span className={`font-sans mt-0.5 shrink-0 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider ${COLOR_NIVEL[a.nivel]}`}>{ETIQUETA_NIVEL[a.nivel]}</span>
                 <div className="min-w-0 flex-1">
                   <p className="font-sans text-xs font-bold">
                     Página {a.pagina}
-                    <span className="font-normal text-ink-soft"> · {paginas[a.pagina - 1]?.titulo ?? ""}</span> · {a.tipo}
+                    <span className="font-normal text-ink-soft"> · {paginas[a.pagina - 1]?.titulo ?? ""}</span> · {a.tipo}{a.grupo === "accesibilidad" && <span className="ml-1.5 rounded bg-indigo/10 px-1 text-[0.6rem] font-bold uppercase text-ink-soft">accesibilidad</span>}
                   </p>
                   <p className="font-sans mt-0.5 break-words text-xs text-ink-soft">{a.texto}</p>
                 </div>
-                <button type="button" className={`${btnCls} shrink-0`} onClick={() => { onIr(a.pagina - 1); onCerrar(); }}>
-                  Ir →
-                </button>
+                <div className="flex shrink-0 flex-col gap-1">
+                  <button type="button" className={btnCls} onClick={() => { onIr(a.pagina - 1); onCerrar(); }}>
+                    Ir →
+                  </button>
+                  {a.arreglo && onArreglar && (
+                    <button type="button" className={`${btnCls} !border-oliva !text-oliva`} onClick={() => onArreglar(a)} title={a.arreglo.descripcion}>
+                      ✓ Arreglar
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

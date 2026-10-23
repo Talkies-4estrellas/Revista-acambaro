@@ -58,6 +58,29 @@ export type AnimacionEl = {
 
 export const DURACION_DEFECTO = 700;
 
+/** Animación de salida: el elemento se va solo, `despues` ms después de aparecer, con un efecto de entrada al revés (los de texto se tratan como «Aparecer»). */
+export type AnimacionSalida = {
+  efecto: Efecto;
+  /** Milisegundos (por defecto 700). */
+  duracion?: number;
+  /** Milisegundos que el elemento se queda a la vista desde que aparece (terminada su animación de entrada) antes de irse (por defecto 3000). */
+  despues?: number;
+};
+export const DESPUES_DEFECTO = 3000;
+
+/** Fotogramas de la salida: los de la entrada al revés (del estado normal al estado «fuera»). */
+export function fotogramasSalida(efecto: Efecto): Keyframe[] {
+  return [...fotogramas(esEfectoTexto(efecto) ? "aparecer" : efecto)]
+    .reverse()
+    .map((f) => (f.offset != null ? { ...f, offset: 1 - Number(f.offset) } : { ...f }));
+}
+
+/** Opciones de `Element.animate` para una salida: al terminar el elemento queda oculto. */
+export function opcionesSalida(s: AnimacionSalida): KeyframeAnimationOptions {
+  const efecto = esEfectoTexto(s.efecto) ? "aparecer" : s.efecto;
+  return { duration: s.duracion ?? DURACION_DEFECTO, easing: EFECTOS[efecto].easing, fill: "forwards" };
+}
+
 /** Fotogramas de cada efecto: del estado inicial al estado normal del elemento. */
 export function fotogramas(efecto: Efecto): Keyframe[] {
   switch (efecto) {
@@ -98,6 +121,54 @@ export function fotogramas(efecto: Efecto): Keyframe[] {
         { opacity: 0, filter: "blur(1.8cqw)", transform: "scale(1.03)" },
         { opacity: 1, filter: "blur(0)", transform: "scale(1)" },
       ];
+  }
+}
+
+/**
+ * Vista previa en el editor del movimiento continuo y del efecto al pasar el cursor. En el sitio los dibuja CSS (globals.css: .fx-b y .fx-h);
+ * aquí se repiten con `Element.animate` porque en la hoja de edición no se montan esos envoltorios (estorbarían al seleccionar y mover).
+ * Si cambias un valor en globals.css, cámbialo también aquí.
+ */
+export function pruebaBucle(b: Bucle): { fotogramas: Keyframe[]; opciones: KeyframeAnimationOptions } {
+  switch (b) {
+    case "flotar":
+      return { fotogramas: [{ transform: "translateY(0)" }, { transform: "translateY(-1.1cqw)" }, { transform: "translateY(0)" }], opciones: { duration: 3200, easing: "ease-in-out", iterations: 2 } };
+    case "latir":
+      return { fotogramas: [{ transform: "scale(1)" }, { transform: "scale(1.06)" }, { transform: "scale(1)" }], opciones: { duration: 1600, easing: "ease-in-out", iterations: 3 } };
+    case "balancear":
+      return { fotogramas: [{ transform: "rotate(-2.5deg)", transformOrigin: "50% 20%" }, { transform: "rotate(2.5deg)", transformOrigin: "50% 20%" }, { transform: "rotate(-2.5deg)", transformOrigin: "50% 20%" }], opciones: { duration: 3400, easing: "ease-in-out", iterations: 2 } };
+    case "brillar":
+      return {
+        fotogramas: [
+          { filter: "brightness(1)", offset: 0 },
+          { filter: "brightness(1)", offset: 0.6 },
+          { filter: "brightness(1.35) saturate(1.2)", offset: 0.8 },
+          { filter: "brightness(1)", offset: 1 },
+        ],
+        opciones: { duration: 2800, easing: "ease-in-out", iterations: 2 },
+      };
+  }
+}
+
+/** Efecto al pasar el cursor: llega al estado «con el cursor encima», se queda un momento y vuelve. `enMedio`: en una foto o video el zoom lo hace la imagen dentro de su marco. */
+export function pruebaHover(h: Hover): { fotogramas: Keyframe[]; enMedio: boolean } {
+  const ida = (estado: Keyframe): Keyframe[] => [
+    { transform: "none", filter: "none", offset: 0 },
+    { ...estado, offset: 0.2 },
+    { ...estado, offset: 0.75 },
+    { transform: "none", filter: "none", offset: 1 },
+  ];
+  switch (h) {
+    case "subir":
+      return { fotogramas: ida({ transform: "translateY(-0.9cqw)", filter: "drop-shadow(0 1.2cqw 1cqw rgb(0 0 0 / 0.28))" }), enMedio: false };
+    case "acercar":
+      return { fotogramas: ida({ transform: "scale(1.07)" }), enMedio: false };
+    case "inclinar":
+      return { fotogramas: ida({ transform: "rotate(-2.5deg) scale(1.03)" }), enMedio: false };
+    case "brillo":
+      return { fotogramas: ida({ filter: "brightness(1.14) saturate(1.15)" }), enMedio: false };
+    case "encoger":
+      return { fotogramas: ida({ transform: "scale(0.95)" }), enMedio: false };
   }
 }
 

@@ -23,6 +23,9 @@ import PanelPaginas from "./PanelPaginas";
 import { construirIndice } from "@/lib/indice";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
 import RevisorDiseno from "./RevisorDiseno";
+import { listaAntesDePublicar, revisarDatos } from "@/lib/revision";
+import BibliotecaMedios from "./BibliotecaMedios";
+import BuscarReemplazar from "./BuscarReemplazar";
 import Versiones from "./Versiones";
 import { textoCreditos } from "@/lib/referencias";
 
@@ -64,10 +67,13 @@ export default function Editor({
   inicial,
   mediosIniciales,
   otras,
+  marcaInicial,
 }: {
   id: string;
   inicial: EdicionDatos;
   mediosIniciales: string[];
+  /** Marca de modificación del archivo al abrir (detecta cambios hechos desde otra pestaña). */
+  marcaInicial: number;
   /** Las demás ediciones, para calcular el número de esta (automático). */
   otras: EntradaNumeracion[];
 }) {
@@ -88,6 +94,10 @@ export default function Editor({
   const [verPlantillas, setVerPlantillas] = useState(false);
   const [verRevisor, setVerRevisor] = useState(false);
   const [verVersiones, setVerVersiones] = useState(false);
+  const [verMedios, setVerMedios] = useState(false);
+  const [verBuscar, setVerBuscar] = useState(false);
+  /** El último «buscar y reemplazar»: cómo estaba la edición antes (para deshacerlo) y qué se hizo. */
+  const [reemplazoAnterior, setReemplazoAnterior] = useState<{ antes: EdicionDatos; resumen: string } | null>(null);
   /** Cuándo se guardó por última vez en esta sesión (a mano o solo). */
   const [guardadoEn, setGuardadoEn] = useState<Date | null>(null);
   /** Copia de recuperación del navegador, de una sesión anterior, que aún no se recuperó ni se descartó. */
@@ -106,6 +116,18 @@ export default function Editor({
   const pagina = datos.paginas[Math.min(sel, datos.paginas.length - 1)];
   const idx = datos.paginas.indexOf(pagina);
   const seguidos = useMemo(() => anunciosSeguidos(datos.paginas), [datos.paginas]);
+  const publicadas = useMemo(() => new Map(otras.map((o) => [o.id, o.publicada])), [otras]);
+  /** Al pasar de borrador a publicada/programada: si hay pendientes, se ofrece abrir la lista antes de publicar. */
+  const confirmarPublicacion = () => {
+    const pend = listaAntesDePublicar(datos, revisarDatos(datos.paginas, datos.fecha, { publicadas })).filter((p) => !p.ok && !p.opcional);
+    if (pend.length === 0) return true;
+    const resumen = pend.slice(0, 5).map((p) => "• " + p.titulo).join("\n");
+    if (confirm(`Antes de publicar hay ${pend.length} pendiente(s):\n\n${resumen}${pend.length > 5 ? "\n…" : ""}\n\nAceptar = abrir la lista y no publicar todavía.\nCancelar = publicar de todos modos.`)) {
+      setVerRevisor(true);
+      return false;
+    }
+    return true;
+  };
   const titulos = useMemo(() => datos.paginas.map(tituloPagina), [datos.paginas]);
   const anclas = useMemo(() => datos.paginas.map((p) => p.ancla), [datos.paginas]);
   const creditos = useMemo(() => textoCreditos(datos.paginas), [datos.paginas]);
@@ -119,17 +141,25 @@ export default function Editor({
   /** Lo que no se pudo autoguardar (para no reintentar sin parar un error que no se arregla solo). */
   const fallaAuto = useRef("");
 
-  const guardar = useCallback(async (silencioso = false) => {
+  /** Lo último que este editor vio del archivo; si el archivo cambia por otro lado, la marca ya no coincide. */
+  const marca = useRef(marcaInicial);
+  /** Cambios hechos fuera de este editor: «externo» se detectó sin guardar; «conflicto» el servidor se negó a pisarlos. */
+  const [cambioAjeno, setCambioAjeno] = useState<null | "externo" | "conflicto">(null);
+
+  const guardar = useCallback(async (silencioso = false, forzar = false) => {
     if (!silencioso) fallaAuto.current = "";
     setEstado({ tipo: "cargando", texto: silencioso ? "Autoguardando…" : "Guardando…" });
     try {
-      const res = await fetch(`/api/admin/ediciones/${id}`, {
+      const res = await fetch(`/api/admin/ediciones/${id}${forzar ? "?forzar=1" : ""}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-marca": String(marca.current) },
         body: JSON.stringify(datos),
       });
       const json = await res.json().catch(() => ({}));
+      if (res.status === 409 && json.conflicto) setCambioAjeno("conflicto");
       if (!res.ok) throw new Error(json.error ?? `Error ${res.status}`);
+      if (typeof json.marca === "number") marca.current = json.marca;
+      setCambioAjeno(null);
       setGuardado(JSON.stringify(datos));
       setGuardadoEn(new Date());
       // Al guardar publicada, la edición queda con su número para siempre (lo asigna el servidor).
@@ -145,11 +175,40 @@ export default function Editor({
 
   const guardarRef = useRef(guardar);
   guardarRef.current = guardar;
+
+  // Avisa si otra pestaña, otra ventana o un cambio directo al archivo modificó esta edición (se mira cada 20 s y al volver a esta pestaña).
+  useEffect(() => {
+    let vivo = true;
+    const mirar = async () => {
+      try {
+        const r = await fetch(`/api/admin/ediciones/${id}`, { cache: "no-store" });
+        if (!r.ok) return;
+        const j = (await r.json()) as { marca?: number };
+        if (vivo && typeof j.marca === "number" && j.marca !== marca.current) setCambioAjeno((c) => c ?? "externo");
+      } catch {
+        // sin red o servidor ocupado: se reintenta en la siguiente
+      }
+    };
+    const cada = setInterval(mirar, 20_000);
+    const alVolver = () => document.visibilityState === "visible" && mirar();
+    document.addEventListener("visibilitychange", alVolver);
+    window.addEventListener("focus", alVolver);
+    return () => {
+      vivo = false;
+      clearInterval(cada);
+      document.removeEventListener("visibilitychange", alVolver);
+      window.removeEventListener("focus", alVolver);
+    };
+  }, [id]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault();
         guardarRef.current();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === "h") {
+        e.preventDefault();
+        setVerBuscar(true);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -417,7 +476,7 @@ export default function Editor({
   /* ------------------------------- UI -------------------------------- */
 
   return (
-    <MediosContext.Provider value={{ medios, subir }}>
+    <MediosContext.Provider value={{ medios, subir, edicionId: id }}>
       <div className="flex min-h-screen flex-col md:h-screen">
         {/* Barra superior */}
         <header className="border-b-2 border-ink bg-paper">
@@ -464,8 +523,14 @@ export default function Editor({
               <button type="button" className={btnCls} onClick={() => setVerVersiones(true)} title="Ver y restaurar versiones anteriores de esta edición">
                 ↶ Versiones
               </button>
-              <button type="button" className={btnCls} onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica en el celular, anuncios seguidos y enlaces de ejemplo">
-                ✓ Revisar diseño
+              <button type="button" className={btnCls} onClick={() => setVerBuscar(true)} title="Cambia un texto, enlace, teléfono o nombre en toda la edición de una vez (Ctrl+Alt+H)">
+                🔎 Reemplazar
+              </button>
+              <button type="button" className={btnCls} onClick={() => setVerMedios(true)} title="Todas las fotos y videos subidos: dónde se usan, cuáles sobran y cuánto pesan">
+                🖼 Medios
+              </button>
+              <button type="button" className={btnCls} onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica, anuncios seguidos, enlaces de ejemplo y problemas de accesibilidad (contraste, descripciones, enlaces)">
+                ✓ Revisar y accesibilidad
               </button>
               <a href={`/ediciones/${id}/1`} target="_blank" rel="noreferrer" className={btnCls}>
                 Abrir edición ↗
@@ -510,6 +575,7 @@ export default function Editor({
                   value={!datos.publicada ? "borrador" : datos.publicarEn ? "programada" : "publicada"}
                   onChange={(e) => {
                     const v = e.target.value;
+                    if (v !== "borrador" && !datos.publicada && !confirmarPublicacion()) return;
                     if (v === "borrador") setDatos({ ...datos, publicada: false, publicarEn: undefined });
                     else if (v === "publicada") setDatos({ ...datos, publicada: true, publicarEn: undefined });
                     else setDatos({ ...datos, publicada: true, publicarEn: datos.publicarEn ?? sugerirPublicacion() });
@@ -538,6 +604,39 @@ export default function Editor({
             </div>
           </div>
         </header>
+
+        {cambioAjeno && (
+          <div role="alert" className="font-sans flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-ocre bg-ocre/20 px-4 py-2 text-xs">
+            <span className="min-w-0 flex-1">
+              <strong>{cambioAjeno === "conflicto" ? "No se guardó para no borrar cambios ajenos." : "Esta edición cambió fuera de esta pestaña."}</strong>{" "}
+              Se guardó desde otra pestaña o ventana (o se editó el archivo) después de que la abriste.
+              {sucio && " Tus cambios de aquí siguen en pantalla y en la copia de recuperación del navegador."}
+            </span>
+            <button
+              type="button"
+              className={btnCls}
+              onClick={() => {
+                if (!sucio || confirm("Se cargará la versión nueva. Tus cambios sin guardar quedan en la copia de recuperación y podrás recuperarlos al abrir. ¿Recargar?")) location.reload();
+              }}
+            >
+              ↻ Cargar la versión nueva
+            </button>
+            {cambioAjeno === "conflicto" && (
+              <button
+                type="button"
+                className={btnCls}
+                onClick={() => {
+                  if (confirm("Se guardará lo que ves aquí encima de la versión de la otra pestaña (queda su copia en «Versiones»). ¿Guardar encima?")) guardar(false, true);
+                }}
+              >
+                Guardar encima
+              </button>
+            )}
+            <button type="button" className={btnCls} onClick={() => setCambioAjeno(null)}>
+              Seguir aquí
+            </button>
+          </div>
+        )}
 
         {/* Cuerpo */}
         <div className={`grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)] ${conPrevia ? "xl:grid-cols-[15rem_minmax(0,1fr)_28rem]" : ""}`}>
@@ -738,8 +837,51 @@ export default function Editor({
           )}
         </div>
       </div>
+      {verBuscar && (
+        <BuscarReemplazar
+          datos={datos}
+          paginas={titulos}
+          ultimo={reemplazoAnterior ? { resumen: reemplazoAnterior.resumen } : null}
+          onAplicar={(nuevos, resumen) => {
+            setReemplazoAnterior({ antes: datos, resumen });
+            setDatos(nuevos);
+          }}
+          onDeshacer={() => {
+            if (reemplazoAnterior) setDatos(reemplazoAnterior.antes);
+            setReemplazoAnterior(null);
+          }}
+          onIr={(pagina) => {
+            if (pagina === -1) setVerDatos(true);
+            else setSel(pagina - 1);
+          }}
+          onCerrar={() => setVerBuscar(false)}
+        />
+      )}
+      {verMedios && <BibliotecaMedios edicionId={id} onCerrar={() => setVerMedios(false)} />}
       {verVersiones && <Versiones edicionId={id} sucio={sucio} onRestaurar={restaurarVersion} onCerrar={() => setVerVersiones(false)} />}
-      {verRevisor && <RevisorDiseno edicionId={id} paginas={datos.paginas} fecha={datos.fecha} sucio={sucio} paginaActual={idx} onIr={setSel} onCerrar={() => setVerRevisor(false)} />}
+      {verRevisor && <RevisorDiseno edicionId={id} paginas={datos.paginas} fecha={datos.fecha} tema={datos.tema} publicadas={publicadas} sucio={sucio} paginaActual={idx} onIr={setSel}
+          onArreglar={(a) => {
+            // Cambia los campos indicados en el elemento del aviso (los que valen undefined se quitan).
+            if (!a.arreglo || !a.elemento) return;
+            setDatos((d) => ({
+              ...d,
+              paginas: d.paginas.map((p, i) =>
+                i !== a.pagina - 1
+                  ? p
+                  : {
+                      ...p,
+                      elementos: (p.elementos ?? []).map((el) => {
+                        if (el.id !== a.elemento) return el;
+                        const nuevo = { ...el, ...a.arreglo!.cambios } as Record<string, unknown>;
+                        for (const k of Object.keys(a.arreglo!.cambios)) if (nuevo[k] === undefined) delete nuevo[k];
+                        return nuevo as unknown as typeof el;
+                      }),
+                    },
+              ),
+            }));
+          }}
+          onCerrar={() => setVerRevisor(false)}
+        />}
       {verPlantillas && (
         <PlantillasModal
           paginaActual={pagina}

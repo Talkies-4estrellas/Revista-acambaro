@@ -3,6 +3,8 @@ import path from "node:path";
 import { DIR_EDICIONES, validarEdicion } from "./ediciones";
 import { construirResumen } from "./resumen";
 import { limpiar, paginaNueva, type EdicionDatos } from "./esquema";
+import { adminPermitido } from "./admin-acceso";
+import { usoEnEdicion } from "./medios-uso";
 import { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
 
 /**
@@ -37,15 +39,10 @@ export class ErrorAdmin extends Error {
 /* ------------------------------ Acceso ------------------------------- */
 
 /**
- * El panel escribe archivos del proyecto, así que solo está disponible en desarrollo
- * (o con ADMIN_ENABLED=true) y únicamente desde esta misma máquina.
+ * El panel escribe archivos del proyecto, así que solo está disponible en desarrollo y únicamente desde esta misma máquina; en Vercel
+ * nunca. La regla vive en admin-acceso.ts (sin dependencias pesadas, para poder usarla en el proxy). Protocolo: Doc/protocolo-admin.md.
  */
-export function adminPermitido(host: string | null | undefined) {
-  if (process.env.NODE_ENV === "production" && process.env.ADMIN_ENABLED !== "true") return false;
-  if (process.env.ADMIN_ALLOW_REMOTE === "true") return true;
-  const nombre = (host ?? "").replace(/:\d+$/, "").replace(/^\[|\]$/g, "");
-  return nombre === "localhost" || nombre === "127.0.0.1" || nombre === "::1";
-}
+export { adminPermitido } from "./admin-acceso";
 
 /** Para peticiones que modifican datos: además exige que el Origin sea este mismo sitio. */
 export function verificarPeticion(req: Request) {
@@ -219,8 +216,22 @@ export function leerRespaldo(id: string, nombre: string): EdicionDatos {
   };
 }
 
-export function guardarEdicion(id: string, datos: unknown) {
+/** Marca de la última modificación del archivo de la edición (para saber si otra pestaña la cambió). 0 si no existe. */
+export function marcaEdicion(id: string): number {
+  try {
+    return Math.floor(fs.statSync(archivoEdicion(id)).mtimeMs);
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Guarda la edición. Con `base` (la marca que el editor leyó al abrir o al guardar por última vez) se niega a pisar
+ * cambios hechos desde otra pestaña, ventana o a mano en el archivo (409). Devuelve la marca nueva.
+ */
+export function guardarEdicion(id: string, datos: unknown, base?: number | null): number {
   if (!fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin("La edición no existe.", 404);
+  if (base != null && marcaEdicion(id) !== base) throw new ErrorAdmin("La edición cambió desde otra pestaña, ventana o archivo después de que la abriste.", 409);
   try {
     const nuevos = datos as EdicionDatos;
     // El número no se escribe a mano (ver lib/numeracion.ts): la primera vez que se publica toma el siguiente
@@ -235,6 +246,7 @@ export function guardarEdicion(id: string, datos: unknown) {
     validarEdicion(limpiar(nuevo), id); // si no es válida, ni siquiera se respalda ni se toca el archivo
     respaldarAntes(id);
     escribir(id, nuevo);
+    return marcaEdicion(id);
   } catch (e) {
     if (e instanceof ErrorAdmin) throw e;
     throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
@@ -320,6 +332,68 @@ export function listarMedios(id: string): string[] {
     .filter((f) => path.extname(f).slice(1).toLowerCase() in TIPOS_MEDIO)
     .sort()
     .map((f) => `/media/${id}/${f}`);
+}
+
+/* ----------------------- Biblioteca de medios ----------------------- */
+
+export type MedioBiblioteca = {
+  src: string;
+  /** Carpeta (normalmente el id de la edición a la que se subió). */
+  carpeta: string;
+  nombre: string;
+  bytes: number;
+  tipo: "imagen" | "video";
+  /** Dónde se usa, en las ediciones guardadas: edición y páginas (0 = elementos repetidos). */
+  uso: { edicion: string; paginas: number[] }[];
+};
+
+/** Qué archivo de /media usa cada edición guardada. */
+function usoEnEdiciones(): Map<string, { edicion: string; paginas: number[] }[]> {
+  const uso = new Map<string, { edicion: string; paginas: number[] }[]>();
+  if (!fs.existsSync(DIR_EDICIONES)) return uso;
+  for (const f of fs.readdirSync(DIR_EDICIONES).filter((x) => x.endsWith(".json"))) {
+    try {
+      const ed = JSON.parse(fs.readFileSync(path.join(DIR_EDICIONES, f), "utf8"));
+      for (const [src, paginas] of usoEnEdicion(ed)) uso.set(src, [...(uso.get(src) ?? []), { edicion: f.replace(/\.json$/, ""), paginas }]);
+    } catch {
+      // una edición con JSON roto no cuenta como uso (el editor ya avisa de ella)
+    }
+  }
+  return uso;
+}
+
+/** Todos los archivos de /media de todas las carpetas, con su peso y dónde se usan. */
+export function bibliotecaMedios(): MedioBiblioteca[] {
+  if (!fs.existsSync(DIR_MEDIA)) return [];
+  const uso = usoEnEdiciones();
+  const lista: MedioBiblioteca[] = [];
+  for (const carpeta of fs.readdirSync(DIR_MEDIA)) {
+    const dir = path.join(DIR_MEDIA, carpeta);
+    if (!ID_RE.test(carpeta) || !fs.statSync(dir).isDirectory()) continue;
+    for (const nombre of fs.readdirSync(dir)) {
+      const ext = path.extname(nombre).slice(1).toLowerCase();
+      if (!(ext in TIPOS_MEDIO)) continue;
+      const src = `/media/${carpeta}/${nombre}`;
+      lista.push({ src, carpeta, nombre, bytes: fs.statSync(path.join(dir, nombre)).size, tipo: ext === "mp4" || ext === "webm" ? "video" : "imagen", uso: uso.get(src) ?? [] });
+    }
+  }
+  return lista.sort((a, b) => a.carpeta.localeCompare(b.carpeta) || a.nombre.localeCompare(b.nombre));
+}
+
+/**
+ * Quita un archivo de la biblioteca. Solo si ninguna edición guardada lo usa; no se borra del disco: pasa a
+ * content/papelera-medios/ para poder recuperarlo.
+ */
+export function borrarMedio(src: string) {
+  const m = /^\/media\/([\w-]+)\/([^/\\]+)$/.exec(src);
+  if (!m || !ID_RE.test(m[1])) throw new ErrorAdmin("Ruta de archivo no válida.");
+  const archivo = path.join(DIR_MEDIA, m[1], m[2]);
+  if (!(path.extname(m[2]).slice(1).toLowerCase() in TIPOS_MEDIO) || !fs.existsSync(archivo)) throw new ErrorAdmin("El archivo no existe.", 404);
+  const donde = usoEnEdiciones().get(src);
+  if (donde?.length) throw new ErrorAdmin(`No se puede borrar: lo usa la edición ${donde[0].edicion}.`, 409);
+  const papelera = path.join(process.cwd(), "content", "papelera-medios");
+  fs.mkdirSync(papelera, { recursive: true });
+  fs.renameSync(archivo, path.join(papelera, `${m[1]}__${new Date().toISOString().replace(/[:.]/g, "-")}__${m[2]}`));
 }
 
 /* ----------------------- Optimización de fotos al subir ----------------------- */

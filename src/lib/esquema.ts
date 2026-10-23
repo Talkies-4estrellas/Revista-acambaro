@@ -2,7 +2,8 @@
  * Esquema de una edición: tipos, listas de opciones y fábricas de elementos nuevos.
  * Sin dependencias del servidor: lo usan tanto el sitio como el panel de administración.
  */
-import type { AnimacionEl, Bucle, Hover } from "./animaciones";
+import { CATALOGO } from "./catalogo-iconos";
+import type { AnimacionEl, AnimacionSalida, Bucle, Hover } from "./animaciones";
 import type { Transicion } from "./transiciones";
 
 export const PLANTILLAS = [
@@ -352,10 +353,16 @@ type ElementoBase = {
   enlace?: number | string;
   /** Los elementos con el mismo valor forman un grupo: se seleccionan y mueven juntos. */
   grupo?: string;
+  /** Relleno en degradado: en un texto colorea las letras (y sustituye su color); en un cuadro, el fondo. */
+  degradado?: DegradadoId;
+  /** Ángulo del degradado en grados (0–360); sin él, el propio del degradado. */
+  anguloDegradado?: number;
   /** Dato que envejece (una cifra, un precio, una noticia): de cuándo es y de dónde salió. El revisor avisa si pasan más de `dias` (7 si falta) antes de publicar. */
   dato?: { fecha: string; fuente?: string; dias?: number };
   /** Animación de entrada: se reproduce cuando el elemento entra en pantalla. */
   animacion?: AnimacionEl;
+  /** Animación de salida: el elemento se va solo un rato después de aparecer (solo en el sitio publicado y la vista previa). */
+  salida?: AnimacionSalida;
   /** Tapa el elemento con este texto hasta que el lector lo toca (p. ej. la respuesta de una trivia). */
   revelar?: string;
   /** Bloqueado en el editor: no se puede seleccionar con el ratón ni mover o borrar por accidente (se desbloquea desde la lista de capas o su panel). No cambia cómo se ve la página. */
@@ -400,6 +407,8 @@ export type ElementoTexto = ElementoBase & {
   colorBorde?: Color;
   /** Este texto es un botón: el revisor avisa si no lleva enlace. */
   boton?: boolean;
+  /** Sombra de las letras. */
+  sombraTexto?: SombraTextoId;
 };
 /** Filtros de color para una imagen (CSS `filter`). */
 export const FILTROS_IMAGEN = {
@@ -432,6 +441,47 @@ export const SOMBRAS = {
 export type SombraImagen = keyof typeof SOMBRAS;
 export const SOMBRAS_IDS = Object.keys(SOMBRAS) as SombraImagen[];
 
+/** Sombras de texto. Cada capa es [desplazamiento x, y, desvanecido, color]; las medidas van en cqw para escalar con la hoja. */
+export const SOMBRAS_TEXTO = {
+  suave: { nombre: "Suave", capas: [[0, 0.3, 0.8, "rgb(0 0 0 / .35)"]] },
+  marcada: { nombre: "Marcada", capas: [[0, 0.5, 1.2, "rgb(0 0 0 / .6)"]] },
+  desplazada: { nombre: "Desplazada (dura)", capas: [[0.4, 0.4, 0, "rgb(0 0 0 / .85)"]] },
+  brillo: { nombre: "Brillo blanco", capas: [[0, 0, 1.4, "rgb(255 255 255 / .9)"], [0, 0, 3, "rgb(255 255 255 / .6)"]] },
+  neon: { nombre: "Neón verde", capas: [[0, 0, 1, "#0fd6a0"], [0, 0, 2.6, "#068562"]] },
+  contorno: { nombre: "Contorno blanco", capas: [[-0.14, 0, 0, "#fff"], [0.14, 0, 0, "#fff"], [0, -0.14, 0, "#fff"], [0, 0.14, 0, "#fff"]] },
+} as const;
+export type SombraTextoId = keyof typeof SOMBRAS_TEXTO;
+export const SOMBRAS_TEXTO_IDS = Object.keys(SOMBRAS_TEXTO) as SombraTextoId[];
+
+/** `text-shadow` de una sombra de texto. */
+export function sombraTextoCss(id: SombraTextoId): string {
+  return SOMBRAS_TEXTO[id].capas.map(([x, y, b, c]) => `${x}cqw ${y}cqw ${b}cqw ${c}`).join(", ");
+}
+/** La misma sombra como `filter` (sirve cuando el texto tiene degradado: ahí `text-shadow` quedaría tapado). */
+export function sombraTextoFiltro(id: SombraTextoId): string {
+  return SOMBRAS_TEXTO[id].capas.map(([x, y, b, c]) => `drop-shadow(${x}cqw ${y}cqw ${b / 2}cqw ${c})`).join(" ");
+}
+
+/** Degradados para el relleno de un texto o de un cuadro. `angulo` es el de CSS (90 = de izquierda a derecha, 180 = de arriba abajo). */
+export const DEGRADADOS = {
+  atardecer: { nombre: "Atardecer", paradas: "#fbbf24, #ea580c, #b91c1c", angulo: 90 },
+  fuego: { nombre: "Fuego", paradas: "#fde047, #f97316, #b91c1c", angulo: 180 },
+  oro: { nombre: "Oro", paradas: "#fef3c7, #f59e0b, #92400e", angulo: 135 },
+  bosque: { nombre: "Bosque", paradas: "#6ee7b7, #059669, #064e3b", angulo: 90 },
+  lago: { nombre: "Lago", paradas: "#7dd3fc, #0e7490, #134e4a", angulo: 135 },
+  revista: { nombre: "ACOM-Di", paradas: "#2dd4bf, #068562, #0b3b4a", angulo: 90 },
+  noche: { nombre: "Noche", paradas: "#a5b4fc, #4338ca, #0f172a", angulo: 180 },
+  plata: { nombre: "Plata", paradas: "#f8fafc, #94a3b8, #475569", angulo: 180 },
+} as const;
+export type DegradadoId = keyof typeof DEGRADADOS;
+export const DEGRADADOS_IDS = Object.keys(DEGRADADOS) as DegradadoId[];
+
+/** `linear-gradient` de un degradado; sin ángulo usa el suyo. */
+export function degradadoCss(id: DegradadoId, angulo?: number): string {
+  const d = DEGRADADOS[id];
+  return `linear-gradient(${angulo ?? d.angulo}deg, ${d.paradas})`;
+}
+
 /** Parallax de una foto: cuánto se amplía (y por tanto cuánto puede desplazarse dentro de su marco) al hacer scroll. */
 export const PARALLAX = {
   suave: { nombre: "Suave", escala: 1.12 },
@@ -462,6 +512,8 @@ export type ElementoImagen = ElementoBase & {
   credito?: string;
   /** Punto de la imagen que debe quedar a la vista al recortar con «cubrir», en % (0–100; 50 = centro). */
   enfoque?: { x: number; y: number };
+  /** Acercamiento de la foto dentro de su marco (1 = sin acercar, hasta 5); se encuadra con `enfoque`. */
+  zoom?: number;
   /** Texto escrito sobre la imagen (globos de un cómic, traducciones, rótulos). */
   globos?: Globo[];
   ajuste?: Ajuste;
@@ -502,15 +554,18 @@ export type Elemento = ElementoTexto | ElementoImagen | ElementoVideo | Elemento
 export type ElementoGuardado = { id: string; nombre: string; creada: string; w: number; h: number; elementos: Elemento[] };
 
 export function elementoIcono(icono: string, cx = ANCHO_LIENZO / 2, cy = 300): Elemento {
-  const w = 96;
+  // Los iconos nacen de 96; las figuras decorativas, más grandes y con la proporción de su dibujo (una cinta es ancha, un divisor es una franja).
+  const d = CATALOGO[icono];
+  const w = d?.ancho ?? (icono.startsWith("fig-") ? 140 : 96);
+  const h = Math.max(8, Math.round((w * (d?.caja?.[1] ?? 24)) / (d?.caja?.[0] ?? 24)));
   return {
     tipo: "icono",
     icono,
     color: "tinta",
     w,
-    h: w,
+    h,
     x: Math.round(Math.min(Math.max(0, cx - w / 2), ANCHO_LIENZO - w)),
-    y: Math.max(0, Math.round(cy - w / 2)),
+    y: Math.max(0, Math.round(cy - h / 2)),
     id: nuevoId(),
   };
 }

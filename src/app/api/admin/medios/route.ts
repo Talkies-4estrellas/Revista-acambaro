@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ErrorAdmin, adminPermitido, guardarMedio, listarMedios, verificarId, verificarPeticion } from "@/lib/admin";
+import { ErrorAdmin, adminPermitido, bibliotecaMedios, borrarMedio, guardarMedio, listarMedios, verificarId, verificarPeticion } from "@/lib/admin";
 
 function responderError(e: unknown) {
   if (e instanceof ErrorAdmin) return NextResponse.json({ error: e.message }, { status: e.status });
@@ -10,8 +10,23 @@ function responderError(e: unknown) {
 export async function GET(req: Request) {
   try {
     if (!adminPermitido(req.headers.get("host"))) throw new ErrorAdmin("No encontrado", 404);
-    const id = verificarId(new URL(req.url).searchParams.get("edicion") ?? "");
+    const params = new URL(req.url).searchParams;
+    // ?todos=1 → biblioteca completa (todas las carpetas, con peso y dónde se usa cada archivo).
+    if (params.get("todos") === "1") return NextResponse.json({ medios: bibliotecaMedios() }, { headers: { "cache-control": "no-store" } });
+    const id = verificarId(params.get("edicion") ?? "");
     return NextResponse.json({ medios: listarMedios(id) });
+  } catch (e) {
+    return responderError(e);
+  }
+}
+
+/** DELETE { src } → quita un archivo sin uso (pasa a content/papelera-medios). */
+export async function DELETE(req: Request) {
+  try {
+    verificarPeticion(req);
+    const b = await req.json();
+    borrarMedio(String(b.src ?? ""));
+    return NextResponse.json({ ok: true });
   } catch (e) {
     return responderError(e);
   }

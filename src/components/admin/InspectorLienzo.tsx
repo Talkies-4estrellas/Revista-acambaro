@@ -17,6 +17,10 @@ import {
   FILTROS_IMAGEN_IDS,
   SOMBRAS,
   SOMBRAS_IDS,
+  SOMBRAS_TEXTO,
+  SOMBRAS_TEXTO_IDS,
+  DEGRADADOS,
+  DEGRADADOS_IDS,
   PARALLAX,
   PARALLAX_IDS,
   FORMAS_GLOBO,
@@ -34,8 +38,8 @@ import {
   type Pagina,
   type Peso,
 } from "@/lib/esquema";
-import { BUCLES, BUCLES_IDS, EFECTOS, EFECTOS_IDS, HOVERS, HOVERS_IDS, esEfectoTexto, type Efecto } from "@/lib/animaciones";
-import { ICONOS } from "@/lib/iconos-datos";
+import { BUCLES, BUCLES_IDS, DESPUES_DEFECTO, EFECTOS, EFECTOS_IDS, HOVERS, HOVERS_IDS, esEfectoTexto, type Bucle, type Efecto, type Hover } from "@/lib/animaciones";
+import { CATALOGO } from "@/lib/catalogo-iconos";
 import { IconoSvg } from "@/components/Lienzo";
 import { useEffect, useState } from "react";
 import {
@@ -107,6 +111,15 @@ export function CampoColor({
 }
 
 /* -------------------------------- Moldes ------------------------------ */
+
+/** Ángulo de un degradado: deslizador de 0 a 360 grados (90 = de izquierda a derecha, 180 = de arriba abajo). */
+function CampoAngulo({ valor, onChange }: { valor: number; onChange: (v: number) => void }) {
+  return (
+    <Campo label={`Dirección del degradado: ${Math.round(valor)}°`}>
+      <input type="range" min={0} max={360} step={5} value={valor} onChange={(e) => onChange(Number(e.target.value))} className="w-full accent-[#068562]" />
+    </Campo>
+  );
+}
 
 export function CampoMolde({ value, onChange }: { value: MoldeId | undefined; onChange: (m: MoldeId | undefined) => void }) {
   const tile = (activo: boolean) =>
@@ -447,6 +460,11 @@ export function InspectorElemento({
     cambiarIcono?: () => void;
     /** Reproduce la animación de entrada de este elemento en la hoja. */
     probarAnimacion?: () => void;
+    /** Encuadrar la foto con el ratón / quitarle el fondo de color liso (solo en fotos con archivo). */
+    recortar?: () => void;
+    quitarFondo?: () => void;
+    /** Muestra en la hoja el movimiento continuo y el efecto al pasar el cursor (con el valor recién elegido, si se da). */
+    probarMovimiento?: (forzar?: { hover?: Hover; bucle?: Bucle }) => void;
   };
 }) {
   const set = (patch: Record<string, unknown>, clave?: string) => cambiar(patch as Partial<Elemento>, clave);
@@ -540,6 +558,20 @@ export function InspectorElemento({
       )}
 
       {el.tipo === "texto" && (
+        <Panel
+          titulo="Efectos del texto"
+          plegable
+          abierto={!!(el.sombraTexto || el.degradado)}
+          resumen={[el.sombraTexto && `sombra ${SOMBRAS_TEXTO[el.sombraTexto].nombre.toLowerCase()}`, el.degradado && `degradado ${DEGRADADOS[el.degradado].nombre.toLowerCase()}`].filter(Boolean).join(" · ") || "Ninguno"}
+          ayuda="Sombra y degradado de las letras. El degradado sustituye al color del texto (también el de las partes con color propio)."
+        >
+          <Selector label="Sombra" value={el.sombraTexto} onChange={(v) => set({ sombraTexto: v })} opciones={SOMBRAS_TEXTO_IDS.map((id) => ({ valor: id, etiqueta: SOMBRAS_TEXTO[id].nombre }))} vacio="Sin sombra" />
+          <Selector label="Degradado en las letras" value={el.degradado} onChange={(v) => set({ degradado: v, anguloDegradado: v ? el.anguloDegradado : undefined })} opciones={DEGRADADOS_IDS.map((id) => ({ valor: id, etiqueta: DEGRADADOS[id].nombre }))} vacio="Color liso" />
+          {el.degradado && <CampoAngulo valor={el.anguloDegradado ?? DEGRADADOS[el.degradado].angulo} onChange={(v) => set({ anguloDegradado: v }, "anguloDegradado")} />}
+        </Panel>
+      )}
+
+      {el.tipo === "texto" && (
         <Panel titulo="Fondo y borde" plegable abierto={!!(el.fondo || el.borde || el.boton)} resumen={el.boton ? "Botón" : el.fondo ? "Con fondo" : el.borde ? "Con borde" : "Sin fondo"}>
             <CampoColor label="Fondo de la caja" value={el.fondo} onChange={(v) => set({ fondo: v })} vacio="Sin fondo" />
             <div className="grid grid-cols-2 gap-3">
@@ -568,7 +600,20 @@ export function InspectorElemento({
           )}
           <Texto label="Texto alternativo" value={el.alt} onChange={(v) => set({ alt: v }, "alt")} hint="Describe la imagen (accesibilidad)" />
           <Texto label="Crédito (autor y licencia)" value={el.credito} onChange={(v) => set({ credito: v || undefined }, "credito")} placeholder="Foto: Nombre, CC BY-SA 4.0" hint="Se junta con el de las demás imágenes donde pongas {creditos} en un texto (p. ej. la página de créditos)" />
-          {(el.ajuste ?? "cubrir") === "cubrir" && (
+          <div className="flex flex-wrap gap-2">
+            {acciones.recortar && (
+              <button type="button" className={btnCls} onClick={acciones.recortar} title="Mueve y acerca la foto dentro de su marco con el ratón (también: doble clic en la foto)">
+                ✂ Recortar con el ratón
+              </button>
+            )}
+            {acciones.quitarFondo && (
+              <button type="button" className={btnCls} onClick={acciones.quitarFondo} title="Vuelve transparente el fondo de un solo color (blanco, verde de estudio…)">
+                🪄 Quitar fondo de color…
+              </button>
+            )}
+          </div>
+          <Numero label="Zoom (%)" value={Math.round((el.zoom ?? 1) * 100)} onChange={(v) => set({ zoom: v === undefined || v <= 100 ? undefined : Math.min(500, v) / 100 }, "zoom")} min={100} max={500} />
+          {((el.ajuste ?? "cubrir") === "cubrir" || (el.zoom ?? 1) > 1) && (
             <div className="grid grid-cols-2 gap-3">
               <Numero label="Enfoque horizontal (%)" value={el.enfoque?.x ?? 50} onChange={(v) => set({ enfoque: { x: Math.min(100, Math.max(0, v ?? 50)), y: el.enfoque?.y ?? 50 } }, "enfoque")} min={0} max={100} />
               <Numero label="Enfoque vertical (%)" value={el.enfoque?.y ?? 50} onChange={(v) => set({ enfoque: { x: el.enfoque?.x ?? 50, y: Math.min(100, Math.max(0, v ?? 50)) } }, "enfoque")} min={0} max={100} />
@@ -618,14 +663,14 @@ export function InspectorElemento({
       )}
 
       {el.tipo === "icono" && (
-        <Panel titulo="Icono" plegable>
+        <Panel titulo={el.icono.startsWith("fig-") ? "Figura" : "Icono"} plegable>
           <div className="flex items-center gap-3">
             <span className="block h-12 w-12 shrink-0 border border-ink/20 bg-white/60 dark:bg-white/5 p-2">
               <IconoSvg icono={el.icono} color={el.color} trazo={el.trazo} />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-sans truncate text-sm font-bold">{ICONOS[el.icono]?.nombre ?? el.icono}</p>
-              <p className="font-sans text-[0.7rem] text-ink-soft">{ICONOS[el.icono]?.categoria}</p>
+              <p className="font-sans truncate text-sm font-bold">{CATALOGO[el.icono]?.nombre ?? el.icono}</p>
+              <p className="font-sans text-[0.7rem] text-ink-soft">{CATALOGO[el.icono]?.categoria}</p>
             </div>
             {acciones.cambiarIcono && (
               <button type="button" className={btnCls} onClick={acciones.cambiarIcono}>
@@ -634,10 +679,10 @@ export function InspectorElemento({
             )}
           </div>
           <CampoColor label="Color" value={el.color ?? "tinta"} onChange={(v) => set({ color: v })} />
-          {ICONOS[el.icono]?.estilo !== "relleno" && (
-            <Numero label="Grosor del trazo (×10)" value={Math.round((el.trazo ?? 2) * 10)} onChange={(v) => set({ trazo: v ? v / 10 : undefined }, "trazo")} min={3} max={60} />
+          {CATALOGO[el.icono]?.estilo !== "relleno" && (
+            <Numero label="Grosor del trazo (×10)" value={Math.round((el.trazo ?? CATALOGO[el.icono]?.trazoBase ?? 2) * 10)} onChange={(v) => set({ trazo: v ? v / 10 : undefined }, "trazo")} min={3} max={60} />
           )}
-          <Texto label="Descripción (accesibilidad)" value={el.alt} onChange={(v) => set({ alt: v }, "alt")} placeholder={ICONOS[el.icono]?.nombre} />
+          <Texto label="Descripción (accesibilidad)" value={el.alt} onChange={(v) => set({ alt: v }, "alt")} placeholder={CATALOGO[el.icono]?.nombre} />
         </Panel>
       )}
 
@@ -645,6 +690,8 @@ export function InspectorElemento({
         <Panel titulo="Forma" plegable>
           <Selector label="Forma" value={el.forma ?? "rectangulo"} onChange={(v) => set({ forma: v })} opciones={FORMAS.map((f) => ({ valor: f, etiqueta: f === "elipse" ? "Elipse / círculo" : "Rectángulo" }))} />
           <CampoColor label="Relleno" value={el.color ?? "tinta"} onChange={(v) => set({ color: v })} />
+          <Selector label="Degradado (sustituye al relleno)" value={el.degradado} onChange={(v) => set({ degradado: v, anguloDegradado: v ? el.anguloDegradado : undefined })} opciones={DEGRADADOS_IDS.map((id) => ({ valor: id, etiqueta: DEGRADADOS[id].nombre }))} vacio="Color liso" />
+          {el.degradado && <CampoAngulo valor={el.anguloDegradado ?? DEGRADADOS[el.degradado].angulo} onChange={(v) => set({ anguloDegradado: v }, "anguloDegradado")} />}
           <CampoMolde value={el.molde} onChange={(m) => set({ molde: m })} />
           <div className="grid grid-cols-2 gap-3">
             <Numero label="Grosor del borde" value={el.borde} onChange={(v) => set({ borde: v }, "borde")} min={0} />
@@ -741,21 +788,57 @@ export function InspectorElemento({
       </Panel>
 
 
-      <Panel titulo="Efectos de movimiento" plegable abierto={!!(el.hover || el.bucle || (el.tipo === "imagen" && el.parallax))} resumen={el.hover || el.bucle || (el.tipo === "imagen" && el.parallax) ? [el.hover && `cursor: ${el.hover}`, el.bucle, el.tipo === "imagen" && el.parallax && `parallax ${el.parallax}`].filter(Boolean).join(" · ") : "Ninguno"} ayuda="Se ven en el sitio publicado y en la vista previa (no mientras editas). El movimiento continuo se apaga solo si el lector pidió menos animaciones en su equipo.">
+      <Panel titulo="Animación de salida" plegable abierto={!!el.salida} resumen={el.salida ? `${EFECTOS[el.salida.efecto].nombre.replace(/ \(.*/, "")} · a los ${((el.salida.despues ?? DESPUES_DEFECTO) / 1000).toLocaleString("es-MX")} s` : "Ninguna"} ayuda="El elemento se va solo un rato después de aparecer (en el sitio publicado y en la vista previa). Sirve para avisos o textos que solo deben verse un momento; no se vuelve a mostrar hasta recargar la página.">
+        <Selector
+          label="Efecto de salida"
+          value={el.salida?.efecto}
+          onChange={(v) => {
+            set({ salida: v ? { ...el.salida, efecto: v } : undefined });
+            if (v) acciones.probarAnimacion?.();
+          }}
+          opciones={EFECTOS_IDS.filter((id) => !esEfectoTexto(id)).map((id) => ({ valor: id, etiqueta: EFECTOS[id].nombre }))}
+          vacio="Ninguna"
+        />
+        {el.salida && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <Numero label="Se va a los (ms)" value={el.salida.despues ?? DESPUES_DEFECTO} onChange={(v) => set({ salida: { ...el.salida, efecto: el.salida!.efecto, despues: v } }, "sal-despues")} min={0} max={60000} />
+              <Numero label="Duración (ms)" value={el.salida.duracion ?? 700} onChange={(v) => set({ salida: { ...el.salida, efecto: el.salida!.efecto, duracion: v } }, "sal-duracion")} min={50} max={6000} />
+            </div>
+            <p className="font-sans text-[0.7rem] text-ink-soft">Cuenta desde que el elemento aparece (al terminar su animación de entrada). En la prueba de la hoja la espera se acorta a 2 s.</p>
+            <button type="button" className={btnCls} onClick={acciones.probarAnimacion}>
+              ▶ Probar
+            </button>
+          </>
+        )}
+      </Panel>
+
+      <Panel titulo="Efectos de movimiento" plegable abierto={!!(el.hover || el.bucle || (el.tipo === "imagen" && el.parallax))} resumen={el.hover || el.bucle || (el.tipo === "imagen" && el.parallax) ? [el.hover && `cursor: ${el.hover}`, el.bucle, el.tipo === "imagen" && el.parallax && `parallax ${el.parallax}`].filter(Boolean).join(" · ") : "Ninguno"} ayuda="Al elegir uno se muestra en la hoja (o con «Ver el movimiento»); el parallax solo se ve en el sitio y en la vista previa, al hacer scroll. El movimiento continuo se apaga solo si el lector pidió menos animaciones en su equipo.">
         <Selector
           label="Al pasar el cursor"
           value={el.hover}
-          onChange={(v) => set({ hover: v })}
+          onChange={(v) => {
+            set({ hover: v });
+            if (v) acciones.probarMovimiento?.({ hover: v });
+          }}
           opciones={HOVERS_IDS.map((id) => ({ valor: id, etiqueta: HOVERS[id] }))}
           vacio="Ninguno"
         />
         <Selector
           label="Movimiento continuo"
           value={el.bucle}
-          onChange={(v) => set({ bucle: v })}
+          onChange={(v) => {
+            set({ bucle: v });
+            if (v) acciones.probarMovimiento?.({ bucle: v });
+          }}
           opciones={BUCLES_IDS.map((id) => ({ valor: id, etiqueta: BUCLES[id] }))}
           vacio="Ninguno"
         />
+        {(el.hover || el.bucle) && (
+          <button type="button" className={btnCls} onClick={() => acciones.probarMovimiento?.()}>
+            ▶ Ver el movimiento
+          </button>
+        )}
         {el.tipo === "imagen" && (
           <Selector
             label="Parallax al hacer scroll"

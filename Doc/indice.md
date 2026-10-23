@@ -12,8 +12,12 @@
 | `PRESENTACION.md` | Texto de presentación del proyecto |
 | `README.md` | Resumen y comandos |
 | `L-ARecurso 8/` | Recursos de marca (arte original) |
+| `scripts/verificar-admin.mjs` | Verifica que el panel no pueda quedar expuesto (corre solo antes de `npm run build`; con una dirección prueba el sitio publicado) |
+| `src/proxy.ts`, `src/lib/admin-acceso.ts` | Muralla de entrada y regla única de acceso del panel (404 en /admin y /api/admin fuera de la máquina local; nunca en Vercel) |
+| `scripts/generar-figuras.mjs` | Genera el catálogo de figuras decorativas del editor (`src/lib/figuras-datos.ts`) |
 | `scripts/generar-iconos.mjs` | Genera el catálogo de iconos del editor (`src/lib/iconos-datos.ts`) |
 | `Doc/` | Esta carpeta: documentación y sesiones |
+| `Doc/base-de-datos.md`, `Doc/base-de-datos-esquema.sql` | Plan de la base de datos (Supabase) y borrador del esquema SQL (sin ejecutar) |
 | `Doc/anuncios-google/` | Imágenes de referencia con los lugares posibles para anuncios de Google (no implementado) |
 
 ---
@@ -71,6 +75,9 @@
 | `plantillas-anuncio.ts` | 7 plantillas de publicidad |
 | `plantillas-editorial.ts` | 3 **collages de anuncios** + 3 plantillas de noticias y cómic |
 | `busqueda.ts` | Índice de búsqueda |
+| `accesibilidad.ts` | Revisor de accesibilidad (contraste, textos, descripciones, enlaces) |
+| `catalogo-iconos.ts`, `figuras-datos.ts` | Iconos + figuras decorativas (un solo catálogo para el elemento «icono») |
+| `medios-uso.ts` | Dónde se usa cada archivo de /media |
 | `clics.ts`, `vistas.ts`, `suscriptores.ts`, `newsletter.ts` | Clics, vistas, suscriptores y correo de cada edición |
 | `animaciones.ts`, `transiciones.ts`, `iconos-datos.ts` | Catálogos del editor |
 
@@ -85,6 +92,7 @@
 | `Logo.tsx`, `ThemeToggle.tsx` | Logotipo con versión oscura; botón claro/oscuro |
 | `PortadaMini.tsx`, `Ticker.tsx`, `Bloques.tsx`, `Placeholder.tsx` | Portadas pequeñas, cinta y bloques de las plantillas clásicas |
 | `CarruselEdiciones.tsx` | Carrusel «cover flow» de las ediciones anteriores en celular (portada central grande, laterales giradas, puntos) |
+| `admin/BibliotecaMedios.tsx` | Biblioteca de medios (elegir y ordenar fotos y videos) |
 | `EnlaceMedido.tsx`, `ContarVistas.tsx`, `FormSuscripcion.tsx`, `AnimacionesLienzo.tsx` | Clics medidos, formulario, animaciones de entrada |
 | `admin/Editor.tsx` | Editor de edición (barra, páginas, identificador de página, revisor) |
 | `admin/EditorLienzo.tsx`, `InspectorLienzo.tsx` | Editor de hoja y propiedades de elementos (enlace «Lleva a», «En el celular») |

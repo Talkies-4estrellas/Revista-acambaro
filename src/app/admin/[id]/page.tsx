@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Editor from "@/components/admin/Editor";
-import { ID_RE, entradasNumeracion, leerCrudo, listarMedios } from "@/lib/admin";
+import { ID_RE, entradasNumeracion, leerCrudo, listarMedios, marcaEdicion } from "@/lib/admin";
 
 export default async function EditarEdicion({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -35,5 +35,5 @@ export default async function EditarEdicion({ params }: { params: Promise<{ id: 
     );
 
   const otras = entradasNumeracion().filter((e) => e.id !== id);
-  return <Editor id={id} inicial={datos} mediosIniciales={listarMedios(id)} otras={otras} />;
+  return <Editor id={id} inicial={datos} mediosIniciales={listarMedios(id)} otras={otras} marcaInicial={marcaEdicion(id)} />;
 }
