@@ -55,7 +55,7 @@ La página **"Página en blanco"** es la principal: una hoja vacía donde compon
   Bebas Neue, Oswald), Manuscritas (Caveat, Pacifico) y Monoespaciada (IBM Plex Mono). El selector de grosor ofrece solo los
   que cada tipografía realmente tiene. Para añadir otra: `src/app/fuentes.ts` (cargarla con `next/font`, con opciones literales,
   sin `...spread`) y `FUENTES` / `FUENTES_INFO` en `src/lib/esquema.ts`.
-- **Iconos** (botón **✦ Iconos**): biblioteca de 197 iconos vectoriales con búsqueda en español (acentos opcionales) y 8
+- **Iconos** (**Elementos → Iconos**): biblioteca de 197 iconos vectoriales con búsqueda en español (acentos opcionales) y 8
   categorías: lugares y viajes, comida y bebida, naturaleza, cultura y arte, personas y social, comunicación, flechas y signos,
   y redes sociales (Facebook, Instagram, YouTube, WhatsApp, X, TikTok, Spotify, Telegram, Pinterest, Google Maps, Tripadvisor).
   Clic para agregarlo o arrástralo a la hoja. Son elementos normales: se mueven, escalan sin perder nitidez, giran, se agrupan,
@@ -63,7 +63,7 @@ La página **"Página en blanco"** es la principal: una hoja vacía donde compon
   puede llevar a tu perfil). "Cambiar…" en sus propiedades sustituye el icono sin perder su posición ni su estilo. Para añadir
   más, edita la tabla de `scripts/generar-iconos.mjs` y ejecuta `node scripts/generar-iconos.mjs` (genera
   `src/lib/iconos-datos.ts`). Iconos de línea: Lucide (ISC); marcas: Simple Icons (CC0), que pertenecen a sus titulares.
-- **Moldes para fotos** (botón **◍ Moldes**): 22 marcos que recortan una foto, un video o una forma: círculo, óvalo, esquinas
+- **Moldes para fotos** (**Elementos → Marcos**): 22 marcos que recortan una foto, un video o una forma: círculo, óvalo, esquinas
   redondas, píldora, arco, esquinas cortadas, paralelogramo, etiqueta, triángulos, rombo, pentágono, hexágono, octágono,
   estrellas, destello, sello, corazón, cruz y flecha. Cómo usarlos: (1) con una foto, video o forma **seleccionada**, clic en el
   molde se lo aplica; (2) sin selección, clic o arrastre a la hoja crea un **marco para foto** (o una forma de color, a tu
@@ -149,7 +149,7 @@ Las plantillas anteriores (portada, índice, reportaje, galería, cita, video, l
 
 ## Plantillas de página
 
-Botón **▤ Plantillas** (en la barra lateral y junto a "Duplicar"). Abre un cuadro con miniaturas en vivo:
+**Plantillas** (primera herramienta del riel de la izquierda, o el botón junto a "Duplicar"). Abre un **panel lateral** junto a la hoja, como en Canva, con miniaturas en vivo: **un clic en la miniatura la agrega como página nueva** y **«Usar aquí»** reemplaza el contenido de la página que tienes abierta (pide confirmación). El panel sigue abierto al cambiar de página, para probar varias; se cierra con la ✕. «☆ Guardar la página como plantilla» está plegado arriba. (En las páginas clásicas, sin hoja de lienzo, se sigue abriendo como ventana.)
 
 - **Iniciales** (6, de solo lectura): portada de revista, reportaje con foto grande, cita destacada, galería de 4 fotos, foto en
   marco redondo y contraportada con redes. Todas usan la hoja de 800 × 1100.
@@ -201,7 +201,7 @@ Las fotos con ajuste «Cubrir» se recortan para llenar su caja. En **Enfoque ho
 
 ## Bloques listos
 
-En el **riel de herramientas** (a la izquierda de la hoja), **Bloques** abre 9 bloques ya compuestos con vista previa: **Comercio** (tarjeta de producto, cupón de descuento, llamada a la acción,
+En el **riel de herramientas** (a la izquierda de la hoja), **Elementos → Bloques** abre 9 bloques ya compuestos con vista previa: **Comercio** (tarjeta de producto, cupón de descuento, llamada a la acción,
 datos de contacto con iconos), **Datos y citas** (cifra grande, testimonio), **Eventos y pasos** (evento con fecha, tres pasos) y **Estructura** (encabezado de
 sección). Clic para ponerlo al centro de la hoja o arrástralo a donde lo quieras. Salen **agrupados** (se mueven juntos; doble clic entra a una pieza, y el
 botón de agrupar del panel los separa). Cambia los textos de guía y suelta tus fotos sobre los marcadores de color; los botones traen su efecto y piden enlace.
@@ -214,7 +214,7 @@ Se combinan con los moldes y las esquinas redondas.
 
 ## Botones prediseñados
 
-En el **riel de herramientas** (a la izquierda de la hoja), **Botones** abre una biblioteca de 14 estilos con vista previa viva (pasa el cursor para ver su efecto): básicos (sólido,
+En el **riel de herramientas** (a la izquierda de la hoja), **Elementos → Botones** abre una biblioteca de 14 estilos con vista previa viva (pasa el cursor para ver su efecto): básicos (sólido,
 contorno, píldora, con flecha, enlace simple), redes y contacto (WhatsApp, Instagram, Facebook, Llamar, Cómo llegar, Escríbenos) y llamativos (oferta
 que late, suscríbete que brilla, etiqueta «Nuevo»). Clic o arrastre a la hoja. Después: doble clic para escribir el texto, **Lleva a** (panel Enlace)
 para decir a dónde va, y colores, esquinas redondas y borde en el panel **Texto**. Un botón nace sin enlace; el **revisor de diseño** avisa si te lo
@@ -223,7 +223,7 @@ dejas así. (Cualquier texto con fondo se puede convertir en botón: esquinas re
 ## Mis elementos (guardar y reutilizar)
 
 Para volver a usar algo que armaste (el anuncio de un cliente, una firma, un sello, un encabezado…): **selecciona uno o varios elementos** en la hoja y pulsa **☆** (arriba de la hoja)
-o abre **Míos** en el riel de herramientas y pulsa **Guardar la selección**; escribe un nombre. Desde entonces aparece en **Míos**, en **cualquier edición**: clic para ponerlo en medio de
+o abre **Elementos → Míos** en el riel de herramientas y pulsa **Guardar la selección**; escribe un nombre. Desde entonces aparece en **Míos**, en **cualquier edición**: clic para ponerlo en medio de
 la hoja o arrástralo a donde lo quieras (entra como un grupo nuevo: se mueve junto, doble clic entra a una pieza). Con **✎** cambias el nombre y con **✕** lo borras (las ediciones donde ya
 lo usaste no cambian). Las imágenes se copian aparte, así que siguen funcionando aunque cambies o borres la edición de origen; se quitan los enlaces a números de página y los
 `{p:…}` (los enlaces a direcciones externas se conservan).
@@ -240,7 +240,7 @@ lo usaste no cambian). Las imágenes se copian aparte, así que siguen funcionan
 
 ## Revisor de accesibilidad
 
-En el mismo panel de **✓ Revisar y accesibilidad**, la pestaña **Accesibilidad** junta los problemas que hacen difícil la revista a personas con baja visión, con lectores de pantalla o que leen en el celular. Cada hallazgo dice en qué página está y por qué importa; **Ir →** te lleva a la página y, cuando se puede, **✓ Arreglar** lo corrige con un clic:
+En el mismo panel de **✓ Revisar**, la pestaña **Accesibilidad** junta los problemas que hacen difícil la revista a personas con baja visión, con lectores de pantalla o que leen en el celular. Cada hallazgo dice en qué página está y por qué importa; **Ir →** te lleva a la página y, cuando se puede, **✓ Arreglar** lo corrige con un clic:
 - **Contraste insuficiente** (WCAG AA): el texto se compara con lo que hay debajo (el fondo de la página, un cuadro de color o degradado, el fondo del propio texto) y se avisa si no llega a 4,5:1 (3:1 en texto grande, de 24 o más, o de 19 en negrita). Cuenta la opacidad del texto. Ofrece ponerlo en tinta o en blanco, o quitarle la transparencia. Los colores de la marca en verde (terracota) sobre papel quedan en 4,2:1: es un caso «casi».
 - **Texto sobre foto** sin capa clara/oscura ni sombra: no se puede medir, pero se sugiere ayudar a la lectura.
 - **Texto muy pequeño** (menos de 12; «Arreglar» lo sube a 14) y **mayúsculas largas** (más de 70 caracteres).
@@ -259,12 +259,32 @@ Selecciona una foto y, en su panel **Imagen**:
 
 ## Figuras decorativas
 
-En el riel de herramientas, **Figuras** abre 71 figuras vectoriales dibujadas para la revista, en 9 categorías: cintas y etiquetas (cinta con pliegues, banderín, escudo, corona, medalla…), burbujas y globos (diálogo, pensamiento, grito, llamada), estrellas y sellos (estrellas, estallidos de oferta, sellos), formas (triángulo, hexágono, corazón, rayo, nube…), manchas y olas (fondos orgánicos y bordes de ola), flechas decorativas, divisores (onda, zigzag, **greca escalonada**, ornamento, **guirnalda de banderines**, **papel picado**…), marcos y bordes, y naturaleza y clima (sol, hoja, flor, montañas, pino, nopal). Buscador y categorías como en Iconos; clic para agregar o arrastrar a la hoja.
+En el riel de herramientas, **Elementos → Figuras** abre 71 figuras vectoriales dibujadas para la revista, en 9 categorías: cintas y etiquetas (cinta con pliegues, banderín, escudo, corona, medalla…), burbujas y globos (diálogo, pensamiento, grito, llamada), estrellas y sellos (estrellas, estallidos de oferta, sellos), formas (triángulo, hexágono, corazón, rayo, nube…), manchas y olas (fondos orgánicos y bordes de ola), flechas decorativas, divisores (onda, zigzag, **greca escalonada**, ornamento, **guirnalda de banderines**, **papel picado**…), marcos y bordes, y naturaleza y clima (sol, hoja, flor, montañas, pino, nopal). Buscador y categorías como en Iconos; clic para agregar o arrastrar a la hoja.
 Son elementos de tipo icono: se les cambia el **color** y el **tamaño**, y a las de línea el **grosor**; **Cambiar…** sustituye una figura por otra. Los **marcos** y los divisores se estiran al tamaño que les des (los demás conservan su proporción). Se pueden animar, enlazar y copiar su estilo como cualquier elemento. Son dibujos propios (sin material de terceros), sin crédito que citar.
 
-## Buscar y reemplazar
+## Cómo está organizado el editor (al estilo de Canva)
 
-Botón **🔎 Reemplazar** de la barra (o Ctrl+Alt+H): cambia un texto, un teléfono, un enlace o el nombre de un anunciante en **toda la edición** de una vez. Escribes lo que buscas y con qué reemplazarlo; el panel lista cada lugar donde aparece (página, tipo y un fragmento con lo que cambiaría), todos marcados. Desmarca los que no quieras tocar y pulsa **Reemplazar**.
+- **Barra superior** (verde): **← Ediciones** (volver a la lista), **Archivo** (guardar, autoguardado, versiones anteriores, buscar y reemplazar, fotos y videos, datos de la edición, abrir la edición en el sitio), los botones **↶ Deshacer** y **↷ Rehacer** (Ctrl+Z / Ctrl+Y; cada página tiene su propio historial de cambios mientras la tienes abierta), el **estado de guardado** (☁ Guardado / ● Guardando…), el **título de la edición** (el tema del número; se escribe ahí mismo), **✓ Revisar**, **Guardar** y el botón **Publicar** (con un menú: Borrador, Publicada ya, Programar…).
+- **Riel de la izquierda**, solo cuatro cosas: **Plantillas** (páginas ya diseñadas), **Elementos** (un panel con secciones: Figuras, Formas, Iconos, Marcos, Bloques, Botones, Logo, Míos y Foto y video), **Texto** y **Subidos** (tus fotos y videos).
+- **Barra sobre la hoja**: cambia según lo que elijas. Sin nada elegido muestra el **fondo y el alto de la página**. Con un **texto**: tipografía, tamaño (− / +), color, negrita, cursiva, mayúsculas, alineación, efectos (sombra y degradado) y Editar. Con una **foto**: Reemplazar (por otra de Subidos), Recortar, Quitar fondo, filtro y estilo (marco, esquinas, borde, sombra). Con una **forma**: color, degradado, borde y esquinas. Con **varios** elementos: alinear, agrupar. En todos: **Opacidad**, **Animar**, **Posición**, **Enlace**, traer al frente / enviar atrás, duplicar y eliminar. Los botones **Animar**, **Posición** y **Enlace** abren su panel en la columna de la derecha, que sigue teniendo todas las opciones finas.
+- **Tira de páginas** (opcional, abajo; por omisión las páginas van en la lista de la izquierda): miniaturas en vivo de todas las páginas, en una fila que se desplaza. **Un clic** abre la página; **arrastra** una miniatura para cambiarla de lugar (una línea marca dónde caerá; con el teclado, Alt + ←/→); el **+** del final agrega una página nueva después de la actual (el tipo se elige en el selector de la derecha; con «▤ Plantillas» se agrega una ya diseñada y con «☰ Índice» se genera la página de contenido); **↻ Repetidos** abre los elementos que se repiten en todas las páginas. Si una página es más alta que las demás (un cómic), su miniatura se recorta por abajo. La disposición elegida (tira o lista) se recuerda en tu navegador.
+- **Columna derecha**: Propiedades (todo en detalle) y Celular.
+
+## Ayuda y recorrido guiado
+- **La primera vez** que abres el editor (en ese navegador) aparece un **recorrido de 9 pasos**: herramientas, hoja, ajustes, páginas, Archivo, Revisar, Publicar y la ayuda. Se salta con «Saltar» o Esc, y se avanza con las flechas o Enter.
+- El botón **?** de la barra superior (o **F1**) abre la **Ayuda**: escribe lo que quieres hacer («subir una foto», «publicar», «deshacer») y salen los temas con los pasos. Cada tema con una pieza de la pantalla trae **👆 Muéstrame dónde**, que la resalta.
+- Desde la Ayuda también puedes **repetir el recorrido** cuando quieras.
+- Para cambiar los textos de la ayuda: `src/lib/ayuda-editor.ts` (temas) y `PASOS_BIENVENIDA` en `src/components/admin/RecorridoEditor.tsx` (recorrido). Las piezas se marcan en el código con `data-tour="…"`.
+
+## El editor en el celular y en la tableta
+
+Todo funciona desde un teléfono, con algunos ajustes para que quepa:
+- **Barra superior**: en el teléfono queda en dos o tres líneas cortas (← · Archivo · ↶ ↷ · 💾 · Publicar y, abajo, el título). **✓ Revisar**, **Elementos repetidos** y **Generar índice** están dentro de **Archivo**. El estado de guardado solo aparece si hay cambios sin guardar o un error.
+- **Página abierta**: sus acciones (subir, bajar, plantillas, duplicar, quitar) son solo iconos; el aviso de «anuncios seguidos» y la ayuda rápida se ocultan (el aviso sigue en ✓ Revisar).
+- **Herramientas** en una fila (Plantillas · Elementos · Texto · Subidos), la **barra de ajustes** sobre la hoja y la **tira de páginas** al final. Los botones **Animar**, **Posición** y **Enlace** de la barra abren el **cajón de propiedades** que sube desde abajo (también con el botón flotante «⚙ Propiedades»).
+- La fila de copiar / pegar / estilo se desplaza de lado en vez de ensanchar la pantalla. En ningún tamaño probado (360, 390, 768 y 1024 px) la pantalla se desborda a los lados.
+
+**Archivo → Buscar y reemplazar…** (o Ctrl+Alt+H): cambia un texto, un teléfono, un enlace o el nombre de un anunciante en **toda la edición** de una vez. Escribes lo que buscas y con qué reemplazarlo; el panel lista cada lugar donde aparece (página, tipo y un fragmento con lo que cambiaría), todos marcados. Desmarca los que no quieras tocar y pulsa **Reemplazar**.
 - Busca en: textos (también los que tienen negritas, colores o tamaños distintos y los globos sobre imágenes), títulos de página y tema, enlaces, descripciones de imágenes, créditos y fuentes de datos, y los elementos que se repiten en todas las páginas. Puedes apagar cualquiera de estos ámbitos.
 - Opciones: distinguir mayúsculas y solo palabras completas. Con «Reemplazar con» vacío, borra lo encontrado.
 - El cambio queda **sin guardar** en el editor (se guarda con Guardar o con el autoguardado) y **↶ Deshacer** lo revierte mientras no hagas otro reemplazo. Los estilos de cada tramo se conservan.
@@ -299,14 +319,14 @@ En la lista de **Capas** (panel de la derecha), cada fila trae dos botones:
 
 ## Lista antes de publicar
 
-**✓ Revisar y accesibilidad** (antes «Revisar diseño») abre «Revisor, accesibilidad y lista antes de publicar». Arriba hay una lista con ✓ / ✗ / ○: el número tiene tema y fecha; sin textos ni enlaces de ejemplo; todos los botones llevan a algún lado; datos con fecha al día; sin páginas vacías ni imágenes sin foto; enlaces a otras ediciones válidos; y, como sugerencias (○), imágenes con descripción, fotos con crédito, anuncios intercalados y sin textos vacíos u ocultos. Con la **revisión visual** (botón del mismo panel) se añade «sin textos encimados ni letra chica». Cada hallazgo trae «Ir →» a su página.
+**✓ Revisar** (barra superior; antes «Revisar diseño») abre «Revisor, accesibilidad y lista antes de publicar». Arriba hay una lista con ✓ / ✗ / ○: el número tiene tema y fecha; sin textos ni enlaces de ejemplo; todos los botones llevan a algún lado; datos con fecha al día; sin páginas vacías ni imágenes sin foto; enlaces a otras ediciones válidos; y, como sugerencias (○), imágenes con descripción, fotos con crédito, anuncios intercalados y sin textos vacíos u ocultos. Con la **revisión visual** (botón del mismo panel) se añade «sin textos encimados ni letra chica». Cada hallazgo trae «Ir →» a su página.
 Al cambiar **Publicación** de Borrador a Publicada o Programada, si hay pendientes (✗) el editor los muestra y pregunta si abrir la lista (Aceptar) o publicar de todos modos (Cancelar).
 
 ## Subidos (galería lateral) y biblioteca de medios
 
 En el riel de herramientas, **Subidos** abre una galería como la de Canva: buscador, botón **Subir archivos**, pestañas **Imágenes / Videos** y miniaturas en columnas sin recortar. **Un clic agrega la foto a la hoja** (con su proporción y su texto alternativo tomado del nombre) o la **arrastras** a donde quieras; si la sueltas sobre una imagen ya puesta, la reemplaza. Muestra los archivos de todas las ediciones (primero los de esta); pasa el cursor para ver el nombre y el peso. No muestra si un archivo «ya se usa» ni ofrece borrarlo: es solo para elegir.
 
-Botón **🖼 Medios** de la barra: la misma galería en una ventana (clic en una foto copia su ruta). Puedes subir varios archivos a la vez. En los campos de imagen y video, el botón **Biblioteca** elige entre todo lo ya subido sin volver a subirlo.
+**Archivo → Fotos y videos…**: la misma galería en una ventana (clic en una foto copia su ruta). Puedes subir varios archivos a la vez. En los campos de imagen y video, el botón **Biblioteca** elige entre todo lo ya subido sin volver a subirlo.
 
 ## Efectos del texto: sombras y degradados
 
@@ -364,7 +384,7 @@ recuerda cuáles dejaste abiertos. Con un elemento seleccionado, de arriba abajo
   Si un autoguardado falla (por ejemplo, un color no válido), avisa y no reintenta hasta que cambies algo.
 - **Recuperación:** mientras hay cambios sin guardar, el navegador conserva una copia. Si se cierra la pestaña o se cae el equipo, al volver a abrir la edición
   sale un aviso con **Recuperarlos** o **Descartarlos** (la copia no se borra mientras decides). Se limpia sola al guardar.
-- **↶ Versiones:** antes de sobrescribir el archivo, el servidor guarda la versión anterior (como mucho una cada 3 minutos, las últimas 40, en `content/respaldos/`).
+- **Archivo → Versiones anteriores:** antes de sobrescribir el archivo, el servidor guarda la versión anterior (como mucho una cada 3 minutos, las últimas 40, en `content/respaldos/`).
   **Restaurar** carga en el editor las páginas, el tema y la fecha de esa versión; no cambia si la edición está publicada y no se escribe hasta que se guarde.
 
 ## Dónde está cada cosa en el editor
@@ -373,9 +393,9 @@ De arriba abajo, la **hoja** es lo principal y lo demás se aparta para no estor
 
 - **Barra de arriba:** guardar, revisar el diseño y abrir la edición. Debajo, una franja resume la edición (N.º, fecha, tema y si es borrador o
   publicada); **✎ Datos de la edición** despliega los campos para cambiarlos (en una edición nueva sin tema ya salen abiertos).
-- **A la izquierda:** las páginas. Abajo, **Agregar una página** (elige el tipo y pulsa «+ Agregar después de la N»), más **Plantillas** e **Índice**.
+- **A la izquierda:** las páginas (lista con miniaturas). Abajo, **Agregar una página** (elige el tipo y pulsa «+ Agregar después de la N»), más **Plantillas** e **Índice**. Si prefieres una fila de miniaturas bajo la hoja, **▭ Ver como tira inferior** (opcional; **☰ Ver como lista** regresa).
 - **Sobre la hoja:** el título de la página con sus acciones (subir, bajar, plantillas, duplicar, quitar) y, plegado, el **⚙ Identificador** de la página.
-  Después, la ayuda rápida (ⓘ) y a la derecha copiar / cortar / pegar / seleccionar todo / deshacer.
+  Después, la ayuda rápida (ⓘ) y a la derecha copiar / cortar / pegar / seleccionar todo (deshacer y rehacer están en la barra superior).
 - **Riel de herramientas** (a la izquierda de la hoja, con icono y nombre; en pantallas angostas va en fila sobre la hoja): **Texto** (titular, párrafo, etiqueta),
   **Imagen** y **Video** (se agregan al instante), **Formas** (rectángulo, círculo, línea), **Bloques**, **Botones**, **Iconos**, **Moldes** y **Logo**. Las que tienen
   opciones abren un **panel** junto al riel (clic en una pieza para agregarla o arrástrala a la hoja; la hoja se reajusta sola); vuelve a pulsar la herramienta o ✕ para cerrarlo.

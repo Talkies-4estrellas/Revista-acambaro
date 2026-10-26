@@ -464,6 +464,18 @@ export function Panel({
     } catch {}
   }, [plegable, clave]);
 
+  // «Abrir» un panel concreto desde otra parte del editor (la barra sobre la hoja): se despliega y se lleva a la vista.
+  const raiz = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const abrir = (e: Event) => {
+      if ((e as CustomEvent<string>).detail !== titulo) return;
+      setVisible(true);
+      setTimeout(() => raiz.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 60);
+    };
+    window.addEventListener("abrir-panel", abrir);
+    return () => window.removeEventListener("abrir-panel", abrir);
+  }, [titulo]);
+
   // «Plegar todo» / «Abrir todo» (ver ControlPaneles).
   useEffect(() => {
     if (!plegable) return;

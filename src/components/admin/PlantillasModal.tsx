@@ -37,12 +37,18 @@ export default function PlantillasModal({
   numeroPagina,
   onAplicar,
   onCerrar,
+  variante = "modal",
 }: {
   paginaActual: Pagina;
   numeroPagina: number;
   onAplicar: (pagina: Pagina, nombre: string, modo: ModoAplicar) => void;
   onCerrar: () => void;
+  /** «panel»: columna del editor junto a la hoja; «modal»: ventana (páginas clásicas, sin hoja de lienzo). */
+  variante?: "modal" | "panel";
 }) {
+  const panel = variante === "panel";
+  // En el panel lateral, «guardar como plantilla» va plegado para que las plantillas se vean primero.
+  const [verGuardar, setVerGuardar] = useState(!panel);
   const [pestana, setPestana] = useState<"iniciales" | "anuncios" | "editorial" | "propias">("iniciales");
   const [guardadas, setGuardadas] = useState<Guardada[] | null>(null);
   const [nombre, setNombre] = useState("");
@@ -65,12 +71,13 @@ export default function PlantillasModal({
   }, [cargar]);
 
   useEffect(() => {
+    if (panel) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCerrar();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onCerrar]);
+  }, [onCerrar, panel]);
 
   async function llamar(url: string, init: RequestInit) {
     const res = await fetch(url, { ...init, headers: { "Content-Type": "application/json" } });
@@ -113,7 +120,28 @@ export default function PlantillasModal({
     }
   }
 
-  const tarjeta = (id: string, titulo: string, detalle: string, pagina: Pagina, acciones?: React.ReactNode) => (
+  const tarjeta = (id: string, titulo: string, detalle: string, pagina: Pagina, acciones?: React.ReactNode) =>
+    panel ? (
+      <li key={id} className="flex flex-col gap-1 border border-ink/25 bg-white/60 p-1.5 dark:bg-white/5">
+        <button type="button" className="block w-full text-left hover:opacity-85" onClick={() => onAplicar(pagina, titulo, "nueva")} title={`${titulo}: ${detalle}\n\nClic para agregarla como página nueva`} aria-label={`Agregar «${titulo}» como página nueva`}>
+          <Miniatura pagina={pagina} />
+        </button>
+        <p className="font-sans truncate text-[0.72rem] font-bold" title={titulo}>{titulo}</p>
+        <div className="flex flex-wrap gap-1">
+          <button
+            type="button"
+            className={`${btnCls} !px-2 !text-[0.68rem]`}
+            onClick={() => {
+              if (window.confirm(`Esto reemplaza el contenido de la página ${numeroPagina} por esta plantilla. ¿Continuar? (Se puede deshacer cerrando sin guardar.)`)) onAplicar(pagina, titulo, "reemplazar");
+            }}
+            title="Reemplaza el contenido de la página actual"
+          >
+            Usar aquí
+          </button>
+          {acciones}
+        </div>
+      </li>
+    ) : (
     <li key={id} className="flex flex-col gap-2 border border-ink/25 bg-white/60 dark:bg-white/5 p-2.5">
       <Miniatura pagina={pagina} />
       <div className="min-w-0">
@@ -137,33 +165,33 @@ export default function PlantillasModal({
         {acciones}
       </div>
     </li>
-  );
+    );
 
   const pest = (id: "iniciales" | "anuncios" | "editorial" | "propias", texto: string) => (
     <button
       type="button"
       onClick={() => setPestana(id)}
       aria-pressed={pestana === id}
-      className={`${btnCls} ${pestana === id ? "!bg-ink !text-paper" : ""}`}
+      className={`${btnCls} ${panel ? "!rounded-full !px-2.5" : ""} ${pestana === id ? "!bg-ink !text-paper" : ""}`}
     >
       {texto}
     </button>
   );
 
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-ink/60 p-4 sm:p-8"
-      onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}
-    >
-      <div role="dialog" aria-modal="true" aria-label="Plantillas de página" className="w-full max-w-5xl border-2 border-ink bg-paper shadow-2xl">
-        <header className="flex items-center justify-between gap-3 border-b border-ink/30 bg-paper-deep px-5 py-3">
-          <h2 className="font-display text-2xl font-black">Plantillas de página</h2>
-          <button type="button" className={btnCls} onClick={onCerrar}>✕ Cerrar</button>
-        </header>
-
+  const contenido = (
+    <>
         {/* Guardar la página actual */}
-        <section className="border-b border-ink/20 px-5 py-4">
-          <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Guardar la página {numeroPagina} como plantilla</h3>
+        <section className={panel ? "border-b border-ink/20 px-3 py-3" : "border-b border-ink/20 px-5 py-4"}>
+          {panel ? (
+            <button type="button" className="font-sans flex w-full items-center justify-between text-left text-xs font-bold uppercase tracking-wider" aria-expanded={verGuardar} onClick={() => setVerGuardar((v) => !v)}>
+              <span>☆ Guardar la página {numeroPagina} como plantilla</span>
+              <span aria-hidden>{verGuardar ? "▾" : "▸"}</span>
+            </button>
+          ) : (
+            <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Guardar la página {numeroPagina} como plantilla</h3>
+          )}
+          {verGuardar && (
+            <>
           <p className="font-sans mt-1 text-[0.72rem] text-ink-soft">
             Se guarda con su diseño (y se copian sus imágenes) para reutilizarla en cualquier edición. Los enlaces a otras páginas de esta edición no se conservan.
           </p>
@@ -179,6 +207,8 @@ export default function PlantillasModal({
               ☆ Guardar plantilla
             </button>
           </form>
+            </>
+          )}
           {estado && (
             <p role="status" className={`font-sans mt-2 text-xs ${estado.tipo === "error" ? "font-bold text-terracota" : "text-ink-soft"}`}>
               {estado.texto}
@@ -187,7 +217,7 @@ export default function PlantillasModal({
         </section>
 
         {/* Galería */}
-        <section className="px-5 py-4">
+        <section className={panel ? "px-3 py-3" : "px-5 py-4"}>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pest("iniciales", `Iniciales (${PLANTILLAS_BASE.length})`)}
             {pest("anuncios", `Publicidad (${PLANTILLAS_ANUNCIO.length + PLANTILLAS_COLLAGE.length})`)}
@@ -196,7 +226,7 @@ export default function PlantillasModal({
           </div>
 
           {pestana === "iniciales" ? (
-            <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+            <ul className={panel ? "grid grid-cols-2 gap-2" : "grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4"}>
               {PLANTILLAS_BASE.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
             </ul>
           ) : pestana === "anuncios" ? (
@@ -205,7 +235,7 @@ export default function PlantillasModal({
                 Cada una lleva la etiqueta «Publicidad». Elige la imagen del anuncio y escribe su dirección en “Enlace” (https://… o https://wa.me/52…).
                 Procura no poner dos páginas de anuncio seguidas.
               </p>
-              <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+              <ul className={panel ? "grid grid-cols-2 gap-2" : "grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4"}>
                 {[...PLANTILLAS_ANUNCIO, ...PLANTILLAS_COLLAGE].map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
               </ul>
             </>
@@ -215,7 +245,7 @@ export default function PlantillasModal({
                 Páginas de noticias con cifras y fotos, y cómic a página completa, listas para reemplazar textos e imágenes. Los pies de página usan {"{n:2}"}:
                 el número de la página se escribe solo y se corrige si agregas o mueves páginas.
               </p>
-              <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+              <ul className={panel ? "grid grid-cols-2 gap-2" : "grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4"}>
                 {PLANTILLAS_EDITORIAL.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
               </ul>
             </>
@@ -226,7 +256,7 @@ export default function PlantillasModal({
               Aún no guardas ninguna. Arma una página, ábrela aquí y usa “Guardar plantilla”.
             </p>
           ) : (
-            <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4">
+            <ul className={panel ? "grid grid-cols-2 gap-2" : "grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4"}>
               {guardadas.map((p) =>
                 tarjeta(
                   p.id,
@@ -242,6 +272,31 @@ export default function PlantillasModal({
             </ul>
           )}
         </section>
+    </>
+  );
+
+  if (panel)
+    return (
+      <section aria-label="Plantillas" className="flex h-full min-h-0 flex-col border border-ink/40 bg-white/50 dark:bg-white/5">
+        <header className="flex shrink-0 items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
+          <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">Plantillas</h3>
+          <button type="button" className={btnCls} onClick={onCerrar} aria-label="Cerrar el panel">✕</button>
+        </header>
+        <div className="min-h-0 flex-1 overflow-y-auto">{contenido}</div>
+      </section>
+    );
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-ink/60 p-4 sm:p-8"
+      onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}
+    >
+      <div role="dialog" aria-modal="true" aria-label="Plantillas de página" className="w-full max-w-5xl border-2 border-ink bg-paper shadow-2xl">
+        <header className="flex items-center justify-between gap-3 border-b border-ink/30 bg-paper-deep px-5 py-3">
+          <h2 className="font-display text-2xl font-black">Plantillas de página</h2>
+          <button type="button" className={btnCls} onClick={onCerrar}>✕ Cerrar</button>
+        </header>
+        {contenido}
       </div>
     </div>
   );

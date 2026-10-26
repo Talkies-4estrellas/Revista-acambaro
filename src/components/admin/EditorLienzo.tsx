@@ -26,6 +26,8 @@ import { animarTexto } from "@/lib/animaciones-texto";
 import { aplicarEstilo, copiarEstilo, type EstiloCopiado } from "@/lib/estilo";
 import { desplazarEnfoque } from "@/lib/recorte";
 import QuitarFondo from "./QuitarFondo";
+import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
+import BarraContextual from "./BarraContextual";
 import BibliotecaLienzo, { type ModoBiblioteca } from "./BibliotecaLienzo";
 import { DESPUES_DEFECTO, fotogramas, fotogramasSalida, opcionesAnimacion, opcionesSalida, pruebaBucle, pruebaHover, type Bucle, type Efecto, type Hover } from "@/lib/animaciones";
 import { CATALOGO } from "@/lib/catalogo-iconos";
@@ -82,19 +84,15 @@ const Vector = ({ id }: { id: string }) => (
 );
 
 /** Herramientas del riel: las de `preset` agregan el elemento al instante; las de `modo` abren su panel con opciones. */
+/** Panel de herramientas que estaba abierto (de la última hoja), para reabrirlo al cambiar de página. */
+let peticionAtendida = 0;
+let bibliotecaRecordada: { edicion: string; modo: ModoBiblioteca } | null = null;
+
 const RIEL: { id: string; etiqueta: string; titulo: string; modo?: ModoBiblioteca; preset?: PresetElemento; icono: React.ReactNode }[] = [
+  { id: "plantillas", etiqueta: "Plantillas", titulo: "Páginas ya diseñadas, y guardar la tuya como plantilla", modo: "plantillas", icono: <Trazo><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></Trazo> },
+  { id: "elementos", etiqueta: "Elementos", titulo: "Figuras, formas, iconos, marcos, bloques, botones, logo y tus elementos guardados", modo: "elementos", icono: <Trazo><rect x="3" y="3" width="7" height="7" rx="1" /><circle cx="17.500" cy="6.500" r="3.500" /><path d="M3 21l4-7 4 7zM14 14h7v7h-7z" /></Trazo> },
   { id: "texto", etiqueta: "Texto", titulo: "Titular, párrafo y etiqueta", modo: "texto", icono: <Trazo><path d="M5 7V5h14v2M12 5v14M9 19h6" /></Trazo> },
-  { id: "imagen", etiqueta: "Imagen", titulo: "Agregar una imagen (clic o arrastra a la hoja)", preset: "imagen", icono: <Vector id="image" /> },
-  { id: "video", etiqueta: "Video", titulo: "Agregar un video (clic o arrastra a la hoja)", preset: "video", icono: <Vector id="film" /> },
   { id: "subidos", etiqueta: "Subidos", titulo: "Tus fotos y videos ya subidos: clic o arrastra a la hoja", modo: "subidos", icono: <Trazo><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 7.97H17" /><path d="M12 12v8M9 15l3-3 3 3" /></Trazo> },
-  { id: "figuras", etiqueta: "Figuras", titulo: "Figuras decorativas: cintas, burbujas, sellos, flechas, divisores, marcos…", modo: "figuras", icono: <Trazo><path d="M12 3l2.6 5.600 6.100.700-4.500 4.200 1.200 6L12 16.500 6.600 19.500l1.200-6L3.300 9.300l6.100-.7z" /></Trazo> },
-  { id: "formas", etiqueta: "Formas", titulo: "Rectángulo, círculo y línea", modo: "formas", icono: <Trazo><rect x="3" y="3" width="11" height="11" rx="1" /><circle cx="16" cy="16" r="5" /></Trazo> },
-  { id: "bloques", etiqueta: "Bloques", titulo: "Bloques listos: tarjeta de producto, cupón, testimonio, cifra, evento…", modo: "bloques", icono: <Trazo><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></Trazo> },
-  { id: "botones", etiqueta: "Botones", titulo: "Botones prediseñados, con su efecto al pasar el cursor", modo: "botones", icono: <Trazo><rect x="3" y="7.5" width="18" height="9" rx="4.5" /><path d="M8.5 12h7" /></Trazo> },
-  { id: "iconos", etiqueta: "Iconos", titulo: "Biblioteca de iconos", modo: "iconos", icono: <Vector id="star" /> },
-  { id: "moldes", etiqueta: "Moldes", titulo: "Moldes (marcos) para fotos y formas", modo: "moldes", icono: <Trazo><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" /></Trazo> },
-  { id: "mios", etiqueta: "Míos", titulo: "Mis elementos: grupos que guardaste para reutilizar en cualquier edición", modo: "mios", icono: <Trazo><path d="M12 21s-7.5-4.6-9.3-9.2C1.5 8.5 3.4 5 6.8 5c2 0 3.5 1 5.2 3 1.7-2 3.2-3 5.2-3 3.4 0 5.3 3.5 4.1 6.8C19.5 16.4 12 21 12 21z" /></Trazo> },
-  { id: "logos", etiqueta: "Logo", titulo: "Logotipo y emblema de la revista", modo: "logos", icono: <Vector id="bookmark" /> },
 ];
 
 type Guias = { v: number[]; h: number[] };
@@ -167,7 +165,10 @@ export default function EditorLienzo({
   indice,
   creditos,
   edicionId,
-  onPlantillas,
+  onAplicarPlantilla,
+  abrirPlantillas,
+  reservaInferior = 0,
+  onHistorial,
   fantasma,
   fantasmaDetras = false,
   etiquetaMover,
@@ -187,7 +188,14 @@ export default function EditorLienzo({
   /** Texto de {creditos}: los créditos de todas las imágenes de la edición. */
   creditos?: string;
   /** Abre las plantillas de página (se ofrece en la guía de la hoja vacía). */
-  onPlantillas?: () => void;
+  /** Usa una plantilla (en una página nueva o en la actual): lo hace el editor de la edición. */
+  onAplicarPlantilla?: (pagina: Pagina, nombre: string, modo: ModoAplicar) => void;
+  /** Cada vez que cambia, se abre el panel de plantillas (lo piden botones de fuera de la hoja). */
+  abrirPlantillas?: number;
+  /** Alto (en rem) que ocupa algo fijo bajo la hoja, como la tira de páginas, para que la hoja no se salga de la pantalla. */
+  reservaInferior?: number;
+  /** Avisa al editor si hay algo que deshacer o rehacer y le da las funciones: los botones están en su barra superior. `null` al desmontarse. */
+  onHistorial?: (e: { puedeDeshacer: boolean; puedeRehacer: boolean; deshacer: () => void; rehacer: () => void } | null) => void;
   /** Elementos que se ven atenuados como referencia y no se pueden tocar (los repetidos de la edición, o la página actual al editar los repetidos). */
   fantasma?: Elemento[];
   /** Los de referencia se dibujan detrás de los elementos de esta hoja (por defecto, delante). */
@@ -236,7 +244,23 @@ export default function EditorLienzo({
     lateralRecordado = v;
     setLateralEstado(v);
   };
-  const [biblioteca, setBiblioteca] = useState<null | { modo: ModoBiblioteca; reemplazar?: boolean }>(null);
+  // El panel abierto (Elementos, Plantillas, Subidos…) se recuerda al cambiar de página, como en Canva: la hoja de cada página es un editor nuevo.
+  const [biblioteca, setBiblioteca] = useState<null | { modo: ModoBiblioteca; reemplazar?: boolean }>(() => (bibliotecaRecordada && bibliotecaRecordada.edicion === edicionId ? { modo: bibliotecaRecordada.modo } : null));
+  useEffect(() => {
+    bibliotecaRecordada = biblioteca ? { edicion: edicionId, modo: biblioteca.modo } : null;
+  }, [biblioteca, edicionId]);
+  // Botones de fuera de la hoja («▤ Plantillas» de la página) piden abrir el panel.
+  useEffect(() => {
+    if (abrirPlantillas && abrirPlantillas !== peticionAtendida) {
+      peticionAtendida = abrirPlantillas; // (cada página crea un editor nuevo: sin esto, el panel se reabriría solo al cambiar de página)
+      setBiblioteca({ modo: "plantillas" });
+    }
+  }, [abrirPlantillas]);
+  // Cada vez que se dibuja, el editor se entera de si hay historial (se compara allá para no repetir avisos).
+  useEffect(() => {
+    onHistorial?.({ puedeDeshacer: pasado.current.length > 0, puedeRehacer: futuro.current.length > 0, deshacer, rehacer });
+  });
+  useEffect(() => () => onHistorial?.(null), []); // eslint-disable-line react-hooks/exhaustive-deps
   /** Foto que se está encuadrando con el ratón (arrastrar para mover, deslizador para acercar) y foto a la que se le quita el fondo. */
   const [recortando, setRecortando] = useState<string | null>(null);
   const recortandoRef = useRef<string | null>(null);
@@ -1738,7 +1762,7 @@ export default function EditorLienzo({
   }, [movil, haySeleccion]);
 
   /** Alto del área de trabajo (hoja, riel y panel de herramientas). */
-  const altoTrabajo = completa ? "calc(100vh - 9rem)" : "max(24rem, calc(100vh - 19.5rem))";
+  const altoTrabajo = completa ? "calc(100vh - 9rem)" : `max(24rem, calc(100vh - ${19.5 + reservaInferior}rem))`;
   const handle = "absolute h-2.5 w-2.5 border border-terracota bg-white pointer-coarse:h-5 pointer-coarse:w-5";
   const cajaGrupo = seleccion.length > 1 ? unir(seleccion.map(caja)) : null;
 
@@ -1749,7 +1773,7 @@ export default function EditorLienzo({
       <div className="min-w-0">
         {/* Fila superior: ayuda y edición (copiar, pegar, deshacer) */}
         <div className="mb-2 flex flex-wrap items-start gap-2">
-          <details className="font-sans min-w-0 text-[0.7rem] text-ink-soft">
+          <details className="font-sans min-w-0 text-[0.7rem] text-ink-soft max-sm:hidden">
             <summary className="inline-block cursor-pointer select-none font-bold hover:text-ink">ⓘ Ayuda rápida</summary>
             <p className="mt-1 max-w-xl leading-relaxed">
               Elige una herramienta a la izquierda (clic para agregarla o arrástrala a la hoja) · Suelta imágenes o videos desde tu equipo sobre la hoja · Doble clic en un texto para
@@ -1757,7 +1781,7 @@ export default function EditorLienzo({
               (pantalla táctil) = zoom.
             </p>
           </details>
-            <span className="ml-auto flex gap-1" role="toolbar" aria-label="Copiar, pegar y deshacer">
+            <span className="ml-auto flex max-w-full min-w-0 gap-1 overflow-x-auto [&>button]:shrink-0 [&>button]:whitespace-nowrap" role="toolbar" aria-label="Copiar, pegar y estilo">
               {onMover && (
               <button type="button" className={btnCls} onClick={() => onMover(seleccion)} disabled={sel.length === 0} title="Pasa lo seleccionado a todas las páginas (o lo deja solo en esta, según el modo)">
                 {etiquetaMover}
@@ -1773,8 +1797,6 @@ export default function EditorLienzo({
               <button type="button" className={btnCls} onClick={() => setSel(elementos.filter((e) => !e.bloqueado && !e.oculto).map((e) => e.id!))} disabled={elementos.length === 0} title="Seleccionar todo (Ctrl+A)" aria-label="Seleccionar todo">
                 ☑
               </button>
-              <button type="button" className={btnCls} onClick={deshacer} disabled={pasado.current.length === 0} title="Deshacer (Ctrl+Z)">↶</button>
-              <button type="button" className={btnCls} onClick={rehacer} disabled={futuro.current.length === 0} title="Rehacer (Ctrl+Y)">↷</button>
             </span>
         </div>
         {aviso && <p role="status" className="font-sans mb-2 text-xs font-bold text-terracota">{aviso}</p>}
@@ -1828,6 +1850,7 @@ export default function EditorLienzo({
           {/* Riel de herramientas */}
           <nav
             aria-label="Herramientas"
+            data-tour="riel"
             className="flex shrink-0 gap-1 overflow-x-auto border border-ink/30 bg-paper-deep/60 p-1 lg:h-(--alto-trabajo) lg:w-[4.5rem] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden"
             style={{ "--alto-trabajo": altoTrabajo } as React.CSSProperties}
           >
@@ -1837,6 +1860,7 @@ export default function EditorLienzo({
                 <button
                   key={it.id}
                   type="button"
+                  data-tour={`riel-${it.id}`}
                   draggable={!!it.preset}
                   onDragStart={(e) => {
                     if (!it.preset) return;
@@ -1861,9 +1885,12 @@ export default function EditorLienzo({
           {/* Panel de la herramienta elegida (bloques, botones, iconos…) */}
           {biblioteca && (
             <div className="h-96 shrink-0 lg:h-(--alto-trabajo) lg:w-80" style={{ "--alto-trabajo": altoTrabajo } as React.CSSProperties}>
+              {biblioteca.modo === "plantillas" ? (
+                <PlantillasModal variante="panel" paginaActual={pagina} numeroPagina={(indice ?? 0) + 1} onAplicar={(p, n, m) => onAplicarPlantilla?.(p, n, m)} onCerrar={() => setBiblioteca(null)} />
+              ) : (
               <BibliotecaLienzo
                 modo={biblioteca.modo}
-                reemplazando={!!biblioteca.reemplazar && unico?.tipo === "icono"}
+                reemplazando={!!biblioteca.reemplazar && (unico?.tipo === "icono" || unico?.tipo === "imagen")}
                 hayMoldeable={!!unico && (unico.tipo === "imagen" || unico.tipo === "video" || unico.tipo === "forma")}
                 onIcono={(id) => {
                   if (biblioteca.reemplazar && unico?.tipo === "icono") {
@@ -1878,7 +1905,12 @@ export default function EditorLienzo({
                 onPreset={(id) => agregar(id)}
                 mios={mios}
                 edicionId={edicionId ?? ""}
-                onSubido={(src) => colocarSubido(src)}
+                onSubido={(src) => {
+                  if (biblioteca.reemplazar && unico?.tipo === "imagen") {
+                    cambiar({ src });
+                    setBiblioteca((b) => (b ? { ...b, reemplazar: false } : b));
+                  } else colocarSubido(src);
+                }}
                 seleccionados={seleccion.length}
                 onGuardarSeleccion={guardarSeleccion}
                 onMio={(id) => agregarMio(id)}
@@ -1886,19 +1918,49 @@ export default function EditorLienzo({
                 onBorrarMio={borrarMio}
                 onCerrar={() => setBiblioteca(null)}
               />
+              )}
             </div>
           )}
 
           <div className="min-w-0 flex-1">
+        {/* Barra contextual: lo principal de lo que está elegido (al estilo de Canva) */}
+        <BarraContextual
+          el={unico ?? undefined}
+          n={seleccion.length}
+          pagina={pagina}
+          cambiar={(p, c) => cambiar(p as Partial<Elemento>, c)}
+          cambiarPagina={(patch) => onChange({ ...pagina, ...patch })}
+          onAlinear={alinear}
+          abrirPanel={(titulo) => {
+            setLateral("propiedades");
+            if (movil) setCajon(true);
+            setTimeout(() => window.dispatchEvent(new CustomEvent("abrir-panel", { detail: titulo })), 80);
+          }}
+          acciones={{
+            duplicar,
+            eliminar,
+            frente: () => moverGrupo("frente"),
+            atras: () => moverGrupo("atras"),
+            agrupar: seleccion.length > 1 ? agrupar : undefined,
+            desagrupar: seleccion.length > 1 && seleccion.some((e) => e.grupo) ? desagrupar : undefined,
+            recortar: unico?.tipo === "imagen" && unico.src && !unico.comparar ? () => setRecortando(unico.id!) : undefined,
+            quitarFondo: unico?.tipo === "imagen" && unico.src ? () => setQuitandoFondo(unico.id!) : undefined,
+            reemplazarImagen: unico?.tipo === "imagen" ? () => setBiblioteca({ modo: "subidos", reemplazar: true }) : undefined,
+            editarTexto: unico?.tipo === "texto" ? () => setEditando(unico.id!) : undefined,
+            cambiarIcono: unico?.tipo === "icono" ? () => setBiblioteca({ modo: unico.icono.startsWith("fig-") ? "figuras" : "iconos", reemplazar: true }) : undefined,
+          }}
+        />
+
         {/* Hoja */}
         <div
           ref={viewport}
+          data-tour="hoja"
           onPointerDownCapture={alPunteroVista}
-          className={`relative overflow-hidden border border-ink/30 ${completa ? "" : "h-[max(22rem,calc(100svh-15rem))] md:h-(--alto-trabajo)"} ${
+          className={`relative overflow-hidden border border-ink/30 ${completa ? "" : "h-[max(22rem,calc(100svh-15rem))] md:h-[calc(var(--alto-trabajo)-3.5rem)]"} ${
             arrastrandoVista ? "[&_*]:cursor-grabbing!" : mano || espacio ? "[&_*]:cursor-grab!" : ""
           }`}
           style={{
-            ...(completa ? { height: altoTrabajo } : { "--alto-trabajo": altoTrabajo }),
+            ...(completa ? { height: `calc(${altoTrabajo} - 3.5rem)` } : { "--alto-trabajo": altoTrabajo }),
             backgroundColor: "#cbd5e1",
             backgroundImage: "radial-gradient(rgba(28,24,20,.2) 1px, transparent 1px)",
             backgroundSize: "18px 18px",
@@ -2178,8 +2240,8 @@ export default function EditorLienzo({
                     <button type="button" className={btnCls} onClick={() => agregar("titular")}>+ Titular</button>
                     <button type="button" className={btnCls} onClick={() => agregar("parrafo")}>+ Párrafo</button>
                     <button type="button" className={btnCls} onClick={() => agregar("imagen")}>+ Imagen</button>
-                    {onPlantillas && (
-                      <button type="button" className={`${btnCls} !bg-ink !text-paper`} onClick={onPlantillas}>▤ Usar una plantilla</button>
+                    {onAplicarPlantilla && (
+                      <button type="button" className={`${btnCls} !bg-ink !text-paper`} onClick={() => setBiblioteca({ modo: "plantillas" })}>▤ Usar una plantilla</button>
                     )}
                   </div>
                 </div>

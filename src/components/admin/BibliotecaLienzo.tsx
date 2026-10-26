@@ -11,9 +11,12 @@ import { GaleriaMedios } from "./BibliotecaMedios";
 
 export const TIPO_BIBLIOTECA = "application/x-lienzo";
 
-export type ModoBiblioteca = "subidos" | "figuras" | "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios";
+export type ModoBiblioteca = "plantillas" | "elementos" | "marcos" | "subidos" | "figuras" | "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios";
 
 const TITULOS: Record<ModoBiblioteca, string> = {
+  plantillas: "Plantillas",
+  elementos: "Elementos",
+  marcos: "Foto y video",
   subidos: "Subidos",
   figuras: "Figuras",
   texto: "Texto",
@@ -125,6 +128,9 @@ export default function BibliotecaLienzo({
   onBorrarMio: (id: string) => void;
   onCerrar: () => void;
 }) {
+  // «Elementos» reúne varios cajones en uno: cada sección es uno de los modos de siempre.
+  const [sub, setSub] = useState<ModoBiblioteca>("figuras");
+  const m: ModoBiblioteca = modo === "elementos" ? sub : modo;
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState<string>("Todas");
   const [comoForma, setComoForma] = useState(false);
@@ -151,13 +157,13 @@ export default function BibliotecaLienzo({
     <section aria-label={TITULOS[modo]} className="flex h-full min-h-0 flex-col border border-ink/40 bg-white/50 dark:bg-white/5">
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
         <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">{TITULOS[modo]}</h3>
-        {(modo === "iconos" || modo === "figuras") && (
+        {(m === "iconos" || m === "figuras") && (
           <input
             type="search"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder={modo === "figuras" ? "Buscar: cinta, marco…" : "Buscar: café, mapa…"}
-            aria-label={modo === "figuras" ? "Buscar figuras" : "Buscar iconos"}
+            placeholder={m === "figuras" ? "Buscar: cinta, marco…" : "Buscar: café, mapa…"}
+            aria-label={m === "figuras" ? "Buscar figuras" : "Buscar iconos"}
             className={`${inputCls} !w-40`}
           />
         )}
@@ -165,11 +171,45 @@ export default function BibliotecaLienzo({
           ✕
         </button>
       </header>
-      <div className={modo === "subidos" ? "flex min-h-0 flex-1 flex-col" : "min-h-0 flex-1 overflow-y-auto"}>
+      {modo === "elementos" && (
+        <nav aria-label="Secciones de elementos" className="flex shrink-0 flex-wrap gap-1 border-b border-ink/15 bg-paper px-2 py-2">
+          {(
+            [
+              ["figuras", "Figuras"],
+              ["formas", "Formas"],
+              ["iconos", "Iconos"],
+              ["moldes", "Marcos"],
+              ["bloques", "Bloques"],
+              ["botones", "Botones"],
+              ["logos", "Logo"],
+              ["mios", "Míos"],
+              ["marcos", "Foto y video"],
+            ] as const
+          ).map(([id, nombre]) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={sub === id}
+              onClick={() => {
+                setSub(id);
+                setCategoria("Todas");
+                setBusqueda("");
+              }}
+              className={`font-sans rounded-full border px-2.5 py-1 text-[0.7rem] font-semibold ${sub === id ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink-soft hover:border-ink hover:text-ink"}`}
+            >
+              {nombre}
+            </button>
+          ))}
+        </nav>
+      )}
+      <div className={m === "subidos" ? "flex min-h-0 flex-1 flex-col" : "min-h-0 flex-1 overflow-y-auto"}>
 
-      {modo === "subidos" ? (
-        <GaleriaMedios edicionId={edicionId} onUsar={onSubido} arrastrable />
-      ) : modo === "mios" ? (
+      {m === "subidos" ? (
+        <>
+          {reemplazando && <p className="font-sans shrink-0 border-b border-ocre bg-ocre/20 px-3 py-1.5 text-xs font-semibold">Elige la foto que sustituirá a la seleccionada.</p>}
+          <GaleriaMedios edicionId={edicionId} onUsar={onSubido} arrastrable />
+        </>
+      ) : m === "mios" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Guarda aquí lo que armes (el anuncio de un cliente, una firma, un sello…) para usarlo en cualquier edición. Selecciona uno o varios elementos en la hoja y pulsa el botón.
@@ -204,11 +244,17 @@ export default function BibliotecaLienzo({
             ))}
           </div>
         </div>
-      ) : modo === "texto" || modo === "formas" ? (
+      ) : m === "marcos" ? (
+        <div className="space-y-3 p-3">
+          <p className="font-sans text-[0.7rem] text-ink-soft">Agrega un marco de foto o de video vacío y suelta después un archivo encima (o elige uno de «Subidos»). Para usar una foto ya subida, ve a <strong>Subidos</strong>.</p>
+          <button type="button" className={`${btnCls} w-full !py-2`} onClick={() => onPreset("imagen")}>🖼 Agregar un marco de foto</button>
+          <button type="button" className={`${btnCls} w-full !py-2`} onClick={() => onPreset("video")}>🎞 Agregar un video</button>
+        </div>
+      ) : m === "texto" || m === "formas" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">Haz clic para agregarlo o arrástralo a la hoja. Después puedes cambiarle el tamaño, el color y todo lo demás.</p>
           <div className="flex flex-col gap-2">
-            {(modo === "texto"
+            {(m === "texto"
               ? ([
                   ["titular", "Titular", "Un título grande", "font-display text-2xl font-black leading-tight"],
                   ["parrafo", "Párrafo", "Texto de lectura, en varias líneas, para el cuerpo de una nota.", "font-serif text-[0.8rem] leading-snug"],
@@ -233,14 +279,14 @@ export default function BibliotecaLienzo({
                 className="flex w-full cursor-grab flex-col gap-2 border border-ink/20 bg-white p-3 text-left hover:border-terracota"
               >
                 <span className="pointer-events-none flex min-h-10 items-center text-ink">
-                  {modo === "texto" ? <span className={clase}>{muestra}</span> : <span className={`block ${clase}`} />}
+                  {m === "texto" ? <span className={clase}>{muestra}</span> : <span className={`block ${clase}`} />}
                 </span>
                 <span className="font-sans text-[0.62rem] font-semibold text-ink-soft">{nombre}</span>
               </button>
             ))}
           </div>
         </div>
-      ) : modo === "bloques" ? (
+      ) : m === "bloques" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Grupos de elementos ya compuestos. Clic para agregarlo al centro de la hoja o arrástralo a donde lo quieras; se mueve junto (doble clic para editar una pieza). Reemplaza
@@ -273,7 +319,7 @@ export default function BibliotecaLienzo({
             ))}
           </div>
         </div>
-      ) : modo === "botones" ? (
+      ) : m === "botones" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Haz clic para agregar el botón o arrástralo a la hoja. Pasa el cursor por encima para ver su efecto. Después escribe su texto (doble clic), pon a dónde lleva en
@@ -306,7 +352,7 @@ export default function BibliotecaLienzo({
             ))}
           </div>
         </div>
-      ) : modo === "figuras" ? (
+      ) : m === "figuras" ? (
         <div className="p-3">
           <div className="mb-2 flex flex-wrap gap-1">
             {["Todas", ...CATEGORIAS_FIGURA].map((c) => (
@@ -348,7 +394,7 @@ export default function BibliotecaLienzo({
           </div>
           <p className="font-sans mt-2 text-[0.65rem] text-ink-soft">Figuras dibujadas para la revista: cintas, burbujas, sellos, formas, flechas, divisores, marcos y motivos de naturaleza.</p>
         </div>
-      ) : modo === "iconos" ? (
+      ) : m === "iconos" ? (
         <div className="p-3">
           <div className="mb-2 flex flex-wrap gap-1">
             {["Todas", ...CATEGORIAS_ICONO].map((c) => (
@@ -394,7 +440,7 @@ export default function BibliotecaLienzo({
             Iconos de línea: Lucide (licencia ISC). Marcas: Simple Icons (CC0); pertenecen a sus titulares, úsalas solo para enlazar a sus perfiles.
           </p>
         </div>
-      ) : modo === "logos" ? (
+      ) : m === "logos" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">
             Haz clic para agregar el logotipo a la hoja, o arrástralo hasta donde lo quieras. Usa la versión clara sobre fondos oscuros.

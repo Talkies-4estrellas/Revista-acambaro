@@ -18,7 +18,7 @@ let vistaRecordada: VistaPaginas = "miniaturas";
  * con el ancho de su caja); las demás plantillas, formadas por formularios, muestran una tarjeta con su tipo.
  * Va memorizada: al editar una página solo se vuelve a dibujar su propia miniatura.
  */
-const Miniatura = memo(
+export const MiniaturaPagina = memo(
   function Miniatura({ pagina, edicionId, indice, anclas, creditos }: { pagina: Pagina; edicionId: string; indice: number; anclas: string; creditos: string }) {
     // Las referencias ({n}, {p:ancla}, {creditos}) se muestran ya resueltas, como en la hoja.
     const refs = useMemo(() => ({ n: indice + 1, mapa: mapaAnclas(anclas.split("").map((a) => a || undefined)), creditos }), [indice, anclas, creditos]);
@@ -194,7 +194,7 @@ export default function PanelPaginas({
                     </>
                   ) : vista === "miniaturas" ? (
                     <>
-                      <Miniatura pagina={p} edicionId={edicionId} indice={i} anclas={anclas} creditos={creditos} />
+                      <MiniaturaPagina pagina={p} edicionId={edicionId} indice={i} anclas={anclas} creditos={creditos} />
                       <span className="min-w-0 pt-0.5 text-sm">
                         <span className="block text-xs text-ink-soft">{i + 1}</span>
                         <span className={`line-clamp-2 leading-tight ${activa ? "font-bold" : ""}`}>{TITULO(p)}</span>
@@ -210,7 +210,7 @@ export default function PanelPaginas({
                         <span className={`min-w-0 flex-1 truncate ${activa ? "font-bold" : ""}`}>{TITULO(p)}</span>
                         <span className="shrink-0 text-[0.6rem] uppercase tracking-wide text-ink-soft">{p.transicion}</span>
                       </span>
-                      <Miniatura pagina={p} edicionId={edicionId} indice={i} anclas={anclas} creditos={creditos} />
+                      <MiniaturaPagina pagina={p} edicionId={edicionId} indice={i} anclas={anclas} creditos={creditos} />
                     </>
                   )}
                 </button>

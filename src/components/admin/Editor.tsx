@@ -20,13 +20,17 @@ import { MediosContext, Campo, Texto, btnCls, inputCls } from "./campos";
 import FormPagina from "./FormPagina";
 import EditorLienzo from "./EditorLienzo";
 import PanelPaginas from "./PanelPaginas";
+import TiraPaginas from "./TiraPaginas";
 import { construirIndice } from "@/lib/indice";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
 import RevisorDiseno from "./RevisorDiseno";
 import { listaAntesDePublicar, revisarDatos } from "@/lib/revision";
 import BibliotecaMedios from "./BibliotecaMedios";
 import BuscarReemplazar from "./BuscarReemplazar";
+import { ItemMenu, MenuSuperior, SeparadorMenu } from "./MenuSuperior";
 import Versiones from "./Versiones";
+import AyudaEditor from "./AyudaEditor";
+import RecorridoEditor, { PASOS_BIENVENIDA, type PasoRecorrido } from "./RecorridoEditor";
 import { textoCreditos } from "@/lib/referencias";
 
 /** «las páginas 7 y 8» / «las páginas 4 a 6 y 10 y 11», a partir de los números de página que son anuncios pegados. */
@@ -91,11 +95,59 @@ export default function Editor({
   const [verPrevia, setVerPrevia] = useState(true);
   const [medios, setMedios] = useState(mediosIniciales);
   const [nuevaPlantilla, setNuevaPlantilla] = useState<Plantilla>("lienzo");
+  // Las páginas se ven como lista en la columna de la izquierda (lo de siempre) o, si se elige, como una tira de miniaturas bajo la hoja; se recuerda la elección.
+  const [tira, setTiraEstado] = useState(false);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("revista:paginas-disposicion") === "tira") setTiraEstado(true);
+    } catch {}
+  }, []);
+  const setTira = (v: boolean) => {
+    setTiraEstado(v);
+    try {
+      localStorage.setItem("revista:paginas-disposicion", v ? "tira" : "lateral");
+    } catch {}
+  };
+  // Deshacer y rehacer de la página abierta (el historial vive en la hoja de lienzo; los botones, en la barra superior).
+  const historialRef = useRef<{ deshacer: () => void; rehacer: () => void } | null>(null);
+  const [hist, setHist] = useState({ d: false, r: false });
+  const alHistorial = useCallback((e: { puedeDeshacer: boolean; puedeRehacer: boolean; deshacer: () => void; rehacer: () => void } | null) => {
+    historialRef.current = e ? { deshacer: e.deshacer, rehacer: e.rehacer } : null;
+    const d = !!e?.puedeDeshacer;
+    const r = !!e?.puedeRehacer;
+    setHist((h) => (h.d === d && h.r === r ? h : { d, r }));
+  }, []);
   const [verPlantillas, setVerPlantillas] = useState(false);
+  /** Sube cada vez que se pide abrir las plantillas: en una página de lienzo se abre el panel lateral. */
+  const [peticionPlantillas, setPeticionPlantillas] = useState(0);
   const [verRevisor, setVerRevisor] = useState(false);
   const [verVersiones, setVerVersiones] = useState(false);
   const [verMedios, setVerMedios] = useState(false);
   const [verBuscar, setVerBuscar] = useState(false);
+  const [verAyuda, setVerAyuda] = useState(false);
+  const [ayudaInicial, setAyudaInicial] = useState("");
+  /** Recorrido guiado: pasos que se están mostrando (null = cerrado). La primera vez se abre solo. */
+  const [recorrido, setRecorrido] = useState<PasoRecorrido[] | null>(null);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("revista:recorrido-visto")) return;
+    } catch {
+      return;
+    }
+    const t = window.setTimeout(() => setRecorrido(PASOS_BIENVENIDA), 1200);
+    return () => window.clearTimeout(t);
+  }, []);
+  const terminarRecorrido = useCallback(() => {
+    setRecorrido(null);
+    try {
+      localStorage.setItem("revista:recorrido-visto", "1");
+    } catch {}
+  }, []);
+  /** «Muéstrame dónde»: resalta una sola pieza con su explicación. */
+  const mostrarPieza = (pieza: string, titulo: string) => {
+    setVerAyuda(false);
+    setRecorrido([{ objetivo: pieza, titulo, texto: "Aquí es. Pulsa «¡Entendido!» para seguir trabajando." }]);
+  };
   /** El último «buscar y reemplazar»: cómo estaba la edición antes (para deshacerlo) y qué se hizo. */
   const [reemplazoAnterior, setReemplazoAnterior] = useState<{ antes: EdicionDatos; resumen: string } | null>(null);
   /** Cuándo se guardó por última vez en esta sesión (a mano o solo). */
@@ -117,6 +169,13 @@ export default function Editor({
   const idx = datos.paginas.indexOf(pagina);
   const seguidos = useMemo(() => anunciosSeguidos(datos.paginas), [datos.paginas]);
   const publicadas = useMemo(() => new Map(otras.map((o) => [o.id, o.publicada])), [otras]);
+  /** Cambia el estado de publicación (con el aviso de pendientes al pasar de borrador a publicada). */
+  const cambiarPublicacion = (v: "borrador" | "publicada" | "programada") => {
+    if (v !== "borrador" && !datos.publicada && !confirmarPublicacion()) return;
+    if (v === "borrador") setDatos({ ...datos, publicada: false, publicarEn: undefined });
+    else if (v === "publicada") setDatos({ ...datos, publicada: true, publicarEn: undefined });
+    else setDatos({ ...datos, publicada: true, publicarEn: datos.publicarEn ?? sugerirPublicacion() });
+  };
   /** Al pasar de borrador a publicada/programada: si hay pendientes, se ofrece abrir la lista antes de publicar. */
   const confirmarPublicacion = () => {
     const pend = listaAntesDePublicar(datos, revisarDatos(datos.paginas, datos.fecha, { publicadas })).filter((p) => !p.ok && !p.opcional);
@@ -209,6 +268,10 @@ export default function Editor({
       if ((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === "h") {
         e.preventDefault();
         setVerBuscar(true);
+      }
+      if (e.key === "F1") {
+        e.preventDefault();
+        setVerAyuda(true);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -395,6 +458,12 @@ export default function Editor({
     setVerPlantillas(false);
   }
 
+  /** Abre las plantillas: junto a la hoja si la página es de lienzo; en una ventana si es una página clásica. */
+  function abrirPlantillas() {
+    if (esLienzo) setPeticionPlantillas((n) => n + 1);
+    else setVerPlantillas(true);
+  }
+
   function agregarPagina() {
     const k = idx + 1;
     const copia = [...datos.paginas];
@@ -478,84 +547,120 @@ export default function Editor({
   return (
     <MediosContext.Provider value={{ medios, subir, edicionId: id }}>
       <div className="flex min-h-screen flex-col md:h-screen">
-        {/* Barra superior */}
+        {/* Barra superior (al estilo de Canva): todo lo de «archivo» en un menú, el estado de guardado y la publicación a la vista */}
         <header className="border-b-2 border-ink bg-paper">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
-            <Link href="/admin" className="font-sans text-xs font-bold uppercase tracking-wider text-terracota hover:underline">
-              ← Ediciones
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 bg-gradient-to-r from-[#068562] via-[#0a7a72] to-[#0b4a5a] px-3 py-1.5 text-white">
+            <Link href="/admin" className="font-sans inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-bold hover:bg-white/15" title="Volver a la lista de ediciones" aria-label="Volver a la lista de ediciones">
+              <span aria-hidden>←</span> <span className="max-sm:hidden">Ediciones</span>
             </Link>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/emblema.svg" alt="" className="h-7 w-auto" />
-            <h1 className="font-display text-xl font-black">Edición {id}</h1>
-            <span className={`font-sans text-xs ${sucio ? "font-bold text-terracota" : "text-ink-soft"}`}>
-              {sucio
-                ? autoguardar && estado?.tipo !== "error"
-                  ? "● Guardando en un momento…"
-                  : "● Cambios sin guardar"
-                : guardadoEn
-                  ? `Guardado a las ${guardadoEn.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}`
-                  : "Todo guardado"}
-            </span>
-            <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-              {estado && (
-                <span
-                  role="status"
-                  className={`font-sans max-w-md truncate text-xs ${estado.tipo === "error" ? "font-bold text-terracota" : "text-ink-soft"}`}
-                  title={estado.texto}
-                >
-                  {estado.texto}
-                </span>
+            <span data-tour="archivo" className="inline-flex">
+            <MenuSuperior etiqueta={<>Archivo <span aria-hidden className="text-[0.6rem]">▾</span></>} titulo="Guardar, versiones, medios, buscar y reemplazar…">
+              {(cerrar) => (
+                <>
+                  <ItemMenu icono="💾" texto="Guardar" atajo="Ctrl+S" deshabilitado={!sucio || estado?.tipo === "cargando"} onClick={() => { cerrar(); guardar(); }} />
+                  <ItemMenu marcado={autoguardar} texto="Autoguardar" nota={datos.publicada ? "Esta edición está publicada: por defecto no se autoguarda" : "Guarda solo, unos segundos después de un cambio"} onClick={() => cambiarAuto(!autoguardar)} />
+                  <SeparadorMenu />
+                  <ItemMenu icono="✓" texto="Revisar la edición" nota="Diseño, accesibilidad y lista antes de publicar" onClick={() => { cerrar(); setVerRevisor(true); }} />
+                  <ItemMenu icono="↻" texto={editandoMaestra ? "Terminar los elementos repetidos" : "Elementos repetidos…"} nota="Encabezado, pie y número de página en todas las páginas" onClick={() => { cerrar(); setEditandoMaestra((v) => !v); }} />
+                  <ItemMenu icono="☰" texto="Generar el índice" nota="Crea la página «Contenido»" onClick={() => { cerrar(); generarIndice(); }} />
+                  <SeparadorMenu />
+                  <ItemMenu icono="↶" texto="Versiones anteriores…" nota="Ver y restaurar cómo estaba antes" onClick={() => { cerrar(); setVerVersiones(true); }} />
+                  <ItemMenu icono="🔎" texto="Buscar y reemplazar…" atajo="Ctrl+Alt+H" nota="Cambia un texto o enlace en toda la edición" onClick={() => { cerrar(); setVerBuscar(true); }} />
+                  <ItemMenu icono="🖼" texto="Fotos y videos…" nota="Todo lo que has subido" onClick={() => { cerrar(); setVerMedios(true); }} />
+                  <ItemMenu icono="✎" texto="Datos de la edición" nota="Fecha, tema, número y publicación" marcado={undefined} onClick={() => { cerrar(); setVerDatos((v) => !v); }} />
+                  <SeparadorMenu />
+                  <ItemMenu icono="↗" texto="Abrir la edición en el sitio" href={`/ediciones/${id}/1`} onClick={cerrar} />
+                  {!esLienzo && <ItemMenu icono="◫" texto={verPrevia ? "Ocultar vista previa" : "Mostrar vista previa"} onClick={() => { cerrar(); setVerPrevia((v) => !v); }} />}
+                </>
               )}
-              <button type="button" className={`${btnCls} hidden ${esLienzo ? "" : "xl:inline-block"}`} onClick={() => setVerPrevia((v) => !v)}>
-                {verPrevia ? "Ocultar vista previa" : "Vista previa"}
-              </button>
-              <label
-                className="font-sans flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft"
-                title={
-                  datos.publicada
-                    ? "Guarda solo, unos segundos después de un cambio. Esta edición está publicada: por defecto no se autoguarda (los cambios se verían en el sitio sin que los revises); igual se conserva una copia de recuperación en este navegador."
-                    : "Guarda solo, unos segundos después de un cambio (la edición es un borrador)."
-                }
-              >
-                <input type="checkbox" className="h-3.5 w-3.5 accent-[#068562]" checked={autoguardar} onChange={(e) => cambiarAuto(e.target.checked)} />
-                Autoguardar
-              </label>
-              <button type="button" className={btnCls} onClick={() => setVerVersiones(true)} title="Ver y restaurar versiones anteriores de esta edición">
-                ↶ Versiones
-              </button>
-              <button type="button" className={btnCls} onClick={() => setVerBuscar(true)} title="Cambia un texto, enlace, teléfono o nombre en toda la edición de una vez (Ctrl+Alt+H)">
-                🔎 Reemplazar
-              </button>
-              <button type="button" className={btnCls} onClick={() => setVerMedios(true)} title="Todas las fotos y videos subidos: dónde se usan, cuáles sobran y cuánto pesan">
-                🖼 Medios
-              </button>
-              <button type="button" className={btnCls} onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica, anuncios seguidos, enlaces de ejemplo y problemas de accesibilidad (contraste, descripciones, enlaces)">
-                ✓ Revisar y accesibilidad
-              </button>
-              <a href={`/ediciones/${id}/1`} target="_blank" rel="noreferrer" className={btnCls}>
-                Abrir edición ↗
-              </a>
-              <button
-                type="button"
-                onClick={() => guardar()}
-                disabled={!sucio || estado?.tipo === "cargando"}
-                className="font-sans bg-ink px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-paper hover:bg-terracota disabled:opacity-40"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-
-          <div className="font-sans flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-ink/20 px-4 py-1 text-xs text-ink-soft">
-            <span className={`font-display text-base font-black ${datos.publicada || fijoPropio !== undefined ? "text-terracota" : "text-ink/40"}`} title="Número de la edición (automático)">N.º {formatoNumero(numeroEdicion)}</span>
-            <span>{datos.fecha ? new Date(datos.fecha + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }) : "sin fecha"}</span>
-            <span className="min-w-0 max-w-[24rem] truncate font-semibold text-ink">{datos.tema?.trim() || "Sin tema"}</span>
-            <span className="border border-ink/30 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider">
-              {!datos.publicada ? "Borrador" : estadoEdicion(datos) === "programada" ? "Programada" : "Publicada"}
+            </MenuSuperior>
             </span>
-            <button type="button" className="font-bold text-terracota hover:underline" onClick={() => setVerDatos((v) => !v)} aria-expanded={verDatos}>
-              {verDatos ? "▲ Ocultar datos de la edición" : "✎ Datos de la edición"}
+            <span role="group" aria-label="Historial" data-tour="deshacer" className="flex items-center">
+              <button type="button" className="font-sans inline-flex h-8 w-8 items-center justify-center rounded-md text-lg font-bold hover:bg-white/15 disabled:opacity-35 disabled:hover:bg-transparent max-sm:w-7" onClick={() => historialRef.current?.deshacer()} disabled={!hist.d} title="Deshacer (Ctrl+Z)" aria-label="Deshacer">
+                ↶
+              </button>
+              <button type="button" className="font-sans inline-flex h-8 w-8 items-center justify-center rounded-md text-lg font-bold hover:bg-white/15 disabled:opacity-35 disabled:hover:bg-transparent max-sm:w-7" onClick={() => historialRef.current?.rehacer()} disabled={!hist.r} title="Rehacer (Ctrl+Y)" aria-label="Rehacer">
+                ↷
+              </button>
+            </span>
+            <span
+              role="status"
+              className={`font-sans inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs ${estado?.tipo === "error" ? "bg-white/90 font-bold text-terracota" : "text-white/85"} ${sucio || estado?.tipo === "error" ? "" : "max-sm:hidden"}`}
+              title={estado?.texto}
+            >
+              {estado?.tipo === "error" ? (
+                <>⚠ <span className="max-sm:hidden">{estado.texto.length > 60 ? estado.texto.slice(0, 58) + "…" : estado.texto}</span></>
+              ) : sucio ? (
+                <>● <span className="max-sm:hidden">{autoguardar ? "Guardando en un momento…" : "Cambios sin guardar"}</span></>
+              ) : (
+                <>
+                  <span aria-hidden>☁</span> <span className="max-sm:hidden">{guardadoEn ? `Guardado ${guardadoEn.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}` : "Todo guardado"}</span>
+                </>
+              )}
+            </span>
+
+            <div className="mx-2 flex min-w-[12rem] flex-1 items-center justify-center gap-2 max-sm:order-last max-sm:mx-0 max-sm:basis-full">
+              <span className="font-display hidden whitespace-nowrap text-base font-black text-white/80 sm:inline" title="Número de la edición (automático)">N.º {formatoNumero(numeroEdicion)}</span>
+              <input
+                aria-label="Tema de la edición"
+                value={datos.tema ?? ""}
+                onChange={(e) => setDatos({ ...datos, tema: e.target.value })}
+                placeholder="Título de la edición (el tema del número)"
+                className="font-sans w-full max-w-md truncate rounded-md border border-transparent bg-white/10 px-3 py-1.5 text-center text-sm font-bold text-white placeholder:font-normal placeholder:text-white/60 hover:bg-white/15 focus:border-white/60 focus:bg-white/20 focus:outline-none"
+              />
+            </div>
+
+            <button type="button" data-tour="revisar" className="font-sans inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-semibold hover:bg-white/15 max-sm:hidden" onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica, anuncios seguidos, enlaces de ejemplo y problemas de accesibilidad (contraste, descripciones, enlaces)">
+              ✓ Revisar
             </button>
+            <button
+              type="button"
+              onClick={() => guardar()}
+              disabled={!sucio || estado?.tipo === "cargando"}
+              className="font-sans inline-flex items-center gap-1 rounded-md border border-white/60 px-3 py-1.5 text-sm font-bold hover:bg-white/15 disabled:opacity-40 max-sm:px-2"
+              title="Guardar (Ctrl+S)"
+              aria-label="Guardar"
+            >
+              <span aria-hidden className="sm:hidden">💾</span>
+              <span className="max-sm:hidden">Guardar</span>
+            </button>
+            <button
+              type="button"
+              data-tour="ayuda"
+              onClick={() => { setAyudaInicial(""); setVerAyuda(true); }}
+              className="font-sans inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/60 text-sm font-black hover:bg-white/15"
+              title="Ayuda y recorrido guiado (F1)"
+              aria-label="Ayuda"
+            >
+              ?
+            </button>
+            <span data-tour="publicar" className="inline-flex">
+            <MenuSuperior
+              primario
+              alinear="derecha"
+              titulo="Publicar, programar o dejar como borrador"
+              etiqueta={
+                !datos.publicada ? (
+                  <>Publicar <span aria-hidden className="text-[0.6rem]">▾</span></>
+                ) : estadoEdicion(datos) === "programada" ? (
+                  <>⏰ Programada <span aria-hidden className="text-[0.6rem]">▾</span></>
+                ) : (
+                  <>✓ Publicada <span aria-hidden className="text-[0.6rem]">▾</span></>
+                )
+              }
+            >
+              {(cerrar) => (
+                <>
+                  <p className="font-sans px-3.5 pb-1 pt-2 text-[0.68rem] font-bold uppercase tracking-wider text-ink-soft">Estado de la edición</p>
+                  <ItemMenu marcado={!datos.publicada} texto={fijoPropio !== undefined ? `Desactivada (conserva la N.º ${formatoNumero(fijoPropio)})` : "Borrador"} nota="No se ve en el sitio" onClick={() => { cerrar(); cambiarPublicacion("borrador"); }} />
+                  <ItemMenu marcado={datos.publicada && !datos.publicarEn} texto="Publicada ya" nota="Visible para todos al guardar" onClick={() => { cerrar(); cambiarPublicacion("publicada"); }} />
+                  <ItemMenu marcado={datos.publicada && !!datos.publicarEn} texto="Programar…" nota={datos.publicarEn ? `Se publica ${datos.publicarEn.replace("T", " a las ")} (hora de México)` : "Elige el día y la hora"} onClick={() => { cerrar(); cambiarPublicacion("programada"); setVerDatos(true); }} />
+                  <SeparadorMenu />
+                  <ItemMenu icono="✎" texto="Fecha, número y datos…" onClick={() => { cerrar(); setVerDatos(true); }} />
+                </>
+              )}
+            </MenuSuperior>
+            </span>
           </div>
 
           <div className={`grid gap-3 border-t border-ink/20 px-4 py-2 sm:grid-cols-[6rem_10rem_1fr_auto] sm:items-end ${verDatos ? "" : "hidden"}`}>
@@ -639,8 +744,10 @@ export default function Editor({
         )}
 
         {/* Cuerpo */}
-        <div className={`grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)] ${conPrevia ? "xl:grid-cols-[15rem_minmax(0,1fr)_28rem]" : ""}`}>
-          {/* Páginas */}
+        <div className={`grid min-h-0 flex-1 grid-cols-1 ${tira ? "" : "md:grid-cols-[15rem_minmax(0,1fr)]"} ${conPrevia ? (tira ? "xl:grid-cols-[minmax(0,1fr)_28rem]" : "xl:grid-cols-[15rem_minmax(0,1fr)_28rem]") : ""}`}>
+          {/* Páginas (en lista, columna de la izquierda) */}
+          {!tira && (
+          <>
           <button
             type="button"
             onClick={() => setVerPaginas((v) => !v)}
@@ -653,7 +760,7 @@ export default function Editor({
               {idx + 1}. {titulos[idx]}
             </span>
           </button>
-          <nav aria-label="Páginas" className={`${verPaginas ? "flex" : "hidden"} max-h-[22rem] min-h-0 flex-col border-b border-ink/30 bg-paper-deep/50 md:flex md:max-h-none md:border-b-0 md:border-r`}>
+          <nav aria-label="Páginas" data-tour="paginas" className={`${verPaginas ? "flex" : "hidden"} max-h-[22rem] min-h-0 flex-col border-b border-ink/30 bg-paper-deep/50 md:flex md:max-h-none md:border-b-0 md:border-r`}>
             <button
               type="button"
               onClick={() => {
@@ -667,6 +774,9 @@ export default function Editor({
               <span aria-hidden>↻</span>
               <span>Elementos repetidos</span>
               <span className={`ml-auto font-normal normal-case tracking-normal ${editandoMaestra ? "" : "text-ink-soft"}`}>{nRepetidos ? `${nRepetidos}` : "ninguno"}</span>
+            </button>
+            <button type="button" onClick={() => setTira(true)} className="font-sans flex w-full items-center gap-2 border-b border-ink/30 px-3 py-1.5 text-left text-[0.68rem] font-bold uppercase tracking-wider text-ink-soft hover:bg-paper-deep" title="Ver las páginas como una tira de miniaturas bajo la hoja">
+              <span aria-hidden>▭</span> Ver como tira inferior
             </button>
             <PanelPaginas
               paginas={paginasVistas}
@@ -693,7 +803,7 @@ export default function Editor({
                 + Agregar después de la {idx + 1}
               </button>
               <div className="grid grid-cols-2 gap-1.5">
-                <button type="button" className={btnCls} onClick={() => setVerPlantillas(true)} title="Usar una plantilla ya diseñada (o guardar esta página como plantilla)">
+                <button type="button" className={btnCls} onClick={abrirPlantillas} title="Usar una plantilla ya diseñada (o guardar esta página como plantilla)">
                   ▤ Plantillas
                 </button>
                 <button type="button" className={btnCls} onClick={generarIndice} title="Crea la página «Contenido» con todas las páginas de la edición (y la rehace si ya la generaste)">
@@ -702,6 +812,8 @@ export default function Editor({
               </div>
             </div>
           </nav>
+          </>
+          )}
 
           {/* Formulario */}
           <main className="min-h-0 px-3 py-4 md:overflow-y-auto md:px-5">
@@ -721,7 +833,7 @@ export default function Editor({
               </div>
             )}
             {seguidos.length > 0 && (
-              <p role="status" className="font-sans mb-3 border-l-4 border-ocre bg-ocre/15 px-3 py-2 text-xs">
+              <p role="status" className="font-sans mb-3 border-l-4 border-ocre bg-ocre/15 px-3 py-2 text-xs max-sm:hidden">
                 <strong>Anuncios seguidos:</strong> {textoSeguidos(seguidos)}. Conviene intercalar contenido entre un anuncio y otro para que la publicidad no canse al lector.
               </p>
             )}
@@ -746,15 +858,15 @@ export default function Editor({
               </div>
             )}
             <div className={`mb-2 flex flex-wrap items-center justify-between gap-2 ${editandoMaestra ? "hidden" : ""}`}>
-              <h2 className="font-display text-xl font-black">
-                Página {idx + 1} <span className="text-base font-bold italic text-ink-soft">· {ETIQUETAS_PLANTILLA[pagina.plantilla]}</span>
+              <h2 className="font-display text-xl font-black max-sm:text-lg">
+                Página {idx + 1} <span className="text-base font-bold italic text-ink-soft max-sm:hidden">· {ETIQUETAS_PLANTILLA[pagina.plantilla]}</span>
               </h2>
-              <div className="flex flex-wrap gap-1">
-                <button type="button" className={btnCls} disabled={idx === 0} onClick={() => moverPagina(-1)}>↑ Subir</button>
-                <button type="button" className={btnCls} disabled={idx === datos.paginas.length - 1} onClick={() => moverPagina(1)}>↓ Bajar</button>
-                <button type="button" className={btnCls} onClick={() => setVerPlantillas(true)} title="Guardar esta página como plantilla o usar una">▤ Plantillas</button>
-                <button type="button" className={btnCls} onClick={duplicarPagina}>⧉ Duplicar</button>
-                <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={quitarPagina}>✕ Quitar</button>
+              <div className="flex gap-1">
+                <button type="button" className={btnCls} disabled={idx === 0} onClick={() => moverPagina(-1)} title="Subir la página (antes)" aria-label="Subir la página">↑<span className="max-sm:hidden"> Subir</span></button>
+                <button type="button" className={btnCls} disabled={idx === datos.paginas.length - 1} onClick={() => moverPagina(1)} title="Bajar la página (después)" aria-label="Bajar la página">↓<span className="max-sm:hidden"> Bajar</span></button>
+                <button type="button" className={btnCls} onClick={abrirPlantillas} title="Guardar esta página como plantilla o usar una" aria-label="Plantillas">▤<span className="max-sm:hidden"> Plantillas</span></button>
+                <button type="button" className={btnCls} onClick={duplicarPagina} title="Duplicar la página" aria-label="Duplicar la página">⧉<span className="max-sm:hidden"> Duplicar</span></button>
+                <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={quitarPagina} title="Quitar la página" aria-label="Quitar la página">✕<span className="max-sm:hidden"> Quitar</span></button>
               </div>
             </div>
             <details className={`mb-3 border border-ink/20 bg-paper-deep/40 ${editandoMaestra ? "hidden" : ""}`} open={anclaRepetida || undefined}>
@@ -807,7 +919,7 @@ export default function Editor({
                 fantasmaDetras={datos.maestra?.capa === "debajo"}
                 etiquetaMover="↻ Repetir en todas"
                 onMover={repetirEnTodas}
-                repetidos={nRepetidos} onPlantillas={() => setVerPlantillas(true)} paginas={titulos} anclas={anclas} indice={idx} creditos={creditos} edicionId={id} />
+                repetidos={nRepetidos} onAplicarPlantilla={aplicarPlantilla} abrirPlantillas={peticionPlantillas} reservaInferior={tira ? 8.5 : 0} onHistorial={alHistorial} paginas={titulos} anclas={anclas} indice={idx} creditos={creditos} edicionId={id} />
             ) : (
               <FormPagina key={idx} pagina={pagina} onChange={cambiarPagina} titulos={titulos} />
             )}
@@ -836,7 +948,38 @@ export default function Editor({
             </aside>
           )}
         </div>
+        {tira && (
+          <TiraPaginas
+            paginas={paginasVistas}
+            seleccionada={idx}
+            edicionId={id}
+            creditos={creditos}
+            editandoMaestra={editandoMaestra}
+            nRepetidos={nRepetidos}
+            nuevaPlantilla={nuevaPlantilla}
+            onSeleccionar={(i) => {
+              setSel(i);
+              setEditandoMaestra(false);
+            }}
+            onReordenar={reordenarPagina}
+            onAgregar={agregarPagina}
+            onNuevaPlantilla={setNuevaPlantilla}
+            onPlantillas={abrirPlantillas}
+            onIndice={generarIndice}
+            onRepetidos={() => setEditandoMaestra((v) => !v)}
+            onLateral={() => setTira(false)}
+          />
+        )}
       </div>
+      {verAyuda && (
+        <AyudaEditor
+          inicial={ayudaInicial}
+          onMostrar={mostrarPieza}
+          onRecorrido={() => { setVerAyuda(false); setRecorrido(PASOS_BIENVENIDA); }}
+          onCerrar={() => setVerAyuda(false)}
+        />
+      )}
+      {recorrido && <RecorridoEditor pasos={recorrido} alTerminar={terminarRecorrido} />}
       {verBuscar && (
         <BuscarReemplazar
           datos={datos}
@@ -882,7 +1025,7 @@ export default function Editor({
           }}
           onCerrar={() => setVerRevisor(false)}
         />}
-      {verPlantillas && (
+      {verPlantillas && !esLienzo && (
         <PlantillasModal
           paginaActual={pagina}
           numeroPagina={idx + 1}

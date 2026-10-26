@@ -92,6 +92,9 @@
 | `Logo.tsx`, `ThemeToggle.tsx` | Logotipo con versión oscura; botón claro/oscuro |
 | `PortadaMini.tsx`, `Ticker.tsx`, `Bloques.tsx`, `Placeholder.tsx` | Portadas pequeñas, cinta y bloques de las plantillas clásicas |
 | `CarruselEdiciones.tsx` | Carrusel «cover flow» de las ediciones anteriores en celular (portada central grande, laterales giradas, puntos) |
+| `admin/TiraPaginas.tsx` | Tira de miniaturas de las páginas bajo la hoja (estilo Canva) |
+| `admin/RecorridoEditor.tsx`, `admin/AyudaEditor.tsx`, `lib/ayuda-editor.ts` | Recorrido guiado de bienvenida (resalta piezas con `data-tour`) y panel de ayuda con búsqueda y «Muéstrame dónde» |
+| `admin/BarraContextual.tsx`, `admin/MenuSuperior.tsx` | Barra sobre la hoja según lo seleccionado y menús de la barra superior del editor (estilo Canva) |
 | `admin/BibliotecaMedios.tsx` | Biblioteca de medios (elegir y ordenar fotos y videos) |
 | `EnlaceMedido.tsx`, `ContarVistas.tsx`, `FormSuscripcion.tsx`, `AnimacionesLienzo.tsx` | Clics medidos, formulario, animaciones de entrada |
 | `admin/Editor.tsx` | Editor de edición (barra, páginas, identificador de página, revisor) |
