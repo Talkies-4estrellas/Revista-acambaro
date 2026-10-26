@@ -29,6 +29,23 @@ const TITULOS: Record<ModoBiblioteca, string> = {
   mios: "Mis elementos",
 };
 
+/** Una línea bajo el título del panel: para qué sirve y cómo se usa. */
+const DESCRIPCIONES: Record<ModoBiblioteca, string> = {
+  plantillas: "Páginas ya diseñadas. Un clic las agrega; cambia luego los textos y fotos.",
+  elementos: "Adornos y piezas para tu página. Elige una sección y haz clic en lo que quieras agregar.",
+  marcos: "Marcos para fotos y videos. Haz clic para agregar uno y luego pon tu foto dentro.",
+  subidos: "Tus fotos y videos. Sube los tuyos y haz clic (o arrastra) para ponerlos en la página.",
+  figuras: "Dibujos decorativos: cintas, sellos, marcos. Haz clic para agregarlos y cambia su color.",
+  texto: "Agrega un texto y haz doble clic sobre él para escribir el tuyo.",
+  formas: "Formas sencillas (cuadros, círculos, líneas) para fondos y detalles.",
+  bloques: "Grupos de piezas ya armados (tarjetas, citas, datos). Se agregan juntos y se editan después.",
+  botones: "Botones ya diseñados. Agrégalo, cambia el texto y pon a dónde lleva con «Enlace».",
+  iconos: "Iconos sencillos. Haz clic para agregar y cambia su color o tamaño.",
+  moldes: "Marcos con forma (círculo, corazón…) para recortar una foto o video.",
+  logos: "Logos de ACOM-Di y de la revista, listos para poner.",
+  mios: "Lo que guardaste para reutilizar. Elige algo en la hoja y guárdalo aquí.",
+};
+
 const ANCHO_PREVIA_BLOQUE = 262;
 
 /** Vista previa de un bloque listo (la hoja de 800 se reduce con transform). */
@@ -170,6 +187,7 @@ export default function BibliotecaLienzo({
         <button type="button" className={btnCls} onClick={onCerrar} aria-label="Cerrar el panel">
           ✕
         </button>
+        <p className="font-sans basis-full text-[0.7rem] leading-snug text-ink-soft">{DESCRIPCIONES[m]}</p>
       </header>
       {modo === "elementos" && (
         <nav aria-label="Secciones de elementos" className="flex shrink-0 flex-wrap gap-1 border-b border-ink/15 bg-paper px-2 py-2">

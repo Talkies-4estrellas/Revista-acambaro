@@ -278,9 +278,10 @@ export default function PlantillasModal({
   if (panel)
     return (
       <section aria-label="Plantillas" className="flex h-full min-h-0 flex-col border border-ink/40 bg-white/50 dark:bg-white/5">
-        <header className="flex shrink-0 items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
+        <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-ink/20 bg-paper-deep px-3 py-2">
           <h3 className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">Plantillas</h3>
           <button type="button" className={btnCls} onClick={onCerrar} aria-label="Cerrar el panel">✕</button>
+          <p className="font-sans basis-full text-[0.7rem] leading-snug text-ink-soft">Páginas ya diseñadas. Un clic las agrega; cambia luego los textos y fotos.</p>
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto">{contenido}</div>
       </section>
