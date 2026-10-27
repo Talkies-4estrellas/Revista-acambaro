@@ -2,7 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { DIR_EDICIONES, validarEdicion } from "./ediciones";
 import { construirResumen } from "./resumen";
-import { limpiar, paginaNueva, type EdicionDatos } from "./esquema";
+import { limpiar, paginaDesdePlantilla, paginaNueva, type EdicionDatos } from "./esquema";
+import { MAX_PAGINAS_ASISTENTE, SECCIONES_ASISTENTE } from "./asistente-edicion";
+import { PLANTILLAS_BASE } from "./plantillas-base";
+import { PLANTILLAS_EXTRA } from "./plantillas-extra";
+import { PLANTILLAS_ANUNCIO } from "./plantillas-anuncio";
+import { PLANTILLAS_COLLAGE, PLANTILLAS_EDITORIAL } from "./plantillas-editorial";
 import { adminPermitido } from "./admin-acceso";
 import { usoEnEdicion } from "./medios-uso";
 import { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
@@ -21,6 +26,7 @@ const TIPOS_MEDIO: Record<string, string> = {
   jpeg: "image/jpeg",
   png: "image/png",
   webp: "image/webp",
+  svg: "image/svg+xml",
   gif: "image/gif",
   avif: "image/avif",
   mp4: "video/mp4",
@@ -253,16 +259,32 @@ export function guardarEdicion(id: string, datos: unknown, base?: number | null)
   }
 }
 
+/** Arma las páginas de una edición nueva a partir de las secciones que eligió el asistente (en el orden de SECCIONES_ASISTENTE). */
+function paginasDeSecciones(ids: string[]): EdicionDatos["paginas"] {
+  const elegidas = SECCIONES_ASISTENTE.filter((s) => ids.includes(s.id));
+  if (elegidas.length === 0) throw new ErrorAdmin("Elige al menos una sección.");
+  if (elegidas.length > MAX_PAGINAS_ASISTENTE) throw new ErrorAdmin("Son demasiadas secciones.");
+  const plantillas = [...PLANTILLAS_BASE, ...PLANTILLAS_EXTRA, ...PLANTILLAS_ANUNCIO, ...PLANTILLAS_COLLAGE, ...PLANTILLAS_EDITORIAL];
+  return elegidas.map((s) => {
+    const p = plantillas.find((x) => x.id === s.plantilla);
+    if (!p) throw new ErrorAdmin(`No encontré la plantilla de «${s.titulo}».`, 500);
+    return { ...paginaDesdePlantilla(p.pagina), titulo: s.titulo };
+  });
+}
+
 export function crearEdicion(
   id: string,
   base: { numero: string; fecha: string; tema: string },
   duplicarDe?: string,
+  secciones?: string[],
 ) {
   if (fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin(`Ya existe una edición con el id "${id}".`, 409);
 
   let paginas: EdicionDatos["paginas"] = [{ ...paginaNueva("lienzo"), titulo: "Portada" }];
   let maestra: EdicionDatos["maestra"];
-  if (duplicarDe) {
+  if (secciones?.length) {
+    paginas = paginasDeSecciones(secciones);
+  } else if (duplicarDe) {
     const origen = leerCrudo(duplicarDe);
     if (!origen) throw new ErrorAdmin("La edición base no existe.", 404);
     paginas = origen.paginas;

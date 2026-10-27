@@ -3,6 +3,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { quitarFondo } from "@/lib/quitar-fondo";
 import { btnCls, MediosContext } from "./campos";
+import { mensajeSimple } from "@/lib/errores-simples";
 
 const LADO_PREVIA = 520; // lado mayor de la vista previa (px)
 const LADO_FINAL = 2000; // lado mayor del archivo que se guarda (px)
@@ -103,7 +104,7 @@ export default function QuitarFondo({ src, onAplicar, onCerrar }: { src: string;
       onAplicar(await subir(new File([blob], nombre, { type: "image/png" })));
       onCerrar();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo guardar la imagen.");
+      setError(mensajeSimple(e, "No se pudo guardar la imagen."));
       setTrabajando(false);
     }
   }

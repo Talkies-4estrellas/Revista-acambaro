@@ -452,6 +452,13 @@ export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?:
   if (raw.publicarEn !== undefined && (typeof raw.publicarEn !== "string" || publicarEnMs(raw.publicarEn) === null))
     fail(ctx, '"publicarEn" debe tener formato AAAA-MM-DDTHH:mm (ej. "2026-10-20T09:00")');
 
+  if (raw.paleta !== undefined && !(Array.isArray(raw.paleta) && raw.paleta.length <= 24 && raw.paleta.every((c) => typeof c === "string" && /^#[0-9a-fA-F]{6}$/.test(c))))
+    fail(ctx, '"paleta" debe ser una lista de hasta 24 colores hexadecimales (#rrggbb)');
+  if (raw.estilos !== undefined) {
+    const ok = Array.isArray(raw.estilos) && raw.estilos.length <= 40 && raw.estilos.every((e) => isObj(e) && typeof e.nombre === "string" && e.nombre.length > 0 && e.nombre.length <= 40 && typeof e.tipo === "string" && isObj(e.valores));
+    if (!ok) fail(ctx, '"estilos" debe ser una lista de hasta 40 estilos con nombre, tipo y valores');
+  }
+
   const total = raw.paginas.length;
   // Elementos que se repiten en todas las páginas: se validan como los de una página de lienzo y se agregan a cada una (aplicarMaestra) antes de resolver referencias.
   let maestra: Maestra | undefined;
@@ -478,6 +485,8 @@ export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?:
     publicada: raw.publicada !== false,
     ...(raw.publicarEn ? { publicarEn: raw.publicarEn as string } : {}),
     ...(raw.numeroFijo === true ? { numeroFijo: true } : {}),
+    ...(Array.isArray(raw.paleta) && raw.paleta.length ? { paleta: raw.paleta as string[] } : {}),
+    ...(Array.isArray(raw.estilos) && raw.estilos.length ? { estilos: raw.estilos as unknown as Edicion["estilos"] } : {}),
     paginas: resolverReferencias(
       raw.paginas
         .map((p, i) => {

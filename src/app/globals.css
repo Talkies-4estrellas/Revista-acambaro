@@ -209,3 +209,8 @@ body {
     transform: none !important;
   }
 }
+
+/* Mientras se usa el cuentagotas de la hoja, las ventanas de color se ocultan para ver toda la hoja. */
+body.cuentagotas-activo [data-paleta-flotante] {
+  visibility: hidden;
+}

@@ -151,6 +151,26 @@ export const ETIQUETAS_COLOR: Record<ColorToken, string> = {
   indigo: "Índigo",
 };
 
+/** Colores sólidos predeterminados (4 filas de 7: grises, rojos y morados, azules, verdes y naranjas) del selector de color. */
+export const COLORES_SOLIDOS: string[] = [
+  "#000000", "#404040", "#737373", "#a3a3a3", "#d4d4d4", "#f5f5f5", "#ffffff",
+  "#ef4444", "#f87171", "#f472b6", "#e9a8f2", "#c026d3", "#8b5cf6", "#5b21b6",
+  "#0e7490", "#06b6d4", "#67e8f9", "#38bdf8", "#6366f1", "#1d4ed8", "#1e1b4b",
+  "#16a34a", "#84cc16", "#d9f99d", "#facc15", "#fbbf24", "#fb923c", "#ea580c",
+];
+
+/** Nombres de color en español para la búsqueda del selector («azul», «verde menta»…). */
+export const NOMBRES_COLOR: { nombre: string; hex: string }[] = [
+  { nombre: "negro", hex: "#000000" }, { nombre: "blanco", hex: "#ffffff" }, { nombre: "gris", hex: "#808080" },
+  { nombre: "rojo", hex: "#e53935" }, { nombre: "naranja", hex: "#fb8c00" }, { nombre: "amarillo", hex: "#fdd835" },
+  { nombre: "verde", hex: "#43a047" }, { nombre: "verde menta", hex: "#98e5c0" }, { nombre: "verde oliva", hex: "#6b7a2a" },
+  { nombre: "turquesa", hex: "#00acc1" }, { nombre: "celeste", hex: "#38bdf8" }, { nombre: "azul", hex: "#1e88e5" },
+  { nombre: "azul marino", hex: "#0b2a6b" }, { nombre: "morado", hex: "#8e24aa" }, { nombre: "violeta", hex: "#7c3aed" },
+  { nombre: "lila", hex: "#c9a0dc" }, { nombre: "rosa", hex: "#ec407a" }, { nombre: "fucsia", hex: "#d81b60" },
+  { nombre: "coral", hex: "#ff6f61" }, { nombre: "durazno", hex: "#ffb38a" }, { nombre: "café", hex: "#795548" },
+  { nombre: "beige", hex: "#e8d9b5" }, { nombre: "dorado", hex: "#d4a017" }, { nombre: "vino", hex: "#7b1e3a" },
+];
+
 export const esColorValido = (c: string) => c in CSS_COLOR || /^#[0-9a-fA-F]{3,8}$/.test(c);
 export function colorCss(c: string | undefined, defecto: string): string {
   if (!c || !esColorValido(c)) return defecto;
@@ -472,6 +492,12 @@ export const DEGRADADOS = {
   revista: { nombre: "ACOM-Di", paradas: "#2dd4bf, #068562, #0b3b4a", angulo: 90 },
   noche: { nombre: "Noche", paradas: "#a5b4fc, #4338ca, #0f172a", angulo: 180 },
   plata: { nombre: "Plata", paradas: "#f8fafc, #94a3b8, #475569", angulo: 180 },
+  menta: { nombre: "Menta", paradas: "#d1fae5, #6ee7b7, #38bdf8", angulo: 135 },
+  durazno: { nombre: "Durazno", paradas: "#fff1d6, #fdba74, #f472b6", angulo: 135 },
+  uva: { nombre: "Uva", paradas: "#c4b5fd, #8b5cf6, #db2777", angulo: 135 },
+  oceano: { nombre: "Océano", paradas: "#22d3ee, #3b82f6, #1e1b4b", angulo: 180 },
+  limon: { nombre: "Limón", paradas: "#fef08a, #a3e635, #16a34a", angulo: 135 },
+  grafito: { nombre: "Grafito", paradas: "#6b7280, #1f2937, #000000", angulo: 180 },
 } as const;
 export type DegradadoId = keyof typeof DEGRADADOS;
 export const DEGRADADOS_IDS = Object.keys(DEGRADADOS) as DegradadoId[];
@@ -833,6 +859,11 @@ export function aplicarMaestra(p: Pagina, m: Maestra | undefined): Pagina {
   return { ...p, elementos: m.capa === "debajo" ? [...copias, ...propios] : [...propios, ...copias], ...(ordenMovil ? { ordenMovil } : {}) };
 }
 
+/** Un estilo con nombre de la edición («Rótulo», «Titular»…): el aspecto de un elemento (ver lib/estilo.ts), para aplicarlo a otros con un clic. */
+export type EstiloGuardado = { nombre: string; tipo: Elemento["tipo"]; valores: Record<string, unknown> };
+export const MAX_PALETA = 24;
+export const MAX_ESTILOS = 40;
+
 export type EdicionDatos = {
   numero: string;
   /** AAAA-MM-DD */
@@ -848,6 +879,10 @@ export type EdicionDatos = {
   publicarEn?: string;
   /** Elementos que se repiten en todas las páginas de lienzo. */
   maestra?: Maestra;
+  /** Colores propios de la edición (hexadecimales): salen primero en todos los selectores de color. */
+  paleta?: string[];
+  /** Estilos con nombre de la edición. */
+  estilos?: EstiloGuardado[];
   paginas: Pagina[];
 };
 

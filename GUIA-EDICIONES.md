@@ -270,6 +270,26 @@ Son elementos de tipo icono: se les cambia el **color** y el **tamaño**, y a la
 - **Tira de páginas** (opcional, abajo; por omisión las páginas van en la lista de la izquierda): miniaturas en vivo de todas las páginas, en una fila que se desplaza. **Un clic** abre la página; **arrastra** una miniatura para cambiarla de lugar (una línea marca dónde caerá; con el teclado, Alt + ←/→); el **+** del final agrega una página nueva después de la actual (el tipo se elige en el selector de la derecha; con «▤ Plantillas» se agrega una ya diseñada y con «☰ Índice» se genera la página de contenido); **↻ Repetidos** abre los elementos que se repiten en todas las páginas. Si una página es más alta que las demás (un cómic), su miniatura se recorta por abajo. La disposición elegida (tira o lista) se recuerda en tu navegador.
 - **Columna derecha**: Propiedades (todo en detalle) y Celular.
 
+## Asistente para una edición nueva (opcional)
+- En **Nueva edición** (lista de ediciones), marca **✨ Usar el asistente**. Elige qué páginas lleva (portada, reportaje, noticias, galería, cita, cómic, anuncio, contraportada) y la edición se crea como borrador con una página de plantilla por cada sección, en ese orden. Después cambias textos y fotos.
+- Si no lo marcas, sigue igual que siempre (edición en blanco o copia de otra). La página «Contenido» se genera aparte: Archivo → Generar el índice.
+- Las secciones se definen en `src/lib/asistente-edicion.ts`.
+
+## Plantillas de secciones (nuevas)
+- En **Plantillas → Secciones**: Carta del editor, Entrevista, Agenda de eventos, Receta, Directorio de negocios, Lugar para visitar, Foto a página completa y Texto en dos columnas. También las ofrece el asistente de «Nueva edición». Están en `src/lib/plantillas-extra.ts`.
+
+## Avisos de error claros
+- Cuando algo falla (no guardó, no subió, no hay conexión…), el aviso dice **qué pasó y qué hacer** en lugar de códigos. Si es un dato inválido, indica la página y el elemento. Las frases están en `src/lib/errores-simples.ts`.
+
+## Textos y fotos de ejemplo (marcados)
+- Cuando usas una plantilla, los textos que no has cambiado y las fotos sin archivo salen con un **contorno punteado y la etiqueta «Texto de ejemplo» / «Foto de ejemplo»** sobre la hoja (solo en el editor; la revista no lo muestra). La marca se quita sola en cuanto cambias el texto o pones tu foto.
+- El botón **✎ Ejemplos** (barra bajo la hoja) las oculta o muestra.
+- **Revisar** también avisa de los textos de plantilla sin cambiar («Texto de relleno»).
+
+## Vista previa como lector
+- **👁 Vista previa** (barra superior, o Archivo → «Vista previa como lector») abre la edición a pantalla completa como la verá quien la lea, con sus animaciones y transiciones. Elige **Celular**, **Tableta** o **Computadora**; abre en la página donde estás y se puede pasar de página como el lector.
+- Muestra lo **último guardado**: si hay cambios sin guardar, aparece «Guardar y recargar». No cuenta como lectura en las estadísticas.
+
 ## Ayuda y recorrido guiado
 - **La primera vez** que abres el editor (en ese navegador) aparece un **recorrido de 9 pasos**: herramientas, hoja, ajustes, páginas, Archivo, Revisar, Publicar y la ayuda. Se salta con «Saltar» o Esc, y se avanza con las flechas o Enter.
 - El botón **?** de la barra superior (o **F1**) abre la **Ayuda**: escribe lo que quieres hacer («subir una foto», «publicar», «deshacer») y salen los temas con los pasos. Cada tema con una pieza de la pantalla trae **👆 Muéstrame dónde**, que la resalta.
@@ -322,11 +342,32 @@ En la lista de **Capas** (panel de la derecha), cada fila trae dos botones:
 **✓ Revisar** (barra superior; antes «Revisar diseño») abre «Revisor, accesibilidad y lista antes de publicar». Arriba hay una lista con ✓ / ✗ / ○: el número tiene tema y fecha; sin textos ni enlaces de ejemplo; todos los botones llevan a algún lado; datos con fecha al día; sin páginas vacías ni imágenes sin foto; enlaces a otras ediciones válidos; y, como sugerencias (○), imágenes con descripción, fotos con crédito, anuncios intercalados y sin textos vacíos u ocultos. Con la **revisión visual** (botón del mismo panel) se añade «sin textos encimados ni letra chica». Cada hallazgo trae «Ir →» a su página.
 Al cambiar **Publicación** de Borrador a Publicada o Programada, si hay pendientes (✗) el editor los muestra y pregunta si abrir la lista (Aceptar) o publicar de todos modos (Cancelar).
 
+## Selector de color (al estilo de Canva)
+- Al elegir un color (fondo de la hoja, texto, formas, bordes, resaltado) se abre un panel con: **buscador** («azul», «verde menta» o un código como `#00c4cc` + Enter), **＋ color libre**, **💧 cuentagotas** (toma un color de lo que se ve **en el lienzo**: foto, texto o fondo de cualquier elemento, **incluso los que sobresalen de la hoja**; no de los paneles ni botones del editor ni del fondo gris. Se ve el código bajo el puntero; clic para elegir, Esc para cancelar; funciona en cualquier navegador). Los **últimos 5 colores tomados** quedan en la fila «Del cuentagotas»: el nuevo entra al principio y el último sale; si tomas uno que ya está, no se mueve nada y solo se marca donde está), **sin color**, los **colores de la página** (los que ya usas, para repetirlos), los **colores de las fotos** (de cada foto de la página: miniatura y hasta 6 colores que más aparecen; muestra 3 fotos y «Ver todo» el resto), los **colores de la revista**, **28 sólidos** predeterminados y, en texto y formas, **14 degradados**. Elegir un color liso quita el degradado.
+- Código: `src/components/admin/PaletaColores.tsx` (lectura de fotos en `src/lib/colores-foto.ts`; listas en `src/lib/esquema.ts`: `COLORES_SOLIDOS`, `NOMBRES_COLOR`, `DEGRADADOS`).
+
+## Tamaño de letra: se puede escribir
+- En la barra sobre la hoja, el campo del **tamaño del texto** acepta un número completo (escríbelo y pulsa Enter, o sal del campo); **Esc** lo deja como estaba y **↑ ↓** cambian de uno en uno. Los botones − y + siguen igual.
+
+## Menú del clic derecho
+- **Sobre un elemento de la hoja:** elige el elemento y ofrece lo más usado: editar o reemplazar, copiar/cortar/pegar/duplicar, **orden de las capas** (traer al frente, traer adelante, enviar atrás, enviar al fondo), agrupar, bloquear, ocultar, animar, posición, enlace, copiar y pegar estilo y eliminar. Con varios elementos elegidos, vale para todos.
+- **Sobre el fondo de la hoja:** pegar, seleccionar todo, agregar texto o imagen, ver la hoja entera.
+- **Sobre una página de la lista (o de la tira):** duplicar, agregar una en blanco después, mover antes o después, quitar; no hace falta abrirla primero.
+- **Sobre una edición en la lista de ediciones:** editar, ver en el sitio, copiar el enlace o el identificador y borrar (borradores).
+- Dentro de un texto en edición queda el menú normal del navegador (copiar, pegar, ortografía). Esc cierra el menú; se puede usar con las flechas.
+
+## Volver a la vista de la hoja entera
+- Si le das zoom o mueves la hoja, el botón **Entera** (barra bajo la hoja) la regresa completa y centrada; **doble clic en el fondo gris** (fuera de la hoja) hace lo mismo. **Ancho** (Ctrl+0) ajusta al ancho; **100 %** es tamaño real.
+
+## Lista de capas
+- **Capas** es un panel **desplegable** al final de la columna derecha (cerrado al principio: muestra cuántos elementos hay; pulsa su título para abrirlo, o «Abrir todo»). Arriba = al frente; Mayús/Ctrl + clic selecciona varias; candado, ojo y flechas por capa.
+- La **columna derecha tiene su propio desplazamiento**: al bajar por Propiedades, Animaciones, Capas… **la hoja no se mueve**, y las pestañas **Propiedades / Celular** se quedan fijas arriba para cambiar de una a otra en cualquier momento (pantallas anchas). La hoja conserva su tamaño fijo.
+
 ## Subidos (galería lateral) y biblioteca de medios
 
 En el riel de herramientas, **Subidos** abre una galería como la de Canva: buscador, botón **Subir archivos**, pestañas **Imágenes / Videos** y miniaturas en columnas sin recortar. **Un clic agrega la foto a la hoja** (con su proporción y su texto alternativo tomado del nombre) o la **arrastras** a donde quieras; si la sueltas sobre una imagen ya puesta, la reemplaza. Muestra los archivos de todas las ediciones (primero los de esta); pasa el cursor para ver el nombre y el peso. No muestra si un archivo «ya se usa» ni ofrece borrarlo: es solo para elegir.
 
-**Archivo → Fotos y videos…**: la misma galería en una ventana (clic en una foto copia su ruta). Puedes subir varios archivos a la vez. En los campos de imagen y video, el botón **Biblioteca** elige entre todo lo ya subido sin volver a subirlo.
+**Archivo → Fotos y videos…**: la misma galería en una ventana (clic en una foto copia su ruta). Para arrastrar, usa el panel **Subidos** del riel: ahí puedes **arrastrar una foto a la hoja**, y también **arrastrar archivos desde tu computadora directo a la hoja** (se suben y se colocan donde los sueltes). Puedes subir varios archivos a la vez. En los campos de imagen y video, el botón **Biblioteca** elige entre todo lo ya subido sin volver a subirlo.
 
 ## Efectos del texto: sombras y degradados
 

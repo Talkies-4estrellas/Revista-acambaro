@@ -7,15 +7,14 @@ import StarterKit from "@tiptap/starter-kit";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import {
   ANCHO_LIENZO,
-  COLORES,
   CATEGORIAS_FUENTE,
-  ETIQUETAS_COLOR,
   FUENTES,
   FUENTES_INFO,
   colorCss,
   fuenteCss,
   type Parrafo,
 } from "@/lib/esquema";
+import PaletaColores, { ALTO_MENU } from "./PaletaColores";
 import {
   aDocumento,
   colorDesdeCss,
@@ -238,28 +237,9 @@ export default function EditorTexto({
               <span className="h-0.5 w-4" style={{ background: actual ? colorCss(actual, "#000") : "transparent", outline: actual ? undefined : "1px solid rgba(0,0,0,.3)" }} />
             </button>
             {menu === cual && (
-              <div className="absolute left-0 top-9 z-40 w-56 border border-ink bg-paper p-2 shadow-lg">
-                <div className="flex flex-wrap gap-1.5">
-                  <button type="button" title="Quitar" aria-label="Quitar" onMouseDown={(e) => e.preventDefault()} onClick={() => { aplicar(null); setMenu(null); }} className="h-6 w-6 border border-ink/40 text-[0.6rem]">∅</button>
-                  {COLORES.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      title={ETIQUETAS_COLOR[c]}
-                      aria-label={ETIQUETAS_COLOR[c]}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => { aplicar(c); setMenu(null); }}
-                      style={{ background: colorCss(c, "#000") }}
-                      className={`h-6 w-6 border ${actual === c ? "border-terracota ring-2 ring-terracota" : "border-ink/40"}`}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    aria-label="Color libre"
-                    defaultValue={actual && actual.startsWith("#") ? actual : "#068562"}
-                    onChange={(e) => aplicar(e.target.value)}
-                    className="h-6 w-8 cursor-pointer border border-ink/40 bg-transparent p-0"
-                  />
+              <div data-paleta-flotante className="absolute left-0 top-9 z-40 w-72 border border-ink bg-paper p-3 shadow-lg">
+                <div className={ALTO_MENU}>
+                  <PaletaColores valor={actual ?? undefined} onChange={(c) => aplicar(c ?? null)} vacio="Quitar" sinFoco />
                 </div>
               </div>
             )}

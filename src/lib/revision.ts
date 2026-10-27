@@ -1,4 +1,5 @@
 import { anunciosSeguidos, type Pagina } from "./esquema";
+import { esTextoDeEjemplo } from "./ejemplos";
 
 /** Un hallazgo de la revisión de diseño. `pagina` empieza en 1. */
 export type Aviso = {
@@ -45,13 +46,12 @@ export function revisarDatos(paginas: Pagina[], fechaEdicion?: string, opciones:
       avisos.push({ pagina: n, nivel: "aviso", tipo: "Enlace de ejemplo", texto: `${ejemplos.length} elemento(s) llevan a una dirección de ejemplo (example.com). Cámbiala por la real o quita el enlace.` });
     }
 
-    const relleno = elementos.filter((e) => e.tipo === "texto" && RELLENO.test(e.texto));
+    const relleno = elementos.filter((e) => e.tipo === "texto" && (RELLENO.test(e.texto) || esTextoDeEjemplo(e.texto)));
     if (relleno.length) {
       const primero = relleno[0];
       const muestra = primero.tipo === "texto" ? primero.texto.replace(/\s+/g, " ").slice(0, 50) : "";
-      avisos.push({ pagina: n, nivel: "aviso", tipo: "Texto de relleno", texto: `${relleno.length} texto(s) parecen de ejemplo sin reemplazar (p. ej. «${muestra}»).` });
+      avisos.push({ pagina: n, nivel: "aviso", tipo: "Texto de relleno", texto: `${relleno.length} texto(s) parecen de ejemplo sin reemplazar (p. ej. «${muestra}»).`, elemento: primero.id });
     }
-
     // Fotos (no logos ni arte pequeño) tomadas de /media sin crédito: conviene acreditarlas en la página de créditos
     const sinCredito = elementos.filter((e) => e.tipo === "imagen" && !!e.src && e.src.startsWith("/media/") && !/logo|brand|emblema/i.test(e.src) && e.w * e.h > 40000 && !(e.credito ?? "").trim());
     if (usaCreditos && sinCredito.length) {

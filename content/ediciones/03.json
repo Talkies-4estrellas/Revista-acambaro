@@ -1,5 +1,5 @@
 {
-  "numero": "03",
+  "numero": "13",
   "fecha": "2026-10-09",
   "tema": "ewew",
   "publicada": false,
@@ -8,9 +8,187 @@
       "plantilla": "lienzo",
       "transicion": "izquierda",
       "titulo": "Portada",
+      "fondo": "#38bdf8",
+      "alto": 1100,
+      "elementos": [
+        {
+          "tipo": "icono",
+          "icono": "fig-banderin",
+          "color": "#1d4ed8",
+          "w": 379,
+          "h": 432,
+          "x": -189,
+          "y": 354,
+          "id": "6zclh870"
+        },
+        {
+          "tipo": "icono",
+          "icono": "fig-gota",
+          "color": "#ea580c",
+          "w": 561,
+          "h": 484,
+          "x": 119,
+          "y": 431,
+          "id": "3ey3nn2a",
+          "rot": 8
+        },
+        {
+          "tipo": "icono",
+          "icono": "fig-mancha-1",
+          "color": "tinta",
+          "w": 460,
+          "h": 446,
+          "x": 118,
+          "y": 570,
+          "id": "jg62n21c"
+        },
+        {
+          "tipo": "icono",
+          "icono": "fig-anillo",
+          "color": "#ffffff",
+          "w": 119,
+          "h": 96,
+          "x": 248,
+          "y": 697,
+          "id": "5bfiacvw"
+        },
+        {
+          "tipo": "icono",
+          "icono": "fig-anillo",
+          "color": "#ffffff",
+          "w": 119,
+          "h": 96,
+          "x": 367,
+          "y": 738,
+          "id": "dczi5z82"
+        },
+        {
+          "tipo": "icono",
+          "icono": "fig-luna",
+          "color": "#ffffff",
+          "w": 140,
+          "h": 140,
+          "x": 247,
+          "y": 813,
+          "id": "mjab0hco",
+          "rot": -27
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Foto en marco redondo",
       "fondo": "papel",
       "alto": 1100,
-      "elementos": []
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "forma",
+          "x": 190,
+          "y": 50,
+          "w": 420,
+          "h": 420,
+          "color": "ocre",
+          "forma": "elipse",
+          "opacidad": 0.35,
+          "id": "reit93i7"
+        },
+        {
+          "tipo": "imagen",
+          "x": 230,
+          "y": 90,
+          "w": 340,
+          "h": 340,
+          "tono": "terracota",
+          "alt": "Foto",
+          "ajuste": "cubrir",
+          "molde": "circulo",
+          "id": "frl3ktiq"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 500,
+          "w": 680,
+          "h": 110,
+          "texto": "Titular de la página",
+          "fuente": "display",
+          "tam": 46,
+          "peso": 900,
+          "alinear": "centro",
+          "interlineado": 1.05,
+          "id": "jxdknubh"
+        },
+        {
+          "tipo": "forma",
+          "x": 360,
+          "y": 630,
+          "w": 80,
+          "h": 3,
+          "color": "terracota",
+          "id": "nu46zvlk"
+        },
+        {
+          "tipo": "texto",
+          "x": 110,
+          "y": 660,
+          "w": 580,
+          "h": 260,
+          "texto": "Escribe aquí un texto centrado. Funciona bien para presentar a una persona, un lugar o un oficio en pocas líneas.",
+          "fuente": "serif",
+          "tam": 22,
+          "alinear": "centro",
+          "interlineado": 1.6,
+          "id": "cfjb4dxw"
+        },
+        {
+          "tipo": "imagen",
+          "w": 440,
+          "h": 292,
+          "tono": "ocre",
+          "alt": "rosas-1",
+          "ajuste": "cubrir",
+          "x": -250,
+          "y": 880,
+          "id": "uwyb3fbv",
+          "src": "/media/12/rosas-1.jpg"
+        },
+        {
+          "tipo": "imagen",
+          "w": 440,
+          "h": 426,
+          "tono": "ocre",
+          "alt": "estacion",
+          "ajuste": "cubrir",
+          "x": 690,
+          "y": 887,
+          "id": "2fyy8522",
+          "src": "/media/05/estacion.jpg"
+        },
+        {
+          "tipo": "imagen",
+          "w": 1191,
+          "h": 555,
+          "tono": "ocre",
+          "alt": "fidelita",
+          "ajuste": "cubrir",
+          "x": 190,
+          "y": 193,
+          "id": "wzc7waf2",
+          "src": "/media/05/fidelita.jpg"
+        },
+        {
+          "tipo": "forma",
+          "w": 812,
+          "h": 686,
+          "forma": "rectangulo",
+          "color": "#8f2522",
+          "x": 724,
+          "y": 172,
+          "id": "qr7x9yec"
+        }
+      ]
     }
   ]
 }

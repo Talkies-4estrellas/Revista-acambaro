@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       id,
       { numero: "", fecha: String(b.fecha ?? ""), tema: String(b.tema ?? "") },
       b.duplicarDe ? String(b.duplicarDe) : undefined,
+      Array.isArray(b.secciones) ? b.secciones.map(String) : undefined,
     );
     return NextResponse.json({ ok: true, id });
   } catch (e) {

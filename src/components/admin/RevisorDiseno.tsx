@@ -50,7 +50,10 @@ function medirPagina(edicionId: string, n: number, ancho: number, cancelado: () 
             }
             return true;
           };
-          const textos = [...raiz.querySelectorAll<HTMLElement>('div[style*="white-space:pre-wrap"]')].filter(visible).map((t) => {
+          const candidatos = [...raiz.querySelectorAll<HTMLElement>('div[style*="white-space:pre-wrap"]')].filter(visible);
+          // Un texto con formato por partes dibuja un bloque por párrafo dentro del bloque del elemento: se miden solo los más internos,
+          // si no, el elemento «chocaría» con sus propios párrafos.
+          const textos = candidatos.filter((t) => !candidatos.some((o) => o !== t && t.contains(o))).map((t) => {
             const r = d.createRange();
             r.selectNodeContents(t);
             const tam = parseFloat(getComputedStyle(t).fontSize) || 0;

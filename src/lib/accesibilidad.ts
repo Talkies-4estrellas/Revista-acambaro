@@ -1,3 +1,4 @@
+import { esAltDeEjemplo } from "./ejemplos";
 import { DEGRADADOS } from "./esquema";
 import type { Elemento, EdicionDatos, Pagina } from "./esquema";
 import type { Aviso } from "./revision";
@@ -187,7 +188,9 @@ function revisarPagina(p: Pagina, n: number, avisos: Aviso[]) {
     if (e.tipo === "imagen" && e.alt?.trim()) {
       const alt = e.alt.trim();
       const sospechoso = NOMBRE_ARCHIVO.test(alt) || (/^[\w-]+$/.test(alt) && /[-_\d]/.test(alt) && !alt.includes(" "));
-      if (sospechoso) {
+      if (e.src && esAltDeEjemplo(alt)) {
+        avisos.push({ pagina: n, nivel: "info", tipo: "Descripción de ejemplo", grupo: "accesibilidad", elemento: e.id, texto: `La foto sigue con la descripción de la plantilla («${recortar(alt)}»). Cámbiala por lo que muestra tu foto (Texto alternativo).` });
+      } else if (sospechoso) {
         avisos.push({ pagina: n, nivel: "info", tipo: "Descripción poco útil", grupo: "accesibilidad", elemento: e.id, texto: `La descripción «${recortar(alt)}» parece un nombre de archivo. Escribe qué muestra la imagen (por ejemplo, «Laguna rodeada de pinos al amanecer»).` });
       }
     }

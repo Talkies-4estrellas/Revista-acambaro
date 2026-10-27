@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import LienzoVista from "@/components/Lienzo";
 import { PLANTILLAS_BASE } from "@/lib/plantillas-base";
+import { PLANTILLAS_EXTRA } from "@/lib/plantillas-extra";
 import { PLANTILLAS_ANUNCIO } from "@/lib/plantillas-anuncio";
 import { PLANTILLAS_COLLAGE, PLANTILLAS_EDITORIAL } from "@/lib/plantillas-editorial";
 import { ETIQUETAS_PLANTILLA, limpiar, type Pagina } from "@/lib/esquema";
 import { btnCls, inputCls } from "./campos";
+import { mensajeSimple } from "@/lib/errores-simples";
 
 type Guardada = { id: string; nombre: string; creada: string; pagina: Pagina };
 
@@ -49,7 +51,7 @@ export default function PlantillasModal({
   const panel = variante === "panel";
   // En el panel lateral, «guardar como plantilla» va plegado para que las plantillas se vean primero.
   const [verGuardar, setVerGuardar] = useState(!panel);
-  const [pestana, setPestana] = useState<"iniciales" | "anuncios" | "editorial" | "propias">("iniciales");
+  const [pestana, setPestana] = useState<"iniciales" | "secciones" | "anuncios" | "editorial" | "propias">("iniciales");
   const [guardadas, setGuardadas] = useState<Guardada[] | null>(null);
   const [nombre, setNombre] = useState("");
   const [estado, setEstado] = useState<{ tipo: "ok" | "error" | "cargando"; texto: string } | null>(null);
@@ -62,7 +64,7 @@ export default function PlantillasModal({
       setGuardadas(json.plantillas);
     } catch (e) {
       setGuardadas([]);
-      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudieron cargar las plantillas" });
+      setEstado({ tipo: "error", texto: mensajeSimple(e, "No se pudieron cargar las plantillas") });
     }
   }, []);
 
@@ -95,7 +97,7 @@ export default function PlantillasModal({
       await cargar();
       setPestana("propias");
     } catch (e) {
-      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo guardar" });
+      setEstado({ tipo: "error", texto: mensajeSimple(e, "No se pudo guardar") });
     }
   }
 
@@ -106,7 +108,7 @@ export default function PlantillasModal({
       await llamar(`/api/admin/plantillas/${p.id}`, { method: "PUT", body: JSON.stringify({ nombre: n }) });
       await cargar();
     } catch (e) {
-      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo renombrar" });
+      setEstado({ tipo: "error", texto: mensajeSimple(e, "No se pudo renombrar") });
     }
   }
 
@@ -116,7 +118,7 @@ export default function PlantillasModal({
       await llamar(`/api/admin/plantillas/${p.id}`, { method: "DELETE" });
       await cargar();
     } catch (e) {
-      setEstado({ tipo: "error", texto: e instanceof Error ? e.message : "No se pudo eliminar" });
+      setEstado({ tipo: "error", texto: mensajeSimple(e, "No se pudo eliminar") });
     }
   }
 
@@ -167,7 +169,7 @@ export default function PlantillasModal({
     </li>
     );
 
-  const pest = (id: "iniciales" | "anuncios" | "editorial" | "propias", texto: string) => (
+  const pest = (id: "iniciales" | "secciones" | "anuncios" | "editorial" | "propias", texto: string) => (
     <button
       type="button"
       onClick={() => setPestana(id)}
@@ -220,6 +222,7 @@ export default function PlantillasModal({
         <section className={panel ? "px-3 py-3" : "px-5 py-4"}>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pest("iniciales", `Iniciales (${PLANTILLAS_BASE.length})`)}
+            {pest("secciones", `Secciones (${PLANTILLAS_EXTRA.length})`)}
             {pest("anuncios", `Publicidad (${PLANTILLAS_ANUNCIO.length + PLANTILLAS_COLLAGE.length})`)}
             {pest("editorial", `Noticias y cómic (${PLANTILLAS_EDITORIAL.length})`)}
             {pest("propias", `Mis plantillas${guardadas ? ` (${guardadas.length})` : ""}`)}
@@ -229,6 +232,13 @@ export default function PlantillasModal({
             <ul className={panel ? "grid grid-cols-2 gap-2" : "grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4"}>
               {PLANTILLAS_BASE.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
             </ul>
+          ) : pestana === "secciones" ? (
+            <>
+              <p className="font-sans mb-3 text-[0.72rem] text-ink-soft">Secciones habituales de una revista local: carta del editor, entrevista, agenda, receta, directorio, lugar para visitar, foto a página completa y texto en dos columnas.</p>
+              <ul className={panel ? "grid grid-cols-2 gap-2" : "grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-4"}>
+                {PLANTILLAS_EXTRA.map((p) => tarjeta(p.id, p.nombre, p.descripcion, p.pagina))}
+              </ul>
+            </>
           ) : pestana === "anuncios" ? (
             <>
               <p className="font-sans mb-3 text-[0.72rem] text-ink-soft">

@@ -4,6 +4,7 @@ import { estadoEdicion, fechaLarga } from "@/lib/ediciones";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import BotonBorrar from "./BotonBorrar";
+import FilaEdicion from "./FilaEdicion";
 import NuevaEdicion from "./NuevaEdicion";
 import ArmarResumen from "./ResumenEdicion";
 
@@ -34,7 +35,7 @@ export default function Admin() {
   const fila = (e: ResumenEdicion) => {
     const desactivada = !e.publicada && e.fijo;
     return (
-      <li key={e.id} className="border-t border-ink py-4">
+      <FilaEdicion key={e.id} id={e.id} tema={e.tema} borrable={!e.publicada} numeroDesactivada={desactivada ? e.numero : undefined} conError={!!e.error}>
         <div className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-3 gap-y-3 sm:grid-cols-[3.5rem_1fr_auto] sm:gap-4">
           <span
             className={`font-display text-3xl font-black ${e.provisional || e.error ? "text-ink/30" : desactivada ? "text-terracota/50" : "text-terracota"}`}
@@ -72,7 +73,7 @@ export default function Admin() {
           </div>
         </div>
         {e.error && <p className="font-sans mt-2 break-words text-xs text-terracota">{e.error}</p>}
-      </li>
+      </FilaEdicion>
     );
   };
 

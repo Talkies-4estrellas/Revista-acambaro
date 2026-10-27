@@ -21,6 +21,7 @@ export default function TiraPaginas({
   nuevaPlantilla,
   onSeleccionar,
   onReordenar,
+  onMenu,
   onAgregar,
   onNuevaPlantilla,
   onPlantillas,
@@ -36,6 +37,8 @@ export default function TiraPaginas({
   nRepetidos: number;
   nuevaPlantilla: Plantilla;
   onSeleccionar: (i: number) => void;
+  /** Clic derecho sobre la miniatura de la página `i`. */
+  onMenu?: (e: React.MouseEvent, i: number) => void;
   /** Mueve la página `desde` a la posición `hasta` (índices de la lista resultante). */
   onReordenar: (desde: number, hasta: number) => void;
   onAgregar: () => void;
@@ -121,6 +124,7 @@ export default function TiraPaginas({
                 anclas={anclas}
                 creditos={creditos}
                 onClick={() => onSeleccionar(i)}
+                onMenu={(e) => onMenu?.(e, i)}
                 onTeclado={(e) => {
                   if (!e.altKey) return;
                   if (e.key === "ArrowLeft" && i > 0) {
@@ -197,6 +201,7 @@ function ItemTira({
   anclas,
   creditos,
   onClick,
+  onMenu,
   onTeclado,
   onDragStart,
   onDragEnd,
@@ -212,6 +217,7 @@ function ItemTira({
   anclas: string;
   creditos: string;
   onClick: () => void;
+  onMenu: (e: React.MouseEvent) => void;
   onTeclado: (e: React.KeyboardEvent) => void;
   onDragStart: (e: React.DragEvent) => void;
   onDragEnd: () => void;
@@ -219,7 +225,7 @@ function ItemTira({
   onDrop: (e: React.DragEvent) => void;
 }) {
   return (
-    <li ref={refLi} draggable onDragStart={onDragStart} onDragEnd={onDragEnd} onDragOver={onDragOver} onDrop={onDrop} className={`w-[4.3rem] shrink-0 ${arrastrada ? "opacity-40" : ""}`}>
+    <li ref={refLi} draggable onContextMenu={onMenu} onDragStart={onDragStart} onDragEnd={onDragEnd} onDragOver={onDragOver} onDrop={onDrop} className={`w-[4.3rem] shrink-0 ${arrastrada ? "opacity-40" : ""}`}>
       <button
         type="button"
         onClick={onClick}

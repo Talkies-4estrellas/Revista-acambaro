@@ -7,6 +7,7 @@ import {
   ANCHO_LIENZO,
   PRESETS,
   colorCss,
+  esColorValido,
   elementoBoton,
   type ElementoGuardado,
   elementoFormaMolde,
@@ -20,7 +21,11 @@ import {
   type Pagina,
   type PresetElemento,
 } from "@/lib/esquema";
-import { MediosContext, btnCls } from "./campos";
+import { MediosContext, Panel, btnCls } from "./campos";
+import { ejemploDe, esAltDeEjemplo } from "@/lib/ejemplos";
+import { ColoresPaginaContext, CuentagotasContext, FotosPaginaContext } from "./PaletaColores";
+import CuentagotasHoja from "./CuentagotasHoja";
+import { useMenuContextual, type ItemMenu } from "./MenuContextual";
 import { elementosBloque } from "@/lib/bloques";
 import { animarTexto } from "@/lib/animaciones-texto";
 import { aplicarEstilo, copiarEstilo, type EstiloCopiado } from "@/lib/estilo";
@@ -37,6 +42,7 @@ import Reglas, { GROSOR_REGLA } from "./Reglas";
 import VistaCelular from "./VistaCelular";
 import { aCarga, desdeTexto, guardarInterno, leerInterno, pareceDeLaRevista, type Carga } from "./portapapeles";
 import { desdeTextoPlano } from "./textoEnriquecido";
+import { mensajeSimple } from "@/lib/errores-simples";
 import {
   InspectorElemento,
   InspectorMultiple,
@@ -354,6 +360,9 @@ export default function EditorLienzo({
     modo: ajusteRecordado,
   });
   const [mano, setMano] = useState(false);
+  /** Resalta sobre la hoja los textos y fotos que siguen siendo de ejemplo (solo en el editor). */
+  const [verEjemplos, setVerEjemplos] = useState(true);
+  const { abrir: abrirMenu, menu: menuContextual } = useMenuContextual();
   const [espacio, setEspacio] = useState(false);
   const [arrastrandoVista, setArrastrandoVista] = useState(false);
   const [completa, setCompleta] = useState(false);
@@ -615,7 +624,7 @@ export default function EditorLienzo({
       setBiblioteca({ modo: "mios" });
       avisar("Guardado en Mis elementos");
     } catch (e) {
-      avisar(e instanceof Error ? e.message : "No se pudo guardar");
+      avisar(mensajeSimple(e, "No se pudo guardar"));
     }
   };
 
@@ -629,7 +638,7 @@ export default function EditorLienzo({
       if (!res.ok) throw new Error(j.error ?? `Error ${res.status}`);
       setMios((l) => (l ?? []).map((m) => (m.id === id ? { ...m, nombre: nombre.trim().replace(/\s+/g, " ") } : m)));
     } catch (e) {
-      avisar(e instanceof Error ? e.message : "No se pudo renombrar");
+      avisar(mensajeSimple(e, "No se pudo renombrar"));
     }
   };
 
@@ -641,7 +650,7 @@ export default function EditorLienzo({
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Error ${res.status}`);
       setMios((l) => (l ?? []).filter((m) => m.id !== id));
     } catch (e) {
-      avisar(e instanceof Error ? e.message : "No se pudo borrar");
+      avisar(mensajeSimple(e, "No se pudo borrar"));
     }
   };
 
@@ -1540,7 +1549,7 @@ export default function EditorLienzo({
       setSel([el.id!]);
       setAviso(null);
     } catch (err) {
-      setAviso(err instanceof Error ? err.message : "No se pudo subir el archivo");
+      setAviso(mensajeSimple(err, "No se pudo subir el archivo"));
     }
   }
 
@@ -1762,11 +1771,163 @@ export default function EditorLienzo({
   }, [movil, haySeleccion]);
 
   /** Alto del área de trabajo (hoja, riel y panel de herramientas). */
-  const altoTrabajo = completa ? "calc(100vh - 9rem)" : `max(24rem, calc(100vh - ${19.5 + reservaInferior}rem))`;
+  const altoTrabajo = completa ? "calc(100vh - 9rem)" : `max(24rem, calc(100vh - ${17.5 + reservaInferior}rem))`;
+  /** Colores que ya usa esta página (fondo, textos, formas, bordes…): el selector de color los ofrece primero. */
+  const coloresPagina = (() => {
+    const set = new Set<string>();
+    const sumar = (c: unknown) => {
+      if (typeof c === "string" && esColorValido(c)) set.add(c.startsWith("#") ? c.toLowerCase() : c);
+    };
+    sumar(pagina.fondo);
+    for (const e of elementos) {
+      const r = e as unknown as Record<string, unknown>;
+      for (const k of ["color", "colorBorde", "fondo", "colorFondo"]) sumar(r[k]);
+    }
+    return [...set].slice(0, 16);
+  })();
+  /* ------------------------- Menú del clic derecho ------------------------- */
+
+  /** Enciende o apaga «bloqueado» u «oculto» en toda la selección (si todos lo tienen, se quita; si no, se pone). */
+  const alternarCampoSel = (campo: "oculto") => {
+    const ids = selRef.current;
+    const elegidos = getEls().filter((e) => ids.includes(e.id!));
+    if (elegidos.length === 0) return;
+    const poner = !elegidos.every((e) => e[campo]);
+    aplicar(getEls().map((e) => (ids.includes(e.id!) ? ({ ...e, [campo]: poner ? true : undefined } as Elemento) : e)));
+  };
+
+  /** Sube o baja un solo escalón en el orden de las capas a todo lo elegido (el bloque se mueve junto). */
+  const moverUnaCapa = (dir: "subir" | "bajar") => {
+    const ids = new Set(selRef.current);
+    const l = [...getEls()];
+    if (dir === "subir") {
+      for (let i = l.length - 2; i >= 0; i--) if (ids.has(l[i].id!) && !ids.has(l[i + 1].id!)) [l[i], l[i + 1]] = [l[i + 1], l[i]];
+    } else {
+      for (let i = 1; i < l.length; i++) if (ids.has(l[i].id!) && !ids.has(l[i - 1].id!)) [l[i], l[i - 1]] = [l[i - 1], l[i]];
+    }
+    aplicar(l);
+  };
+
+  /** Abre (y lleva a la vista) un panel de la columna derecha, igual que los botones de la barra sobre la hoja. */
+  const abrirPanelProp = (titulo: string) => {
+    setLateral("propiedades");
+    if (movil) setCajon(true);
+    setTimeout(() => window.dispatchEvent(new CustomEvent("abrir-panel", { detail: titulo })), 80);
+  };
+
+  const itemsElemento = (): ItemMenu[] => {
+    const ids = selRef.current;
+    const lista = getEls();
+    const elegidos = lista.filter((x) => ids.includes(x.id!));
+    if (elegidos.length === 0) return [];
+    const uno = elegidos.length === 1 ? elegidos[0] : null;
+    const enFrente = lista.slice(-elegidos.length).every((x) => ids.includes(x.id!));
+    const alFondo = lista.slice(0, elegidos.length).every((x) => ids.includes(x.id!));
+    const todosBloqueados = elegidos.every((x) => x.bloqueado);
+    const todosOcultos = elegidos.every((x) => x.oculto);
+    const hayGrupo = elegidos.some((x) => x.grupo);
+    const items: ItemMenu[] = [];
+    if (uno?.tipo === "texto") items.push({ texto: "Editar texto", icono: "✎", onClick: () => setEditando(uno.id!) });
+    if (uno?.tipo === "imagen") {
+      items.push({ texto: "Reemplazar foto…", icono: "⇄", onClick: () => setBiblioteca({ modo: "subidos", reemplazar: true }) });
+      if (uno.src && !uno.comparar) items.push({ texto: "Recortar o acercar", onClick: () => setRecortando(uno.id!) });
+      if (uno.src) items.push({ texto: "Quitar fondo…", onClick: () => setQuitandoFondo(uno.id!) });
+    }
+    if (uno?.tipo === "icono") items.push({ texto: "Cambiar figura o icono…", icono: "⇄", onClick: () => setBiblioteca({ modo: uno.icono.startsWith("fig-") ? "figuras" : "iconos", reemplazar: true }) });
+    if (items.length) items.push({ separador: true });
+    items.push(
+      { texto: "Copiar", atajo: "Ctrl+C", onClick: copiarBoton },
+      { texto: "Cortar", atajo: "Ctrl+X", onClick: cortarBoton },
+      { texto: "Pegar", atajo: "Ctrl+V", onClick: pegarBoton },
+      { texto: "Duplicar", atajo: "Ctrl+D", onClick: duplicar },
+      { separador: true },
+      { titulo: "Orden de las capas" },
+      { texto: "Traer al frente", icono: "⇈", deshabilitado: enFrente, onClick: () => moverGrupo("frente") },
+      { texto: "Traer adelante", icono: "↑", deshabilitado: enFrente, onClick: () => moverUnaCapa("subir") },
+      { texto: "Enviar atrás", icono: "↓", deshabilitado: alFondo, onClick: () => moverUnaCapa("bajar") },
+      { texto: "Enviar al fondo", icono: "⇊", deshabilitado: alFondo, onClick: () => moverGrupo("atras") },
+      { separador: true },
+    );
+    if (elegidos.length > 1) items.push({ texto: "Agrupar", atajo: "Ctrl+G", onClick: agrupar });
+    if (hayGrupo) items.push({ texto: "Desagrupar", atajo: "Ctrl+Mayús+G", onClick: desagrupar });
+    items.push(
+      { texto: todosBloqueados ? "Desbloquear" : "Bloquear", icono: todosBloqueados ? "🔓" : "🔒", onClick: alternarBloqueoSeleccion },
+      { texto: todosOcultos ? "Mostrar" : "Ocultar", icono: todosOcultos ? "👁" : "🚫", onClick: () => alternarCampoSel("oculto") },
+      { separador: true },
+    );
+    if (uno) {
+      items.push(
+        { texto: "Animar…", icono: "✦", onClick: () => abrirPanelProp("Animación de entrada") },
+        { texto: "Posición y tamaño…", onClick: () => abrirPanelProp("Posición y tamaño") },
+        { texto: "Enlace…", icono: "🔗", onClick: () => abrirPanelProp("Enlace") },
+        { separador: true },
+      );
+    }
+    items.push(
+      { texto: "Copiar estilo", atajo: "Ctrl+Alt+C", onClick: copiarEstiloSel },
+      { texto: "Pegar estilo", atajo: "Ctrl+Alt+V", onClick: pegarEstiloSel },
+      { separador: true },
+      { texto: elegidos.length > 1 ? "Eliminar " + elegidos.length + " elementos" : "Eliminar", icono: "🗑", atajo: "Supr", peligro: true, onClick: eliminar },
+    );
+    return items;
+  };
+
+  const itemsFondo = (): ItemMenu[] => [
+    { texto: "Pegar", atajo: "Ctrl+V", onClick: pegarBoton },
+    { texto: "Seleccionar todo", atajo: "Ctrl+A", onClick: () => setSel(getEls().filter((e) => !e.bloqueado && !e.oculto).map((e) => e.id!).filter(Boolean)) },
+    { separador: true },
+    { texto: "Agregar un titular", icono: "T", onClick: () => agregar("titular") },
+    { texto: "Agregar un párrafo", onClick: () => agregar("parrafo") },
+    { texto: "Agregar una imagen", icono: "🖼", onClick: () => agregar("imagen") },
+    { separador: true },
+    { texto: "Ver la hoja entera", onClick: () => ajustarVista("pagina") },
+    { texto: "Fondo, alto y transición…", onClick: () => abrirPanelProp("Hoja") },
+  ];
+
+  /** Clic derecho en la hoja: sobre un elemento lo elige (con su grupo) y muestra sus acciones; en el fondo, las de la página. Dentro de un texto en edición se deja el menú del navegador. */
+  function alClicDerecho(e: React.MouseEvent) {
+    const t = e.target as Element;
+    if (t.closest("[contenteditable],input,textarea,select")) return;
+    const id = t.closest("[data-elid]")?.getAttribute("data-elid");
+    if (id && getEls().some((x) => x.id === id)) {
+      if (!selRef.current.includes(id)) {
+        const ids = expandir([id]);
+        selRef.current = ids;
+        setSel(ids);
+      }
+      setEditando(null);
+      abrirMenu(e, itemsElemento());
+    } else {
+      selRef.current = [];
+      setSel([]);
+      abrirMenu(e, itemsFondo());
+    }
+  }
+
+  /** Fotos con archivo de esta página: de ellas salen los «Colores de las fotos» del selector. */
+  const fotosPagina = [...new Set(elementos.flatMap((e) => (e.tipo === "imagen" && e.src ? [e.src] : [])))];
+  /** Cuentagotas de la hoja (lo pide el selector de color): mientras está activo, `resolver` espera el color elegido. */
+  const [cuentagotas, setCuentagotas] = useState<null | { resolver: (c: string | null) => void }>(null);
+  const pedirColor = () => new Promise<string | null>((resolver) => setCuentagotas({ resolver }));
+  /** Tiradores de la selección (el cuentagotas los reconoce por su borde terracota y no los toma como color). */
   const handle = "absolute h-2.5 w-2.5 border border-terracota bg-white pointer-coarse:h-5 pointer-coarse:w-5";
   const cajaGrupo = seleccion.length > 1 ? unir(seleccion.map(caja)) : null;
 
   return (
+    <ColoresPaginaContext.Provider value={coloresPagina}>
+    <FotosPaginaContext.Provider value={fotosPagina}>
+    <CuentagotasContext.Provider value={pedirColor}>
+    {menuContextual}
+    {cuentagotas && viewport.current && (
+      <CuentagotasHoja
+        area={viewport.current}
+        hoja={lienzo.current}
+        alTerminar={(c) => {
+          cuentagotas.resolver(c);
+          setCuentagotas(null);
+        }}
+      />
+    )}
     <div
       className={`grid gap-5 xl:grid-cols-[minmax(0,1fr)_21rem] ${completa ? "fixed inset-0 z-50 overflow-y-auto bg-paper p-4" : ""}`}
     >
@@ -1907,7 +2068,8 @@ export default function EditorLienzo({
                 edicionId={edicionId ?? ""}
                 onSubido={(src) => {
                   if (biblioteca.reemplazar && unico?.tipo === "imagen") {
-                    cambiar({ src });
+                    // La descripción de fábrica de la plantilla ya no describe la foto nueva: se quita para que la revisión la pida.
+                    cambiar({ src, ...(esAltDeEjemplo(unico.alt) ? { alt: undefined } : {}) });
                     setBiblioteca((b) => (b ? { ...b, reemplazar: false } : b));
                   } else colocarSubido(src);
                 }}
@@ -1956,6 +2118,11 @@ export default function EditorLienzo({
           ref={viewport}
           data-tour="hoja"
           onPointerDownCapture={alPunteroVista}
+          onContextMenu={alClicDerecho}
+          onDoubleClick={(e) => {
+            // Doble clic en el fondo gris (fuera de la hoja): vuelve a la vista de la hoja entera, como el botón «Entera».
+            if (e.target === e.currentTarget) ajustarVista("pagina");
+          }}
           className={`relative overflow-hidden border border-ink/30 ${completa ? "" : "h-[max(22rem,calc(100svh-15rem))] md:h-[calc(var(--alto-trabajo)-3.5rem)]"} ${
             arrastrandoVista ? "[&_*]:cursor-grabbing!" : mano || espacio ? "[&_*]:cursor-grab!" : ""
           }`}
@@ -2060,6 +2227,17 @@ export default function EditorLienzo({
                                 style={{ fontSize: Math.max(9, 11 / Math.max(vista.s, 0.2)), lineHeight: 1.3, transform: "translateY(-100%)" }}
                               >
                                 Solo en el celular
+                              </span>
+                            </>
+                          )}
+                          {verEjemplos && editando !== el.id && recortando !== el.id && ejemploDe(el) && (
+                            <>
+                              <span className="pointer-events-none absolute inset-0 border-2 border-dashed border-ocre" />
+                              <span
+                                className="pointer-events-none absolute left-0 top-0 bg-ocre px-1 font-sans font-bold uppercase text-ink"
+                                style={{ fontSize: 11, lineHeight: 1.3, letterSpacing: "normal", transform: "translateY(-100%)" }}
+                              >
+                                {ejemploDe(el) === "foto" ? "Foto de ejemplo" : "Texto de ejemplo"}
                               </span>
                             </>
                           )}
@@ -2265,7 +2443,7 @@ export default function EditorLienzo({
           </select>
           <button type="button" className={btnCls} onClick={() => zoomCentro(vista.s * 1.25)} title="Acercar (Ctrl y +)" aria-label="Acercar">+</button>
           <button type="button" className={btnCls} onClick={() => ajustarVista("ancho")} title="Ajustar la hoja al ancho de la pantalla (Ctrl y 0)">Ancho</button>
-          <button type="button" className={btnCls} onClick={() => ajustarVista("pagina")} title="Ver la hoja entera">Entera</button>
+          <button type="button" className={btnCls} onClick={() => ajustarVista("pagina")} title="Ver la hoja entera (o doble clic en el fondo gris)">Entera</button>
           <button type="button" className={btnCls} onClick={() => zoomCentro(1)} title="Tamaño real: 1 unidad = 1 píxel">100 %</button>
           <button
             type="button"
@@ -2277,6 +2455,9 @@ export default function EditorLienzo({
             ✋ Mano
           </button>
           <span className="mx-1 h-5 w-px bg-ink/25 max-md:hidden" aria-hidden />
+          <button type="button" className={`${btnCls} ${verEjemplos ? "!bg-ink !text-paper" : ""}`} aria-pressed={verEjemplos} onClick={() => setVerEjemplos((v) => !v)} title="Resalta los textos y fotos que siguen siendo de ejemplo (solo se ve aquí, no en la revista)">
+            ✎ Ejemplos
+          </button>
           <button type="button" className={`${btnCls} max-md:hidden ${rej.reglas ? "!bg-ink !text-paper" : ""}`} aria-pressed={rej.reglas} onClick={() => setRej({ reglas: !rej.reglas })} title="Reglas: arrastra desde ellas para crear guías">
             ▭ Reglas
           </button>
@@ -2328,8 +2509,9 @@ export default function EditorLienzo({
         </button>
       )}
       <aside
-        className={`min-w-0 space-y-5 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:max-h-[58vh] max-md:overflow-y-auto max-md:border-t-2 max-md:border-ink max-md:bg-paper max-md:p-3 max-md:shadow-[0_-10px_30px_rgba(0,0,0,0.3)] ${cajon ? "" : "max-md:hidden"}`}
+        className={`min-w-0 space-y-5 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:max-h-[58vh] max-md:overflow-y-auto max-md:border-t-2 max-md:border-ink max-md:bg-paper max-md:p-3 max-md:shadow-[0_-10px_30px_rgba(0,0,0,0.3)] xl:sticky xl:top-0 xl:max-h-[calc(var(--alto-trabajo)+6rem)] xl:self-start xl:overflow-y-auto xl:overscroll-contain xl:pr-1 ${cajon ? "" : "max-md:hidden"}`}
         aria-label="Panel lateral"
+        style={{ "--alto-trabajo": altoTrabajo } as React.CSSProperties}
       >
         <div className="sticky top-0 z-10 -mx-3 -mt-3 flex items-center gap-2 border-b border-ink/30 bg-paper px-3 py-2 md:hidden">
           <span className="font-sans mr-auto text-xs font-bold uppercase tracking-wider">{unico ? "Propiedades" : seleccion.length > 1 ? `${seleccion.length} elementos` : "Hoja y capas"}</span>
@@ -2342,7 +2524,7 @@ export default function EditorLienzo({
             ✕ Cerrar
           </button>
         </div>
-        <div role="tablist" aria-label="Panel lateral" className="flex border-b-2 border-ink/30">
+        <div role="tablist" aria-label="Panel lateral" className="flex border-b-2 border-ink/30 xl:sticky xl:top-0 xl:z-10 xl:bg-paper">
           {(
             [
               ["propiedades", "Propiedades"],
@@ -2416,58 +2598,57 @@ export default function EditorLienzo({
           <InspectorPagina pagina={pagina} onChange={onChange} repetidos={repetidos} onProbarTodo={() => reproducir()} />
         )}
 
-        <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
-          <header className="border-b border-ink/20 bg-paper-deep px-4 py-2">
-            <h3 className="font-sans text-xs font-bold uppercase tracking-wider">Capas</h3>
-            <p className="font-sans mt-0.5 text-[0.7rem] text-ink-soft">Arriba = al frente. Mayús/Ctrl + clic selecciona varias.</p>
-          </header>
-          <ol className="max-h-64 overflow-y-auto">
-            {elementos.length === 0 && <li className="font-sans p-3 text-xs italic text-ink-soft">Sin elementos.</li>}
-            {[...elementos].reverse().map((el) => {
-              const activo = sel.includes(el.id!);
-              return (
-                <li key={el.id} className={`flex items-center gap-1 border-b border-ink/10 ${activo ? "bg-paper" : ""} ${el.oculto ? "opacity-50" : ""}`}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      if (e.shiftKey || e.ctrlKey || e.metaKey) setSel((s) => (s.includes(el.id!) ? s.filter((id) => id !== el.id) : [...s, el.id!]));
-                      else setSel([el.id!]);
-                    }}
-                    className={`font-sans min-w-0 flex-1 truncate px-3 py-1.5 text-left text-xs ${activo ? "font-bold" : ""} ${el.oculto ? "line-through" : ""}`}
-                  >
-                    {el.grupo ? "⛓ " : ""}
-                    {resumen(el)}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${btnCls} !border-0`}
-                    onClick={() => alternarCapa(el.id!, "bloqueado")}
-                    aria-pressed={!!el.bloqueado}
-                    aria-label={el.bloqueado ? "Desbloquear capa" : "Bloquear capa"}
-                    title={el.bloqueado ? "Bloqueado: no se puede mover con el ratón. Clic para desbloquear" : "Bloquear (no se mueve por accidente)"}
-                  >
-                    {el.bloqueado ? "🔒" : "🔓"}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${btnCls} !border-0`}
-                    onClick={() => alternarCapa(el.id!, "oculto")}
-                    aria-pressed={!!el.oculto}
-                    aria-label={el.oculto ? "Mostrar capa" : "Ocultar capa"}
-                    title={el.oculto ? "Oculto: no se ve en la página publicada. Clic para mostrar" : "Ocultar (no se ve en la página publicada)"}
-                  >
-                    {el.oculto ? "🚫" : "👁"}
-                  </button>
-                  <button type="button" className={`${btnCls} !border-0`} onClick={() => moverCapa("subir", el.id!)} aria-label="Subir capa">↑</button>
-                  <button type="button" className={`${btnCls} mr-1 !border-0`} onClick={() => moverCapa("bajar", el.id!)} aria-label="Bajar capa">↓</button>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
+        <Panel titulo="Capas" plegable abierto={false} resumen={`${elementos.length} elementos`} ayuda="Arriba = al frente. Mayús/Ctrl + clic selecciona varias.">
+          <ol className="-m-4 max-h-72 overflow-y-auto">
+                {elementos.length === 0 && <li className="font-sans p-3 text-xs italic text-ink-soft">Sin elementos.</li>}
+                {[...elementos].reverse().map((el) => {
+                  const activo = sel.includes(el.id!);
+                  return (
+                    <li key={el.id} className={`flex items-center gap-1 border-b border-ink/10 ${activo ? "bg-paper" : ""} ${el.oculto ? "opacity-50" : ""}`}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          if (e.shiftKey || e.ctrlKey || e.metaKey) setSel((s) => (s.includes(el.id!) ? s.filter((id) => id !== el.id) : [...s, el.id!]));
+                          else setSel([el.id!]);
+                        }}
+                        className={`font-sans min-w-0 flex-1 truncate px-3 py-1.5 text-left text-xs ${activo ? "font-bold" : ""} ${el.oculto ? "line-through" : ""}`}
+                      >
+                        {el.grupo ? "⛓ " : ""}
+                        {resumen(el)}
+                      </button>
+                      <button
+                        type="button"
+                        className={`${btnCls} !border-0`}
+                        onClick={() => alternarCapa(el.id!, "bloqueado")}
+                        aria-pressed={!!el.bloqueado}
+                        aria-label={el.bloqueado ? "Desbloquear capa" : "Bloquear capa"}
+                        title={el.bloqueado ? "Bloqueado: no se puede mover con el ratón. Clic para desbloquear" : "Bloquear (no se mueve por accidente)"}
+                      >
+                        {el.bloqueado ? "🔒" : "🔓"}
+                      </button>
+                      <button
+                        type="button"
+                        className={`${btnCls} !border-0`}
+                        onClick={() => alternarCapa(el.id!, "oculto")}
+                        aria-pressed={!!el.oculto}
+                        aria-label={el.oculto ? "Mostrar capa" : "Ocultar capa"}
+                        title={el.oculto ? "Oculto: no se ve en la página publicada. Clic para mostrar" : "Ocultar (no se ve en la página publicada)"}
+                      >
+                        {el.oculto ? "🚫" : "👁"}
+                      </button>
+                      <button type="button" className={`${btnCls} !border-0`} onClick={() => moverCapa("subir", el.id!)} aria-label="Subir capa">↑</button>
+                      <button type="button" className={`${btnCls} mr-1 !border-0`} onClick={() => moverCapa("bajar", el.id!)} aria-label="Bajar capa">↓</button>
+                    </li>
+                  );
+                })}
+              </ol>
+        </Panel>
           </>
         )}
       </aside>
     </div>
+    </CuentagotasContext.Provider>
+    </FotosPaginaContext.Provider>
+    </ColoresPaginaContext.Provider>
   );
 }

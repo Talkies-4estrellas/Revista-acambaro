@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import BibliotecaMedios from "./BibliotecaMedios";
+import { mensajeSimple } from "@/lib/errores-simples";
 import {
   ANCHOS,
   PROPORCIONES,
@@ -223,7 +224,7 @@ export function CampoArchivo({
       onChange(await subir(file));
       setEstado({ cargando: false });
     } catch (err) {
-      setEstado({ cargando: false, error: err instanceof Error ? err.message : "No se pudo subir" });
+      setEstado({ cargando: false, error: mensajeSimple(err, "No se pudo subir") });
     }
   }
 
@@ -465,7 +466,7 @@ export function Panel({
   }, [plegable, clave]);
 
   // «Abrir» un panel concreto desde otra parte del editor (la barra sobre la hoja): se despliega y se lleva a la vista.
-  const raiz = useRef<HTMLDivElement>(null);
+  const raiz = useRef<HTMLElement>(null);
   useEffect(() => {
     const abrir = (e: Event) => {
       if ((e as CustomEvent<string>).detail !== titulo) return;
@@ -487,7 +488,7 @@ export function Panel({
 
   if (!plegable) {
     return (
-      <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
+      <section ref={raiz} className="border border-ink/30 bg-white/40 dark:bg-white/5">
         <header className="border-b border-ink/20 bg-paper-deep px-4 py-2">
           <h3 className="font-sans text-xs font-bold uppercase tracking-wider">{titulo}</h3>
           {ayuda && <p className="font-sans mt-0.5 text-[0.7rem] text-ink-soft">{ayuda}</p>}
@@ -498,7 +499,7 @@ export function Panel({
   }
 
   return (
-    <section className="border border-ink/30 bg-white/40 dark:bg-white/5">
+    <section ref={raiz} className="border border-ink/30 bg-white/40 dark:bg-white/5">
       <h3 className={visible ? "border-b border-ink/20 bg-paper-deep" : "bg-paper-deep"}>
         <button
           type="button"

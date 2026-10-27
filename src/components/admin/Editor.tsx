@@ -30,8 +30,12 @@ import BuscarReemplazar from "./BuscarReemplazar";
 import { ItemMenu, MenuSuperior, SeparadorMenu } from "./MenuSuperior";
 import Versiones from "./Versiones";
 import AyudaEditor from "./AyudaEditor";
+import { EstilosEdicionContext, PaletaEdicionContext } from "./ContextosEdicion";
+import VistaPreviaLector from "./VistaPreviaLector";
+import { useMenuContextual, type ItemMenu as ItemCtx } from "./MenuContextual";
 import RecorridoEditor, { PASOS_BIENVENIDA, type PasoRecorrido } from "./RecorridoEditor";
 import { textoCreditos } from "@/lib/referencias";
+import { mensajeSimple } from "@/lib/errores-simples";
 
 /** «las páginas 7 y 8» / «las páginas 4 a 6 y 10 y 11», a partir de los números de página que son anuncios pegados. */
 function textoSeguidos(paginas: number[]) {
@@ -125,6 +129,8 @@ export default function Editor({
   const [verMedios, setVerMedios] = useState(false);
   const [verBuscar, setVerBuscar] = useState(false);
   const [verAyuda, setVerAyuda] = useState(false);
+  const { abrir: abrirMenu, menu: menuContextual } = useMenuContextual();
+  const [verLector, setVerLector] = useState(false);
   const [ayudaInicial, setAyudaInicial] = useState("");
   /** Recorrido guiado: pasos que se están mostrando (null = cerrado). La primera vez se abre solo. */
   const [recorrido, setRecorrido] = useState<PasoRecorrido[] | null>(null);
@@ -227,7 +233,7 @@ export default function Editor({
       setEstado({ tipo: "ok", texto: silencioso ? "Autoguardado" : "Guardado" });
     } catch (e) {
       if (silencioso) fallaAuto.current = JSON.stringify(datos);
-      const motivo = e instanceof Error ? e.message : "No se pudo guardar";
+      const motivo = mensajeSimple(e, "No se pudo guardar");
       setEstado({ tipo: "error", texto: silencioso ? `No se pudo autoguardar: ${motivo}` : motivo });
     }
   }, [datos, id, numeroEdicion]);
@@ -464,8 +470,8 @@ export default function Editor({
     else setVerPlantillas(true);
   }
 
-  function agregarPagina() {
-    const k = idx + 1;
+  function agregarPagina(despuesDe?: number) {
+    const k = (typeof despuesDe === "number" ? despuesDe : idx) + 1;
     const copia = [...datos.paginas];
     copia.splice(k, 0, paginaNueva(nuevaPlantilla));
     setPaginas(copia, (n) => (n - 1 >= k ? n + 1 : n));
@@ -501,11 +507,12 @@ export default function Editor({
     setSel(r.posicion);
   }
 
-  function duplicarPagina() {
-    const k = idx + 1;
+  function duplicarPagina(cual?: number) {
+    const i = typeof cual === "number" ? cual : idx;
+    const k = i + 1;
     const copia = [...datos.paginas];
     // El identificador (ancla) es único en la edición: la copia nace sin él.
-    const nueva = structuredClone(pagina);
+    const nueva = structuredClone(datos.paginas[i]);
     delete nueva.ancla;
     copia.splice(k, 0, nueva);
     setPaginas(copia, (n) => (n - 1 >= k ? n + 1 : n));
@@ -534,18 +541,39 @@ export default function Editor({
     reordenarPagina(idx, idx + d);
   }
 
-  function quitarPagina() {
+  function quitarPagina(cual?: number) {
+    const q = typeof cual === "number" ? cual : idx;
     if (datos.paginas.length <= 1) return;
-    if (!confirm(`¿Quitar la página ${idx + 1} “${tituloPagina(pagina)}”? Se puede deshacer cerrando sin guardar.`)) return;
-    const copia = datos.paginas.filter((_, i) => i !== idx);
-    setPaginas(copia, (n) => (n === idx + 1 ? null : n > idx + 1 ? n - 1 : n));
-    setSel(Math.max(0, idx - 1));
+    if (!confirm(`¿Quitar la página ${q + 1} “${tituloPagina(datos.paginas[q])}”? Si te equivocas, el botón ↶ de la barra de arriba la regresa.`)) return;
+    const copia = datos.paginas.filter((_, i) => i !== q);
+    setPaginas(copia, (n) => (n === q + 1 ? null : n > q + 1 ? n - 1 : n));
+    setSel(Math.max(0, q === idx ? q - 1 : idx > q ? idx - 1 : idx));
+  }
+
+  /** Clic derecho en una página de la lista: sus acciones, sin tener que abrirla primero. */
+  function menuPagina(e: React.MouseEvent, i: number) {
+    const n = datos.paginas.length;
+    const items: ItemCtx[] = [];
+    if (i !== idx) items.push({ texto: "Abrir esta página", icono: "→", onClick: () => { setSel(i); setEditandoMaestra(false); } }, { separador: true });
+    items.push(
+      { titulo: `Página ${i + 1}` },
+      { texto: "Duplicar", icono: "⧉", onClick: () => duplicarPagina(i) },
+      { texto: "Agregar una página en blanco después", icono: "+", onClick: () => agregarPagina(i) },
+      { separador: true },
+      { texto: "Mover antes", icono: "↑", atajo: "Alt+↑", deshabilitado: i === 0, onClick: () => reordenarPagina(i, i - 1) },
+      { texto: "Mover después", icono: "↓", atajo: "Alt+↓", deshabilitado: i === n - 1, onClick: () => reordenarPagina(i, i + 1) },
+      { separador: true },
+      { texto: "Quitar la página", icono: "🗑", peligro: true, deshabilitado: n <= 1, onClick: () => quitarPagina(i) },
+    );
+    abrirMenu(e, items);
   }
 
   /* ------------------------------- UI -------------------------------- */
 
   return (
     <MediosContext.Provider value={{ medios, subir, edicionId: id }}>
+    <PaletaEdicionContext.Provider value={{ colores: datos.paleta ?? [], cambiar: (c) => setDatos((d) => ({ ...d, paleta: c.length ? c : undefined })) }}>
+    <EstilosEdicionContext.Provider value={{ estilos: datos.estilos ?? [], cambiar: (e) => setDatos((d) => ({ ...d, estilos: e.length ? e : undefined })) }}>
       <div className="flex min-h-screen flex-col md:h-screen">
         {/* Barra superior (al estilo de Canva): todo lo de «archivo» en un menú, el estado de guardado y la publicación a la vista */}
         <header className="border-b-2 border-ink bg-paper">
@@ -569,6 +597,7 @@ export default function Editor({
                   <ItemMenu icono="🖼" texto="Fotos y videos…" nota="Todo lo que has subido" onClick={() => { cerrar(); setVerMedios(true); }} />
                   <ItemMenu icono="✎" texto="Datos de la edición" nota="Fecha, tema, número y publicación" marcado={undefined} onClick={() => { cerrar(); setVerDatos((v) => !v); }} />
                   <SeparadorMenu />
+                  <ItemMenu icono="👁" texto="Vista previa como lector" nota="Cómo se ve en celular, tableta y computadora" onClick={() => { cerrar(); setVerLector(true); }} />
                   <ItemMenu icono="↗" texto="Abrir la edición en el sitio" href={`/ediciones/${id}/1`} onClick={cerrar} />
                   {!esLienzo && <ItemMenu icono="◫" texto={verPrevia ? "Ocultar vista previa" : "Mostrar vista previa"} onClick={() => { cerrar(); setVerPrevia((v) => !v); }} />}
                 </>
@@ -610,6 +639,9 @@ export default function Editor({
               />
             </div>
 
+            <button type="button" data-tour="vista-lector" className="font-sans inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-semibold hover:bg-white/15 max-sm:hidden" onClick={() => setVerLector(true)} title="Ver la edición como la verá el lector, en celular, tableta o computadora">
+              👁 Vista previa
+            </button>
             <button type="button" data-tour="revisar" className="font-sans inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-semibold hover:bg-white/15 max-sm:hidden" onClick={() => setVerRevisor(true)} title="Busca textos encimados, letra chica, anuncios seguidos, enlaces de ejemplo y problemas de accesibilidad (contraste, descripciones, enlaces)">
               ✓ Revisar
             </button>
@@ -789,6 +821,7 @@ export default function Editor({
                 setVerPaginas(false);
               }}
               onReordenar={reordenarPagina}
+              onMenu={menuPagina}
             />
             <div className="space-y-2 border-t border-ink/30 p-3">
               <p className="font-sans text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">Agregar una página</p>
@@ -799,7 +832,7 @@ export default function Editor({
                   </option>
                 ))}
               </select>
-              <button type="button" className={`${btnCls} w-full !bg-ink !text-paper`} onClick={agregarPagina}>
+              <button type="button" className={`${btnCls} w-full !bg-ink !text-paper`} onClick={() => agregarPagina()}>
                 + Agregar después de la {idx + 1}
               </button>
               <div className="grid grid-cols-2 gap-1.5">
@@ -865,8 +898,8 @@ export default function Editor({
                 <button type="button" className={btnCls} disabled={idx === 0} onClick={() => moverPagina(-1)} title="Subir la página (antes)" aria-label="Subir la página">↑<span className="max-sm:hidden"> Subir</span></button>
                 <button type="button" className={btnCls} disabled={idx === datos.paginas.length - 1} onClick={() => moverPagina(1)} title="Bajar la página (después)" aria-label="Bajar la página">↓<span className="max-sm:hidden"> Bajar</span></button>
                 <button type="button" className={btnCls} onClick={abrirPlantillas} title="Guardar esta página como plantilla o usar una" aria-label="Plantillas">▤<span className="max-sm:hidden"> Plantillas</span></button>
-                <button type="button" className={btnCls} onClick={duplicarPagina} title="Duplicar la página" aria-label="Duplicar la página">⧉<span className="max-sm:hidden"> Duplicar</span></button>
-                <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={quitarPagina} title="Quitar la página" aria-label="Quitar la página">✕<span className="max-sm:hidden"> Quitar</span></button>
+                <button type="button" className={btnCls} onClick={() => duplicarPagina()} title="Duplicar la página" aria-label="Duplicar la página">⧉<span className="max-sm:hidden"> Duplicar</span></button>
+                <button type="button" className={btnCls} disabled={datos.paginas.length <= 1} onClick={() => quitarPagina()} title="Quitar la página" aria-label="Quitar la página">✕<span className="max-sm:hidden"> Quitar</span></button>
               </div>
             </div>
             <details className={`mb-3 border border-ink/20 bg-paper-deep/40 ${editandoMaestra ? "hidden" : ""}`} open={anclaRepetida || undefined}>
@@ -962,7 +995,8 @@ export default function Editor({
               setEditandoMaestra(false);
             }}
             onReordenar={reordenarPagina}
-            onAgregar={agregarPagina}
+            onMenu={menuPagina}
+            onAgregar={() => agregarPagina()}
             onNuevaPlantilla={setNuevaPlantilla}
             onPlantillas={abrirPlantillas}
             onIndice={generarIndice}
@@ -971,6 +1005,8 @@ export default function Editor({
           />
         )}
       </div>
+      {menuContextual}
+      {verLector && <VistaPreviaLector edicionId={id} pagina={idx + 1} sucio={sucio} onGuardar={() => guardar()} onCerrar={() => setVerLector(false)} />}
       {verAyuda && (
         <AyudaEditor
           inicial={ayudaInicial}
@@ -1033,6 +1069,8 @@ export default function Editor({
           onCerrar={() => setVerPlantillas(false)}
         />
       )}
+    </EstilosEdicionContext.Provider>
+    </PaletaEdicionContext.Provider>
     </MediosContext.Provider>
   );
 }

@@ -50,6 +50,7 @@ export default function PanelPaginas({
   creditos = "",
   onSeleccionar,
   onReordenar,
+  onMenu,
 }: {
   paginas: Pagina[];
   seleccionada: number;
@@ -57,6 +58,8 @@ export default function PanelPaginas({
   /** Texto de {creditos} de la edición. */
   creditos?: string;
   onSeleccionar: (i: number) => void;
+  /** Clic derecho sobre la miniatura de la página `i`. */
+  onMenu?: (e: React.MouseEvent, i: number) => void;
   /** Mueve la página `desde` a la posición `hasta` (índices de 0 a n-1 en la lista resultante). */
   onReordenar: (desde: number, hasta: number) => void;
 }) {
@@ -149,6 +152,7 @@ export default function PanelPaginas({
                   setDesde(i);
                 }}
                 onDragEnd={terminar}
+                onContextMenu={(e) => onMenu?.(e, i)}
                 onDragOver={(e) => {
                   if (desde === null) return;
                   e.preventDefault();

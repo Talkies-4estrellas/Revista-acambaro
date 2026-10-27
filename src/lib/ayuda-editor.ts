@@ -286,11 +286,24 @@ export const TEMAS_AYUDA: TemaAyuda[] = [
     muestra: "publicar",
   },
   {
+    id: "vista-lector",
+    grupo: "Publicar",
+    titulo: "Ver la edición como la verá el lector",
+    palabras: "vista previa lector ver como se ve celular tableta computadora probar animaciones transiciones",
+    pasos: [
+      "Pulsa «👁 Vista previa» arriba (o Archivo → «Vista previa como lector»).",
+      "Elige Celular, Tableta o Computadora. Se abre en la página en la que estás y puedes pasar las páginas como el lector, con sus animaciones y transiciones.",
+      "Muestra lo último que guardaste: si hay cambios sin guardar, un aviso te deja «Guardar y recargar».",
+      "No cuenta como lectura en las estadísticas.",
+    ],
+    muestra: "vista-lector",
+  },
+  {
     id: "celular",
     grupo: "Publicar",
-    titulo: "Ver cómo se ve en el celular",
-    palabras: "celular telefono movil vista previa pantalla chica",
-    pasos: ["En la columna de la derecha hay dos pestañas: «Propiedades» y «Celular».", "«Celular» muestra la página como se ve en un teléfono y deja acomodar el orden de los elementos."],
+    titulo: "Acomodar la página para el celular",
+    palabras: "celular telefono movil pantalla chica orden elementos apilar",
+    pasos: ["En la columna de la derecha hay dos pestañas: «Propiedades» y «Celular».", "«Celular» muestra la página como se ve en un teléfono y deja acomodar el orden de los elementos.", "Para ver la edición completa como la leerá la gente, usa «Vista previa»."],
   },
   /* -------------------------------- Trucos -------------------------------- */
   {

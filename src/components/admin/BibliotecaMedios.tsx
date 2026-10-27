@@ -2,6 +2,7 @@
 
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { btnCls, MediosContext } from "./campos";
+import { mensajeSimple } from "@/lib/errores-simples";
 
 type Medio = {
   src: string;
@@ -53,7 +54,7 @@ export function GaleriaMedios({
       if (!r.ok) throw new Error(j.error ?? `Error ${r.status}`);
       setMedios(j.medios as Medio[]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo cargar la galería");
+      setError(mensajeSimple(e, "No se pudo cargar la galería"));
     }
   }, []);
   useEffect(() => {
@@ -82,7 +83,7 @@ export function GaleriaMedios({
         else setPestana("imagen");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo subir");
+      setError(mensajeSimple(err, "No se pudo subir"));
     }
     await cargar();
     setOcupado(false);

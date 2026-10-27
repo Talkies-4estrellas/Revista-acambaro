@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   ALINEACIONES,
-  COLORES,
   DEGRADADOS,
   DEGRADADOS_IDS,
-  ETIQUETAS_COLOR,
   FILTROS_IMAGEN,
   FILTROS_IMAGEN_IDS,
   CATEGORIAS_FUENTE,
@@ -16,10 +14,13 @@ import {
   SOMBRAS_TEXTO_IDS,
   colorCss,
   type Alineacion,
+  type DegradadoId,
   type Elemento,
   type Fuente,
   type Pagina,
 } from "@/lib/esquema";
+import PaletaColores, { ALTO_MENU } from "./PaletaColores";
+import { EstilosEdicionContext } from "./ContextosEdicion";
 
 /**
  * Barra contextual sobre la hoja (al estilo de Canva): lo que más se usa del elemento elegido, a un clic. Para lo demás (animaciones, enlace,
@@ -43,6 +44,9 @@ type Acciones = {
   editarTexto?: () => void;
   /** Icono / figura: elegir otra. */
   cambiarIcono?: () => void;
+  /** Estilos con nombre de la edición (aún sin conectar en EditorLienzo). */
+  aplicarEstilo?: (indice: number) => void;
+  guardarEstilo?: () => void;
 };
 
 const TAMANOS_RAPIDOS = [10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 60, 72, 96];
@@ -72,6 +76,7 @@ function useFuera(abierto: boolean, cerrar: () => void) {
   useEffect(() => {
     if (!abierto) return;
     const alTocar = (e: PointerEvent) => {
+      if ((e.target as Element).closest?.("[data-no-cerrar]")) return; // capa del cuentagotas
       if (ref.current && !ref.current.contains(e.target as Node)) cerrar();
     };
     const alTecla = (e: KeyboardEvent) => e.key === "Escape" && cerrar();
@@ -95,18 +100,64 @@ function Menu({ etiqueta, titulo, activo, children, ancho = "w-64" }: { etiqueta
       <button type="button" className={btn(abierto || activo)} title={titulo} aria-label={titulo} aria-expanded={abierto} onClick={() => setAbierto((a) => !a)}>
         {etiqueta}
       </button>
-      {abierto && <div className={`absolute left-0 top-9 z-40 ${ancho} rounded-md border border-ink/40 bg-paper p-3 shadow-xl`}>{children}</div>}
+      {abierto && <div data-paleta-flotante className={`absolute left-0 top-9 z-40 ${ancho} rounded-md border border-ink/40 bg-paper p-3 shadow-xl`}>{children}</div>}
     </div>
   );
 }
 
+/**
+ * Campo del tamaño de letra. Se puede escribir un número completo (se aplica al salir del campo o con Enter; Esc lo deja como estaba);
+ * con ↑ ↓ cambia de uno en uno. Antes cada tecla se aplicaba al instante y el mínimo (4) hacía imposible teclear «26».
+ */
+function CampoTamano({ valor, onCambiar }: { valor: number; onCambiar: (n: number) => void }) {
+  const [borrador, setBorrador] = useState<string | null>(null);
+  const aplicar = (texto: string) => {
+    setBorrador(null);
+    const n = Number(texto.replace(",", "."));
+    if (texto.trim() !== "" && Number.isFinite(n)) onCambiar(Math.max(4, Math.min(400, Math.round(n))));
+  };
+  return (
+    <input
+      aria-label="Tamaño del texto"
+      type="text"
+      inputMode="numeric"
+      value={borrador ?? String(valor)}
+      list="tamanos-rapidos"
+      onFocus={(e) => e.currentTarget.select()}
+      onChange={(e) => {
+        // Una opción de la lista de tamaños llega como cambio completo: se aplica al momento.
+        const v = e.target.value;
+        const esOpcion = (e.nativeEvent as InputEvent).inputType === undefined || (e.nativeEvent as InputEvent).inputType === "insertReplacementText";
+        if (esOpcion && /^\d+$/.test(v)) aplicar(v);
+        else setBorrador(v.replace(/[^\d.,]/g, ""));
+      }}
+      onBlur={() => borrador !== null && aplicar(borrador)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (borrador !== null) aplicar(borrador);
+          e.currentTarget.blur();
+        } else if (e.key === "Escape") {
+          e.stopPropagation();
+          setBorrador(null);
+          e.currentTarget.blur();
+        } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          onCambiar(Math.max(4, Math.min(400, valor + (e.key === "ArrowUp" ? 1 : -1))));
+          setBorrador(null);
+        }
+      }}
+      className="font-sans h-8 w-14 rounded-md border border-ink/25 bg-paper px-1.5 text-center text-xs font-semibold text-ink"
+    />
+  );
+}
+
 /** Muestra de color con menú de paleta (y color libre). `vacio`: ofrece «sin color» con ese texto. */
-function ColorBoton({ valor, onChange, titulo, vacio, letra }: { valor: string | undefined; onChange: (v: string | undefined) => void; titulo: string; vacio?: string; letra?: boolean }) {
-  const hex = valor && valor.startsWith("#") ? valor : "";
+function ColorBoton({ valor, onChange, titulo, vacio, letra, degradado, onDegradado }: { valor: string | undefined; onChange: (v: string | undefined) => void; titulo: string; vacio?: string; letra?: boolean; degradado?: DegradadoId; onDegradado?: (id: DegradadoId | undefined) => void }) {
   return (
     <Menu
       titulo={titulo}
-      ancho="w-60"
+      ancho="w-72"
       etiqueta={
         letra ? (
           <span className="flex flex-col items-center leading-none">
@@ -119,32 +170,9 @@ function ColorBoton({ valor, onChange, titulo, vacio, letra }: { valor: string |
       }
     >
       <p className="font-sans mb-2 text-[0.68rem] font-bold uppercase tracking-wide text-ink-soft">{titulo}</p>
-      <div className="flex flex-wrap items-center gap-1.5">
-        {vacio !== undefined && (
-          <button type="button" title={vacio} aria-label={vacio} onClick={() => onChange(undefined)} className={`h-7 w-7 rounded border text-xs ${valor === undefined ? "border-terracota ring-2 ring-terracota" : "border-ink/40"}`}>
-            ∅
-          </button>
-        )}
-        {COLORES.map((c) => (
-          <button
-            key={c}
-            type="button"
-            title={ETIQUETAS_COLOR[c]}
-            aria-label={ETIQUETAS_COLOR[c]}
-            onClick={() => onChange(c)}
-            style={{ background: colorCss(c, "#000") }}
-            className={`h-7 w-7 rounded border ${valor === c ? "border-terracota ring-2 ring-terracota" : "border-ink/40"}`}
-          />
-        ))}
-        <input
-          type="color"
-          aria-label="Color libre"
-          value={/^#[0-9a-fA-F]{6}$/.test(hex) ? hex : "#068562"}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-7 w-9 cursor-pointer rounded border border-ink/40 bg-transparent p-0"
-        />
+      <div className={ALTO_MENU}>
+        <PaletaColores valor={valor} onChange={onChange} vacio={vacio} degradado={degradado} onDegradado={onDegradado} />
       </div>
-      {hex && <p className="font-sans mt-2 text-[0.7rem] text-ink-soft">{hex}</p>}
     </Menu>
   );
 }
@@ -288,6 +316,37 @@ function Barra({ etiqueta, children }: { etiqueta: string; children: React.React
   );
 }
 
+/** Estilos con nombre de la edición: aplica uno al elemento elegido o guarda el aspecto de este como estilo nuevo. */
+function MenuEstilos({ el, acciones }: { el: Elemento; acciones: Acciones }) {
+  const ctx = useContext(EstilosEdicionContext);
+  if (!ctx || !acciones.aplicarEstilo || !acciones.guardarEstilo) return null;
+  const propios = ctx.estilos.map((e, i) => ({ e, i })).filter(({ e }) => e.tipo === el.tipo);
+  return (
+    <Menu etiqueta={<span>🎨 Estilos</span>} titulo="Estilos de la edición: aplicar uno o guardar el de este elemento" ancho="w-64">
+      <p className="font-sans mb-2 text-[0.68rem] font-bold uppercase tracking-wide text-ink-soft">Estilos de {el.tipo === "texto" ? "texto" : el.tipo === "imagen" ? "imagen" : el.tipo === "forma" ? "forma" : el.tipo}</p>
+      {propios.length === 0 ? (
+        <p className="font-sans mb-2 text-xs italic text-ink-soft">Aún no hay. Deja este elemento como quieras y guárdalo abajo para reusarlo.</p>
+      ) : (
+        <ul className="mb-2 space-y-1">
+          {propios.map(({ e, i }) => (
+            <li key={i} className="flex items-center gap-1">
+              <button type="button" className={`${btn()} min-w-0 flex-1 justify-start !border-ink/25`} onClick={() => acciones.aplicarEstilo!(i)} title="Aplicar este estilo">
+                <span className="truncate">{e.nombre}</span>
+              </button>
+              <button type="button" className={`${btn()} !px-1.5`} onClick={() => ctx.cambiar(ctx.estilos.filter((_, k) => k !== i))} title="Quitar este estilo" aria-label={`Quitar el estilo ${e.nombre}`}>
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button type="button" className={`${btn()} w-full !border-ink/40`} onClick={acciones.guardarEstilo}>
+        ＋ Guardar el estilo de este elemento…
+      </button>
+    </Menu>
+  );
+}
+
 function Comunes({ acciones }: { acciones: Acciones }) {
   return (
     <>
@@ -343,16 +402,7 @@ function ControlesTexto({ el, cambiar, acciones }: { el: Elemento & { tipo: "tex
       <button type="button" className={btn()} title="Reducir el tamaño" aria-label="Reducir el tamaño" onClick={() => cambiar({ tam: Math.max(4, Math.round(tam) - (tam > 40 ? 4 : 2)) }, "tam")}>
         −
       </button>
-      <input
-        aria-label="Tamaño del texto"
-        type="number"
-        min={4}
-        max={400}
-        value={Math.round(tam)}
-        list="tamanos-rapidos"
-        onChange={(e) => cambiar({ tam: Math.max(4, Math.min(400, Number(e.target.value) || tam)) }, "tam")}
-        className="font-sans h-8 w-14 rounded-md border border-ink/25 bg-paper px-1.5 text-center text-xs font-semibold text-ink"
-      />
+      <CampoTamano valor={Math.round(tam)} onCambiar={(n) => cambiar({ tam: n }, "tam")} />
       <datalist id="tamanos-rapidos">
         {TAMANOS_RAPIDOS.map((t) => (
           <option key={t} value={t} />
@@ -362,7 +412,7 @@ function ControlesTexto({ el, cambiar, acciones }: { el: Elemento & { tipo: "tex
         +
       </button>
       <Sep />
-      <ColorBoton valor={el.color ?? "tinta"} onChange={(v) => cambiar({ color: v })} titulo="Color del texto" letra />
+      <ColorBoton valor={el.color ?? "tinta"} onChange={(v) => cambiar({ color: v })} titulo="Color del texto" letra degradado={el.degradado} onDegradado={(id) => cambiar({ degradado: id, anguloDegradado: id ? el.anguloDegradado : undefined })} />
       <button type="button" className={`${btn(negrita)} font-black`} title="Negrita" aria-pressed={negrita} onClick={() => cambiar({ peso: negrita ? undefined : pesoNegrita })}>
         B
       </button>
@@ -453,7 +503,7 @@ function ControlesFoto({ el, cambiar, acciones, abrirPanel }: { el: Elemento & {
 function ControlesForma({ el, cambiar, abrirPanel }: { el: Elemento & { tipo: "forma" }; cambiar: (p: Record<string, unknown>, c?: string) => void; abrirPanel: (t: string) => void }) {
   return (
     <>
-      <ColorBoton valor={el.color ?? "tinta"} onChange={(v) => cambiar({ color: v })} titulo="Color de relleno" />
+      <ColorBoton valor={el.color ?? "tinta"} onChange={(v) => cambiar({ color: v })} titulo="Color de relleno" degradado={el.degradado} onDegradado={(id) => cambiar({ degradado: id, anguloDegradado: id ? el.anguloDegradado : undefined })} />
       <select aria-label="Degradado" className={`${selectCls} w-32`} value={el.degradado ?? ""} onChange={(e) => cambiar({ degradado: e.target.value || undefined, anguloDegradado: e.target.value ? el.anguloDegradado : undefined })}>
         <option value="">Color liso</option>
         {DEGRADADOS_IDS.map((id) => (

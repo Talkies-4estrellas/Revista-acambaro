@@ -10,6 +10,8 @@ import { useEffect } from "react";
 export default function ContarVistas({ edicion }: { edicion: string }) {
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
+    // Dentro de un marco (la vista previa del editor) no es un lector: no se cuenta.
+    if (window.self !== window.top) return;
     const temporizadores = new Map<Element, number>();
     const visto = (n: number) => {
       const k = `vista:${edicion}:${n}`;

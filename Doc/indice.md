@@ -93,6 +93,15 @@
 | `PortadaMini.tsx`, `Ticker.tsx`, `Bloques.tsx`, `Placeholder.tsx` | Portadas pequeñas, cinta y bloques de las plantillas clásicas |
 | `CarruselEdiciones.tsx` | Carrusel «cover flow» de las ediciones anteriores en celular (portada central grande, laterales giradas, puntos) |
 | `admin/TiraPaginas.tsx` | Tira de miniaturas de las páginas bajo la hoja (estilo Canva) |
+| `admin/VistaPreviaLector.tsx` | Vista previa a pantalla completa como la verá el lector (celular, tableta, computadora) |
+| `lib/errores-simples.ts` | Traduce errores técnicos a avisos claros (`mensajeSimple`) |
+| `lib/plantillas-extra.ts` | 8 plantillas de secciones: carta, entrevista, agenda, receta, directorio, lugar, foto completa, dos columnas |
+| `lib/color-en-punto.ts`, `admin/CuentagotasHoja.tsx` | Cuentagotas que solo toma colores de la hoja editable |
+| `lib/colores-foto.ts`, `admin/PaletaColores.tsx` | Selector de color estilo Canva y colores principales de cada foto (k-medias en un lienzo invisible) |
+| `Doc/analisis-edicion-modelismo.md` | Análisis del editor armando una edición de 10 páginas: errores, tropiezos y carencias |
+| `admin/MenuContextual.tsx`, `app/admin/FilaEdicion.tsx` | Menú del clic derecho (elementos, fondo, páginas y ediciones) |
+| `lib/ejemplos.ts` | Detecta textos de plantilla sin cambiar y fotos sin archivo (los marca el editor y los cuenta la revisión) |
+| `lib/asistente-edicion.ts` | Secciones del asistente opcional de «Nueva edición» (cada una → una plantilla integrada) |
 | `admin/RecorridoEditor.tsx`, `admin/AyudaEditor.tsx`, `lib/ayuda-editor.ts` | Recorrido guiado de bienvenida (resalta piezas con `data-tour`) y panel de ayuda con búsqueda y «Muéstrame dónde» |
 | `admin/BarraContextual.tsx`, `admin/MenuSuperior.tsx` | Barra sobre la hoja según lo seleccionado y menús de la barra superior del editor (estilo Canva) |
 | `admin/BibliotecaMedios.tsx` | Biblioteca de medios (elegir y ordenar fotos y videos) |

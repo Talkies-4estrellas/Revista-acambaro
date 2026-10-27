@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { EdicionDatos } from "@/lib/esquema";
 import { btnCls } from "./campos";
+import { mensajeSimple } from "@/lib/errores-simples";
 
 type Respaldo = { nombre: string; fecha: number; paginas: number; tema: string };
 
@@ -51,7 +52,7 @@ export default function Versiones({
       if (!r.ok) throw new Error(j.error ?? "No se pudo cargar la versión.");
       onRestaurar(j.datos as EdicionDatos);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo cargar la versión.");
+      setError(mensajeSimple(e, "No se pudo cargar la versión."));
     } finally {
       setCargando(null);
     }

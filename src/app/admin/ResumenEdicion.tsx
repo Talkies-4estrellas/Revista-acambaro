@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Campo, Texto, btnCls, inputCls } from "@/components/admin/campos";
 import { anunciosSeguidos } from "@/lib/esquema";
+import { mensajeSimple } from "@/lib/errores-simples";
 
 type Origen = { id: string; tema?: string; paginas: { titulo?: string; seccion?: string }[] };
 
@@ -61,7 +62,7 @@ export default function ResumenEdicion({ origenes, sugerido }: { origenes: Orige
       if (!res.ok) throw new Error(json.error ?? `Error ${res.status}`);
       setListo({ id: json.id, avisos: json.avisos ?? [] });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear");
+      setError(mensajeSimple(err, "No se pudo crear"));
     } finally {
       setCargando(false);
     }

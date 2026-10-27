@@ -5,8 +5,6 @@ import {
   AJUSTES,
   ALINEACIONES,
   ALINEACIONES_V,
-  COLORES,
-  ETIQUETAS_COLOR,
   CATEGORIAS_FUENTE,
   ETIQUETAS_PESO,
   FUENTES_INFO,
@@ -56,6 +54,7 @@ import {
   btnCls,
   inputCls,
 } from "./campos";
+import { BotonColor } from "./PaletaColores";
 
 /* ------------------------------- Color ------------------------------- */
 
@@ -71,41 +70,9 @@ export function CampoColor({
   /** Si se da, se ofrece una opción "sin color" con este texto. */
   vacio?: string;
 }) {
-  const hex = value && value.startsWith("#") ? value : "";
   return (
     <Campo label={label}>
-      <div className="flex flex-wrap items-center gap-1.5">
-        {vacio !== undefined && (
-          <button
-            type="button"
-            title={vacio}
-            aria-label={vacio}
-            onClick={() => onChange(undefined)}
-            className={`h-6 w-6 border text-[0.6rem] leading-none ${value === undefined ? "border-terracota ring-2 ring-terracota" : "border-ink/40"}`}
-          >
-            ∅
-          </button>
-        )}
-        {COLORES.map((c) => (
-          <button
-            key={c}
-            type="button"
-            title={ETIQUETAS_COLOR[c]}
-            aria-label={ETIQUETAS_COLOR[c]}
-            onClick={() => onChange(c)}
-            style={{ background: colorCss(c, "#000") }}
-            className={`h-6 w-6 border ${value === c ? "border-terracota ring-2 ring-terracota" : "border-ink/40"}`}
-          />
-        ))}
-        <input
-          type="color"
-          aria-label="Color libre"
-          value={/^#[0-9a-fA-F]{6}$/.test(hex) ? hex : "#068562"}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-6 w-8 cursor-pointer border border-ink/40 bg-transparent p-0"
-        />
-        {hex && <span className="font-sans text-[0.7rem] text-ink-soft">{hex}</span>}
-      </div>
+      <BotonColor valor={value} onChange={onChange} vacio={vacio} />
     </Campo>
   );
 }

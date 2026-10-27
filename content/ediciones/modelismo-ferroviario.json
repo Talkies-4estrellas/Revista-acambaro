@@ -1,0 +1,3734 @@
+{
+  "numero": "17",
+  "fecha": "2026-10-27",
+  "tema": "Rieles a escala: el modelismo ferroviario en México",
+  "publicada": false,
+  "maestra": {
+    "elementos": [
+      {
+        "tipo": "forma",
+        "w": 688,
+        "h": 1,
+        "forma": "rectangulo",
+        "color": "#cfc4ad",
+        "x": 56,
+        "y": 1050,
+        "id": "i93bawts"
+      },
+      {
+        "tipo": "texto",
+        "w": 420,
+        "h": 18,
+        "texto": "ACOM-Di · Revista de Acámbaro",
+        "fuente": "sans",
+        "tam": 12,
+        "peso": 700,
+        "color": "#6b6458",
+        "mayusculas": true,
+        "espaciado": 0.18,
+        "x": 56,
+        "y": 1062,
+        "id": "804b57q4",
+        "contenido": [
+          [
+            {
+              "texto": "ACOM-Di · Revista de Acámbaro"
+            }
+          ]
+        ]
+      },
+      {
+        "tipo": "texto",
+        "w": 300,
+        "h": 18,
+        "texto": "N.º 17 · Octubre 2026 · {n}",
+        "fuente": "sans",
+        "tam": 12,
+        "peso": 700,
+        "color": "#6b6458",
+        "mayusculas": true,
+        "espaciado": 0.18,
+        "x": 444,
+        "y": 1062,
+        "id": "fazkzel6",
+        "contenido": [
+          [
+            {
+              "texto": "N.º 17 · Octubre 2026 · {n}"
+            }
+          ]
+        ],
+        "alinear": "derecha"
+      }
+    ]
+  },
+  "paginas": [
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Portada",
+      "fondo": "#1b262c",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 400,
+          "y": 44,
+          "w": 360,
+          "h": 26,
+          "texto": "EDICIÓN ESPECIAL · N.º 17",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#f3ead7",
+          "alinear": "derecha",
+          "animacion": {
+            "efecto": "aparecer"
+          },
+          "id": "pubeyeq0",
+          "contenido": [
+            [
+              {
+                "texto": "EDICIÓN ESPECIAL · N.º 17"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "imagen",
+          "x": 0,
+          "y": 150,
+          "w": 800,
+          "h": 610,
+          "tono": "terracota",
+          "alt": "Maqueta ferroviaria en escala HO: una ciudad al fondo y trenes en las vías",
+          "ajuste": "cubrir",
+          "animacion": {
+            "efecto": "revelar",
+            "duracion": 900,
+            "retraso": 450
+          },
+          "id": "y4qvicgu",
+          "src": "/media/modelismo/portada.jpg",
+          "credito": "Foto: Joseph Gage, CC BY-SA 2.0"
+        },
+        {
+          "tipo": "forma",
+          "w": 800,
+          "h": 220,
+          "forma": "rectangulo",
+          "color": "#1b262c",
+          "x": 0,
+          "y": 540,
+          "id": "qz4aptdr",
+          "opacidad": 0.62
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 580,
+          "w": 400,
+          "h": 24,
+          "texto": "PASATIEMPO",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#e0a35a",
+          "id": "7kgfmk40",
+          "contenido": [
+            [
+              {
+                "texto": "PASATIEMPO"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 606,
+          "w": 688,
+          "h": 100,
+          "texto": "Rieles a escala",
+          "fuente": "display",
+          "tam": 78,
+          "peso": 900,
+          "interlineado": 1.05,
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          },
+          "id": "4y1sn01g",
+          "contenido": [
+            [
+              {
+                "texto": "Rieles a escala"
+              }
+            ]
+          ],
+          "color": "#f3ead7"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 712,
+          "w": 688,
+          "h": 56,
+          "texto": "Trenes, vías y paisajes a escala: una afición de paciencia, historia y mucho detalle.",
+          "fuente": "serif",
+          "tam": 20,
+          "color": "#e0a35a",
+          "interlineado": 1.5,
+          "id": "js6sjoxm",
+          "contenido": [
+            [
+              {
+                "texto": "Trenes, vías y paisajes a escala: una afición de paciencia, historia y mucho detalle."
+              }
+            ]
+          ],
+          "cursiva": true
+        },
+        {
+          "tipo": "imagen",
+          "src": "/brand/logo-claro.svg",
+          "alt": "ACOM-Di, Revista de Acámbaro",
+          "ajuste": "contener",
+          "w": 330,
+          "h": 80,
+          "x": 40,
+          "y": 26,
+          "id": "o0katztx"
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 22,
+          "texto": "P. 03",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "color": "#e0a35a",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 56,
+          "y": 812,
+          "id": "3xwjypih",
+          "contenido": [
+            [
+              {
+                "texto": "P. 03"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 214,
+          "h": 70,
+          "texto": "Carta del editor",
+          "fuente": "display",
+          "tam": 26,
+          "peso": 900,
+          "color": "#f3ead7",
+          "interlineado": 1.05,
+          "x": 56,
+          "y": 840,
+          "id": "zdh0774k",
+          "contenido": [
+            [
+              {
+                "texto": "Carta del editor"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 60,
+          "texto": "Por qué un tren cabe sobre una mesa.",
+          "fuente": "serif",
+          "tam": 15,
+          "color": "#cfc7b5",
+          "interlineado": 1.5,
+          "x": 56,
+          "y": 922,
+          "id": "w3astcj2",
+          "contenido": [
+            [
+              {
+                "texto": "Por qué un tren cabe sobre una mesa."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 22,
+          "texto": "P. 05",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "color": "#e0a35a",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 300,
+          "y": 812,
+          "id": "2zs4z8pr",
+          "contenido": [
+            [
+              {
+                "texto": "P. 05"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 214,
+          "h": 70,
+          "texto": "Escalas",
+          "fuente": "display",
+          "tam": 26,
+          "peso": 900,
+          "color": "#f3ead7",
+          "interlineado": 1.05,
+          "x": 300,
+          "y": 840,
+          "id": "iw2jkyck",
+          "contenido": [
+            [
+              {
+                "texto": "Escalas"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 60,
+          "texto": "HO, N, O y G: qué mide cada una.",
+          "fuente": "serif",
+          "tam": 15,
+          "color": "#cfc7b5",
+          "interlineado": 1.5,
+          "x": 300,
+          "y": 922,
+          "id": "y8jgc7ur",
+          "contenido": [
+            [
+              {
+                "texto": "HO, N, O y G: qué mide cada una."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 22,
+          "texto": "P. 08",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "color": "#e0a35a",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 544,
+          "y": 812,
+          "id": "sslfech5",
+          "contenido": [
+            [
+              {
+                "texto": "P. 08"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 214,
+          "h": 70,
+          "texto": "Tu primera maqueta",
+          "fuente": "display",
+          "tam": 26,
+          "peso": 900,
+          "color": "#f3ead7",
+          "interlineado": 1.05,
+          "x": 544,
+          "y": 840,
+          "id": "e1go6lml",
+          "contenido": [
+            [
+              {
+                "texto": "Tu primera maqueta"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 60,
+          "texto": "Un óvalo de vía, en un fin de semana.",
+          "fuente": "serif",
+          "tam": 15,
+          "color": "#cfc7b5",
+          "interlineado": 1.5,
+          "x": 544,
+          "y": 922,
+          "id": "bh2s9gdm",
+          "contenido": [
+            [
+              {
+                "texto": "Un óvalo de vía, en un fin de semana."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "imagen",
+          "w": 800,
+          "h": 70,
+          "tono": "ocre",
+          "alt": "Franja decorativa con vías de tren",
+          "ajuste": "cubrir",
+          "x": 0,
+          "y": 1030,
+          "id": "2q6p8jum",
+          "src": "/media/05/rieles.svg"
+        }
+      ],
+      "ancla": "portada",
+      "sinMaestra": true
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Contenido",
+      "seccion": "Contenido",
+      "ancla": "indice",
+      "enIndice": false,
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "e7",
+        "e8",
+        "e9",
+        "e10",
+        "e11",
+        "e12",
+        "e13",
+        "e14",
+        "e15",
+        "e16",
+        "e17",
+        "e18",
+        "e19",
+        "e20",
+        "e21",
+        "e22",
+        "e23",
+        "e24",
+        "e25",
+        "e26",
+        "e27"
+      ],
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 52,
+          "w": 688,
+          "h": 18,
+          "texto": "En este número",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "#a8501c",
+          "peso": 800,
+          "espaciado": 0.22,
+          "mayusculas": true,
+          "id": "e1"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 74,
+          "w": 688,
+          "h": 70,
+          "texto": "Contenido",
+          "fuente": "display",
+          "tam": 56,
+          "color": "tinta",
+          "interlineado": 1,
+          "peso": 900,
+          "id": "e2"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 150,
+          "w": 688,
+          "h": 3,
+          "color": "tinta",
+          "id": "e3"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 176,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:carta-del-editor:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#carta-del-editor",
+          "id": "e4"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 184,
+          "w": 260,
+          "h": 27,
+          "texto": "Carta del editor",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#carta-del-editor",
+          "id": "e5"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 254,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e6"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 276,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:reportaje-con-foto-grande:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#reportaje-con-foto-grande",
+          "id": "e7"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 284,
+          "w": 260,
+          "h": 54,
+          "texto": "¿Qué es el modelismo ferroviario?",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#reportaje-con-foto-grande",
+          "id": "e8"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 354,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e9"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 376,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:texto-en-dos-columnas:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#texto-en-dos-columnas",
+          "id": "e10"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 384,
+          "w": 260,
+          "h": 54,
+          "texto": "Escalas: cuánto mide un tren en miniatura",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#texto-en-dos-columnas",
+          "id": "e11"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 454,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e12"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 476,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:reportaje-con-foto-grande-2:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#reportaje-con-foto-grande-2",
+          "id": "e13"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 484,
+          "w": 260,
+          "h": 27,
+          "texto": "Del vapor a la maqueta",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#reportaje-con-foto-grande-2",
+          "id": "e14"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 554,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e15"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 576,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:lugar-para-visitar:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#lugar-para-visitar",
+          "id": "e16"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 584,
+          "w": 260,
+          "h": 54,
+          "texto": "La antigua estación de Acámbaro",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#lugar-para-visitar",
+          "id": "e17"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 654,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e18"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 676,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:receta:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#receta",
+          "id": "e19"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 684,
+          "w": 260,
+          "h": 54,
+          "texto": "Tu primera maqueta en una tabla",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#receta",
+          "id": "e20"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 754,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e21"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 776,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:agenda-de-eventos:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#agenda-de-eventos",
+          "id": "e22"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 784,
+          "w": 260,
+          "h": 54,
+          "texto": "Ideas para seguir en el tema",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#agenda-de-eventos",
+          "id": "e23"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 854,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e24"
+        },
+        {
+          "tipo": "texto",
+          "x": 56,
+          "y": 876,
+          "w": 70,
+          "h": 54,
+          "texto": "{p:contraportada-con-redes:2}",
+          "fuente": "display",
+          "tam": 44,
+          "color": "#a8501c",
+          "interlineado": 1,
+          "peso": 900,
+          "enlace": "#contraportada-con-redes",
+          "id": "e25"
+        },
+        {
+          "tipo": "texto",
+          "x": 130,
+          "y": 884,
+          "w": 260,
+          "h": 54,
+          "texto": "Contraportada con redes",
+          "fuente": "display",
+          "tam": 20,
+          "color": "tinta",
+          "interlineado": 1.15,
+          "peso": 800,
+          "enlace": "#contraportada-con-redes",
+          "id": "e26"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 954,
+          "w": 320,
+          "h": 1,
+          "color": "#cbd5e1",
+          "id": "e27"
+        },
+        {
+          "tipo": "forma",
+          "x": 56,
+          "y": 1050,
+          "w": 688,
+          "h": 1,
+          "color": "#cbd5e1",
+          "movil": "ocultar",
+          "id": "e28"
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Carta del editor",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 56,
+          "w": 400,
+          "h": 24,
+          "texto": "CARTA DEL EDITOR",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "gw4yatdd"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 90,
+          "w": 680,
+          "h": 110,
+          "texto": "Vías en miniatura, historias enormes",
+          "fuente": "display",
+          "tam": 46,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "fc6f1yvt",
+          "contenido": [
+            [
+              {
+                "texto": "Vías en miniatura, historias enormes"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 222,
+          "w": 120,
+          "h": 4,
+          "color": "terracota",
+          "id": "jilz5f8a"
+        },
+        {
+          "tipo": "imagen",
+          "x": 60,
+          "y": 262,
+          "w": 220,
+          "h": 220,
+          "tono": "oliva",
+          "alt": "Locomotora N. de M. 3034, vista frontal",
+          "ajuste": "cubrir",
+          "molde": "circulo",
+          "id": "jf8nl2lc",
+          "src": "/media/05/ndem-3034.jpg"
+        },
+        {
+          "tipo": "texto",
+          "x": 310,
+          "y": 262,
+          "w": 430,
+          "h": 460,
+          "texto": "Querido lector:\n\nEl modelismo ferroviario empieza con una pregunta sencilla: ¿cómo cabría un tren entero sobre una mesa? La respuesta es la escala, y detrás de ella hay paciencia, historia y manos hábiles.\n\nEn este número te contamos qué es este pasatiempo, cómo se mide un tren en miniatura y cómo dar tus primeros pasos. Las locomotoras y la estación de las fotos son del patrimonio ferroviario de Acámbaro.\n\nSube a bordo.",
+          "fuente": "serif",
+          "tam": 21,
+          "interlineado": 1.6,
+          "id": "ke8uky6e",
+          "contenido": [
+            [
+              {
+                "texto": "Querido lector:"
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "El modelismo ferroviario empieza con una pregunta sencilla: ¿cómo cabría un tren entero sobre una mesa? La respuesta es la escala, y detrás de ella hay paciencia, historia y manos hábiles."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "En este número te contamos qué es este pasatiempo, cómo se mide un tren en miniatura y cómo dar tus primeros pasos. Las locomotoras y la estación de las fotos son del patrimonio ferroviario de Acámbaro."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "Sube a bordo."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 780,
+          "w": 680,
+          "h": 40,
+          "texto": "La redacción",
+          "fuente": "display",
+          "tam": 30,
+          "cursiva": true,
+          "peso": 700,
+          "id": "9c1nh74i",
+          "contenido": [
+            [
+              {
+                "texto": "La redacción"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 824,
+          "w": 680,
+          "h": 26,
+          "texto": "Revista de Acámbaro",
+          "fuente": "sans",
+          "tam": 15,
+          "color": "tintaSuave",
+          "id": "fklcds62",
+          "contenido": [
+            [
+              {
+                "texto": "Revista de Acámbaro"
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "carta-del-editor"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "fundido",
+      "titulo": "Anuncio de página completa",
+      "seccion": "Publicidad",
+      "enIndice": false,
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "cfgl377w",
+        "tbx7hsfx",
+        "45jy3yrj",
+        "etatv6bg",
+        "cepf9fag",
+        "25tdi4mf"
+      ],
+      "elementos": [
+        {
+          "tipo": "forma",
+          "w": 800,
+          "h": 1010,
+          "forma": "rectangulo",
+          "color": "#a8501c",
+          "x": 0,
+          "y": 0,
+          "id": "18djsd1r"
+        },
+        {
+          "tipo": "icono",
+          "icono": "train",
+          "color": "#f3ead7",
+          "w": 200,
+          "h": 200,
+          "x": 300,
+          "y": 150,
+          "id": "h0ecfyhd"
+        },
+        {
+          "tipo": "texto",
+          "x": 600,
+          "y": 20,
+          "w": 180,
+          "h": 20,
+          "texto": "PUBLICIDAD",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.22,
+          "color": "tinta",
+          "alinear": "derecha",
+          "fondo": "papel",
+          "relleno": 6,
+          "id": "tbx7hsfx"
+        },
+        {
+          "tipo": "forma",
+          "x": 0,
+          "y": 1010,
+          "w": 800,
+          "h": 90,
+          "color": "tinta",
+          "id": "45jy3yrj"
+        },
+        {
+          "tipo": "texto",
+          "x": 40,
+          "y": 1024,
+          "w": 480,
+          "h": 30,
+          "texto": "Hobby Rieles",
+          "fuente": "sans",
+          "tam": 18,
+          "peso": 700,
+          "color": "papel",
+          "id": "etatv6bg",
+          "contenido": [
+            [
+              {
+                "texto": "Hobby Rieles"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 40,
+          "y": 1056,
+          "w": 560,
+          "h": 24,
+          "texto": "Calle del Riel 123, Acámbaro · Lun a Sáb 10:00 a 19:00 · 000 000 0000",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "papel",
+          "opacidad": 0.8,
+          "id": "cepf9fag",
+          "contenido": [
+            [
+              {
+                "texto": "Calle del Riel 123, Acámbaro · Lun a Sáb 10:00 a 19:00 · 000 000 0000"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 700,
+          "y": 1027,
+          "w": 46,
+          "h": 46,
+          "color": "papel",
+          "id": "25tdi4mf"
+        },
+        {
+          "tipo": "texto",
+          "w": 720,
+          "h": 130,
+          "texto": "Hobby Rieles",
+          "fuente": "display",
+          "tam": 100,
+          "peso": 900,
+          "color": "#f3ead7",
+          "interlineado": 1.05,
+          "x": 40,
+          "y": 400,
+          "id": "0wzt2i0z",
+          "contenido": [
+            [
+              {
+                "texto": "Hobby Rieles"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 640,
+          "h": 110,
+          "texto": "Todo para tu primera maqueta: locomotoras, vías y pintura.",
+          "fuente": "serif",
+          "tam": 30,
+          "color": "#f3ead7",
+          "interlineado": 1.5,
+          "x": 80,
+          "y": 560,
+          "id": "gwkz3wwa",
+          "contenido": [
+            [
+              {
+                "texto": "Todo para tu primera maqueta: locomotoras, vías y pintura."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 640,
+          "h": 30,
+          "texto": "ESCALAS HO · N · O",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "color": "#f3ead7",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 80,
+          "y": 730,
+          "id": "rcn275kn",
+          "contenido": [
+            [
+              {
+                "texto": "ESCALAS HO · N · O"
+              }
+            ]
+          ]
+        }
+      ],
+      "sinMaestra": true
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "¿Qué es el modelismo ferroviario?",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "x": 0,
+          "y": 0,
+          "w": 800,
+          "h": 520,
+          "tono": "indigo",
+          "alt": "Maqueta ferroviaria en una exposición: vías, edificios y trenes en miniatura",
+          "ajuste": "cubrir",
+          "id": "qu00y0gj",
+          "src": "/media/modelismo/que-es.jpg",
+          "credito": "Foto: 玄史生, CC0"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 556,
+          "w": 400,
+          "h": 24,
+          "texto": "EL PASATIEMPO",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "rwu0m0au",
+          "contenido": [
+            [
+              {
+                "texto": "EL PASATIEMPO"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 586,
+          "w": 680,
+          "h": 130,
+          "texto": "¿Qué es el modelismo ferroviario?",
+          "fuente": "display",
+          "tam": 48,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "69jlr0sr",
+          "contenido": [
+            [
+              {
+                "texto": "¿Qué es el modelismo ferroviario?"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 724,
+          "w": 680,
+          "h": 24,
+          "texto": "Por la redacción · 3 min de lectura",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "id": "73lre5yn",
+          "contenido": [
+            [
+              {
+                "texto": "Por la redacción · 3 min de lectura"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 768,
+          "w": 120,
+          "h": 4,
+          "color": "terracota",
+          "id": "a8ni4yfm"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 796,
+          "w": 680,
+          "h": 270,
+          "texto": "El modelismo ferroviario consiste en construir trenes, vías y paisajes a escala reducida. Hay quien colecciona locomotoras de fábrica, quien arma maquetas completas con montañas, estaciones y pueblos, y quien se dedica a copiar con detalle una locomotora real.\n\nNo hace falta un cuarto entero: una maqueta puede caber en una tabla de un metro. Lo que sí hace falta es calma. Colocar una vía, pintar un durmiente o cablear un cambio de agujas son tareas de horas, y por eso el pasatiempo se disfruta tanto en compañía.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.6,
+          "id": "11ilxrex",
+          "contenido": [
+            [
+              {
+                "texto": "El modelismo ferroviario consiste en construir trenes, vías y paisajes a escala reducida. Hay quien colecciona locomotoras de fábrica, quien arma maquetas completas con montañas, estaciones y pueblos, y quien se dedica a copiar con detalle una locomotora real."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "No hace falta un cuarto entero: una maqueta puede caber en una tabla de un metro. Lo que sí hace falta es calma. Colocar una vía, pintar un durmiente o cablear un cambio de agujas son tareas de horas, y por eso el pasatiempo se disfruta tanto en compañía."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 688,
+          "h": 22,
+          "texto": "Maqueta ferroviaria en una exposición de modelismo. Foto: 玄史生 (dominio público, CC0).",
+          "fuente": "serif",
+          "tam": 12,
+          "color": "#6b6458",
+          "interlineado": 1.5,
+          "x": 56,
+          "y": 526,
+          "id": "tmd6w4yt",
+          "contenido": [
+            [
+              {
+                "texto": "Maqueta ferroviaria en una exposición de modelismo. Foto: 玄史生 (dominio público, CC0)."
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "reportaje-con-foto-grande"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Escalas: cuánto mide un tren en miniatura",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 56,
+          "w": 400,
+          "h": 24,
+          "texto": "TÉCNICA",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "g1cas8by",
+          "contenido": [
+            [
+              {
+                "texto": "TÉCNICA"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 90,
+          "w": 680,
+          "h": 150,
+          "texto": "Escalas: cuánto mide un tren en miniatura",
+          "fuente": "display",
+          "tam": 48,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "hdoidr8a",
+          "contenido": [
+            [
+              {
+                "texto": "Escalas: cuánto mide un tren en miniatura"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 252,
+          "w": 680,
+          "h": 24,
+          "texto": "Por la redacción",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "id": "pbvyiupf",
+          "contenido": [
+            [
+              {
+                "texto": "Por la redacción"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 296,
+          "w": 680,
+          "h": 2,
+          "color": "tintaSuave",
+          "opacidad": 0.4,
+          "id": "903300sl"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 326,
+          "w": 320,
+          "h": 290,
+          "texto": "La escala es la proporción entre el modelo y el tren real. En HO, la más popular, cada centímetro del modelo equivale a 87 del tren verdadero (1:87) y la vía mide 16.5 milímetros entre rieles.\n\nEn escala N, 1:160, la vía es de 9 milímetros y el tren cabe en espacios mucho más chicos.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.6,
+          "id": "l79pgthv",
+          "contenido": [
+            [
+              {
+                "texto": "La escala es la proporción entre el modelo y el tren real. En HO, la más popular, cada centímetro del modelo equivale a 87 del tren verdadero (1:87) y la vía mide 16.5 milímetros entre rieles."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "En escala N, 1:160, la vía es de 9 milímetros y el tren cabe en espacios mucho más chicos."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 420,
+          "y": 326,
+          "w": 320,
+          "h": 290,
+          "texto": "La escala O (1:48) es más grande y vistosa, y la escala G (1:22.5) se usa incluso en jardines. Los trenes reales de México circulan sobre vía de trocha estándar, de 1.435 metros, y los modelos copian esa medida a escala.\n\nElegir la escala es la primera decisión: define el espacio, el costo y las piezas que podrás conseguir.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.6,
+          "id": "pmtyh64j",
+          "contenido": [
+            [
+              {
+                "texto": "La escala O (1:48) es más grande y vistosa, y la escala G (1:22.5) se usa incluso en jardines. Los trenes reales de México circulan sobre vía de trocha estándar, de 1.435 metros, y los modelos copian esa medida a escala."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "Elegir la escala es la primera decisión: define el espacio, el costo y las piezas que podrás conseguir."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 688,
+          "h": 22,
+          "texto": "UNA LOCOMOTORA DE 8 METROS, A CUATRO ESCALAS",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "color": "#a8501c",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 56,
+          "y": 660,
+          "id": "uma3dgzx",
+          "contenido": [
+            [
+              {
+                "texto": "UNA LOCOMOTORA DE 8 METROS, A CUATRO ESCALAS"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "w": 360,
+          "h": 40,
+          "forma": "rectangulo",
+          "color": "#a8501c",
+          "x": 56,
+          "y": 706,
+          "id": "4ybzoj2h"
+        },
+        {
+          "tipo": "texto",
+          "w": 300,
+          "h": 26,
+          "texto": "G  ·  1:22,5  ·  36 cm",
+          "fuente": "serif",
+          "tam": 17,
+          "color": "#1b262c",
+          "interlineado": 1.5,
+          "x": 432,
+          "y": 714,
+          "id": "71fknzlm",
+          "contenido": [
+            [
+              {
+                "texto": "G  ·  1:22,5  ·  36 cm"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "w": 169,
+          "h": 40,
+          "forma": "rectangulo",
+          "color": "#a8501c",
+          "x": 56,
+          "y": 790,
+          "id": "3deu3nob"
+        },
+        {
+          "tipo": "texto",
+          "w": 300,
+          "h": 26,
+          "texto": "O  ·  1:48  ·  17 cm",
+          "fuente": "serif",
+          "tam": 17,
+          "color": "#1b262c",
+          "interlineado": 1.5,
+          "x": 241,
+          "y": 798,
+          "id": "azie2w1v",
+          "contenido": [
+            [
+              {
+                "texto": "O  ·  1:48  ·  17 cm"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "w": 93,
+          "h": 40,
+          "forma": "rectangulo",
+          "color": "#a8501c",
+          "x": 56,
+          "y": 874,
+          "id": "wsy1csnc"
+        },
+        {
+          "tipo": "texto",
+          "w": 300,
+          "h": 26,
+          "texto": "HO  ·  1:87  ·  9 cm",
+          "fuente": "serif",
+          "tam": 17,
+          "color": "#1b262c",
+          "interlineado": 1.5,
+          "x": 165,
+          "y": 882,
+          "id": "5q6g4x0t",
+          "contenido": [
+            [
+              {
+                "texto": "HO  ·  1:87  ·  9 cm"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "w": 51,
+          "h": 40,
+          "forma": "rectangulo",
+          "color": "#a8501c",
+          "x": 56,
+          "y": 958,
+          "id": "pwwm01hi"
+        },
+        {
+          "tipo": "texto",
+          "w": 300,
+          "h": 26,
+          "texto": "N  ·  1:160  ·  5 cm",
+          "fuente": "serif",
+          "tam": 17,
+          "color": "#1b262c",
+          "interlineado": 1.5,
+          "x": 123,
+          "y": 966,
+          "id": "bcqq10na",
+          "contenido": [
+            [
+              {
+                "texto": "N  ·  1:160  ·  5 cm"
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "texto-en-dos-columnas"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "fundido",
+      "titulo": "Dos medias páginas",
+      "seccion": "Publicidad",
+      "enIndice": false,
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "d8c4608f",
+        "narjsyzb",
+        "qnt5ilgh",
+        "adp5zbhx",
+        "ckn4tp68",
+        "h7cniaze",
+        "jtr6hwye",
+        "8q6d2oj3"
+      ],
+      "elementos": [
+        {
+          "tipo": "forma",
+          "w": 680,
+          "h": 440,
+          "forma": "rectangulo",
+          "color": "#1b262c",
+          "x": 60,
+          "y": 54,
+          "id": "62t1klh4"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 24,
+          "w": 300,
+          "h": 20,
+          "texto": "PUBLICIDAD",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.22,
+          "color": "tintaSuave",
+          "id": "d8c4608f"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 502,
+          "w": 680,
+          "h": 24,
+          "texto": "Taller Vía Estrecha",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "id": "qnt5ilgh",
+          "contenido": [
+            [
+              {
+                "texto": "Taller Vía Estrecha"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 526,
+          "w": 680,
+          "h": 22,
+          "texto": "Calle del Durmiente 45, Acámbaro · WhatsApp 000 000 0000",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "adp5zbhx",
+          "contenido": [
+            [
+              {
+                "texto": "Calle del Durmiente 45, Acámbaro · WhatsApp 000 000 0000"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 566,
+          "w": 680,
+          "h": 1,
+          "color": "tintaSuave",
+          "opacidad": 0.4,
+          "id": "ckn4tp68"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 1038,
+          "w": 680,
+          "h": 24,
+          "texto": "El Pincel Fino",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "id": "jtr6hwye",
+          "contenido": [
+            [
+              {
+                "texto": "El Pincel Fino"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 1062,
+          "w": 680,
+          "h": 22,
+          "texto": "Plaza del Andén, local 3 · WhatsApp 000 000 0000",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "8q6d2oj3",
+          "contenido": [
+            [
+              {
+                "texto": "Plaza del Andén, local 3 · WhatsApp 000 000 0000"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "hammer",
+          "color": "#f3ead7",
+          "w": 140,
+          "h": 140,
+          "x": 330,
+          "y": 114,
+          "id": "v2mir2f8"
+        },
+        {
+          "tipo": "texto",
+          "w": 620,
+          "h": 80,
+          "texto": "Taller Vía Estrecha",
+          "fuente": "display",
+          "tam": 56,
+          "peso": 900,
+          "color": "#f3ead7",
+          "interlineado": 1.05,
+          "x": 90,
+          "y": 284,
+          "id": "9rybx15c",
+          "contenido": [
+            [
+              {
+                "texto": "Taller Vía Estrecha"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 620,
+          "h": 70,
+          "texto": "Reparación y puesta a punto de locomotoras y vagones.",
+          "fuente": "serif",
+          "tam": 22,
+          "color": "#f3ead7",
+          "interlineado": 1.5,
+          "x": 90,
+          "y": 374,
+          "id": "nla1tjoo",
+          "contenido": [
+            [
+              {
+                "texto": "Reparación y puesta a punto de locomotoras y vagones."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "w": 680,
+          "h": 440,
+          "forma": "rectangulo",
+          "color": "#a8501c",
+          "x": 60,
+          "y": 590,
+          "id": "fjt5a4ev"
+        },
+        {
+          "tipo": "icono",
+          "icono": "brush",
+          "color": "#f3ead7",
+          "w": 140,
+          "h": 140,
+          "x": 330,
+          "y": 650,
+          "id": "v3fnb6nj"
+        },
+        {
+          "tipo": "texto",
+          "w": 620,
+          "h": 80,
+          "texto": "El Pincel Fino",
+          "fuente": "display",
+          "tam": 56,
+          "peso": 900,
+          "color": "#f3ead7",
+          "interlineado": 1.05,
+          "x": 90,
+          "y": 820,
+          "id": "qds2lkyi",
+          "contenido": [
+            [
+              {
+                "texto": "El Pincel Fino"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 620,
+          "h": 70,
+          "texto": "Pinturas, polvos y todo para el paisaje de tu maqueta.",
+          "fuente": "serif",
+          "tam": 22,
+          "color": "#f3ead7",
+          "interlineado": 1.5,
+          "x": 90,
+          "y": 910,
+          "id": "g40kl2be",
+          "contenido": [
+            [
+              {
+                "texto": "Pinturas, polvos y todo para el paisaje de tu maqueta."
+              }
+            ]
+          ]
+        }
+      ],
+      "sinMaestra": true
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Del vapor a la maqueta",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "x": 0,
+          "y": 0,
+          "w": 800,
+          "h": 520,
+          "tono": "indigo",
+          "alt": "Locomotora N. de M. 739 con un grupo de soldados zapatistas, 1911",
+          "ajuste": "cubrir",
+          "id": "zgz1iohb",
+          "src": "/media/05/ndem-739-1911.jpg"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 556,
+          "w": 400,
+          "h": 24,
+          "texto": "HISTORIA",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "rdwtj5ji",
+          "contenido": [
+            [
+              {
+                "texto": "HISTORIA"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 586,
+          "w": 680,
+          "h": 130,
+          "texto": "Del vapor a la maqueta",
+          "fuente": "display",
+          "tam": 48,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "lu91s2hv",
+          "contenido": [
+            [
+              {
+                "texto": "Del vapor a la maqueta"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 724,
+          "w": 680,
+          "h": 24,
+          "texto": "Por la redacción · 2 min de lectura",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "id": "twqpdjfh",
+          "contenido": [
+            [
+              {
+                "texto": "Por la redacción · 2 min de lectura"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 768,
+          "w": 120,
+          "h": 4,
+          "color": "terracota",
+          "id": "oxz61yvz"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 796,
+          "w": 680,
+          "h": 270,
+          "texto": "Los ferrocarriles llegaron a México a mediados del siglo XIX. En 1908 se formó Ferrocarriles Nacionales de México, que durante décadas unió ciudades, puertos y pueblos; sus locomotoras llevaban las siglas N. de M.\n\nA finales de los años noventa el servicio de pasajeros casi desapareció, pero las locomotoras de vapor que se conservan en estaciones y museos siguen despertando curiosidad. Muchos modelistas nacieron mirando una de ellas.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.6,
+          "id": "h0cnzg7z",
+          "contenido": [
+            [
+              {
+                "texto": "Los ferrocarriles llegaron a México a mediados del siglo XIX. En 1908 se formó Ferrocarriles Nacionales de México, que durante décadas unió ciudades, puertos y pueblos; sus locomotoras llevaban las siglas N. de M."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "A finales de los años noventa el servicio de pasajeros casi desapareció, pero las locomotoras de vapor que se conservan en estaciones y museos siguen despertando curiosidad. Muchos modelistas nacieron mirando una de ellas."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 688,
+          "h": 22,
+          "texto": "Locomotora N. de M. 739 con un grupo de soldados zapatistas, 1911.",
+          "fuente": "serif",
+          "tam": 12,
+          "color": "#6b6458",
+          "interlineado": 1.5,
+          "x": 56,
+          "y": 526,
+          "id": "y7e094g2",
+          "contenido": [
+            [
+              {
+                "texto": "Locomotora N. de M. 739 con un grupo de soldados zapatistas, 1911."
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "reportaje-con-foto-grande-2"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "La antigua estación de Acámbaro",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "x": 0,
+          "y": 0,
+          "w": 800,
+          "h": 470,
+          "tono": "oliva",
+          "alt": "Antigua estación del ferrocarril de Acámbaro, hoy museo",
+          "ajuste": "cubrir",
+          "id": "cmsy0lcu",
+          "src": "/media/05/estacion.jpg"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 502,
+          "w": 400,
+          "h": 24,
+          "texto": "PARA VISITAR",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "ptjn0cjj"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 534,
+          "w": 680,
+          "h": 90,
+          "texto": "La antigua estación de Acámbaro",
+          "fuente": "display",
+          "tam": 46,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "16btnhjz",
+          "contenido": [
+            [
+              {
+                "texto": "La antigua estación de Acámbaro"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 640,
+          "w": 680,
+          "h": 170,
+          "texto": "Hoy convertida en museo, la antigua estación del ferrocarril de Acámbaro conserva la memoria de los años en que los trenes de vapor pasaban por la ciudad. Si te gustan los trenes, es un buen lugar para ver de cerca el tamaño real de lo que los modelistas copian a escala.",
+          "fuente": "serif",
+          "tam": 20,
+          "interlineado": 1.6,
+          "id": "hw3y9ijh",
+          "contenido": [
+            [
+              {
+                "texto": "Hoy convertida en museo, la antigua estación del ferrocarril de Acámbaro conserva la memoria de los años en que los trenes de vapor pasaban por la ciudad. Si te gustan los trenes, es un buen lugar para ver de cerca el tamaño real de lo que los modelistas copian a escala."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 830,
+          "w": 680,
+          "h": 2,
+          "color": "tintaSuave",
+          "opacidad": 0.4,
+          "id": "fcfcin8b"
+        },
+        {
+          "tipo": "icono",
+          "icono": "map-pin",
+          "x": 60,
+          "y": 860,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "1lewjkg5"
+        },
+        {
+          "tipo": "texto",
+          "x": 104,
+          "y": 862,
+          "w": 280,
+          "h": 56,
+          "texto": "Cómo llegar\nAcámbaro, Guanajuato (confirma la dirección)",
+          "fuente": "sans",
+          "tam": 16,
+          "interlineado": 1.4,
+          "id": "nlxsqbf7",
+          "contenido": [
+            [
+              {
+                "texto": "Cómo llegar"
+              }
+            ],
+            [
+              {
+                "texto": "Acámbaro, Guanajuato (confirma la dirección)"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "clock",
+          "x": 420,
+          "y": 860,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "vtk7ymgd"
+        },
+        {
+          "tipo": "texto",
+          "x": 464,
+          "y": 862,
+          "w": 276,
+          "h": 56,
+          "texto": "Horario\nConsúltalo antes de ir",
+          "fuente": "sans",
+          "tam": 16,
+          "interlineado": 1.4,
+          "id": "d5ju0s4y",
+          "contenido": [
+            [
+              {
+                "texto": "Horario"
+              }
+            ],
+            [
+              {
+                "texto": "Consúltalo antes de ir"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "ticket",
+          "x": 60,
+          "y": 960,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "jpxsdluw"
+        },
+        {
+          "tipo": "texto",
+          "x": 104,
+          "y": 962,
+          "w": 280,
+          "h": 56,
+          "texto": "Costo\nPor confirmar",
+          "fuente": "sans",
+          "tam": 16,
+          "interlineado": 1.4,
+          "id": "nt2s3wtm",
+          "contenido": [
+            [
+              {
+                "texto": "Costo"
+              }
+            ],
+            [
+              {
+                "texto": "Por confirmar"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "phone",
+          "x": 420,
+          "y": 960,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "lt1lgxkk"
+        },
+        {
+          "tipo": "texto",
+          "x": 464,
+          "y": 962,
+          "w": 276,
+          "h": 56,
+          "texto": "Informes\nPor confirmar",
+          "fuente": "sans",
+          "tam": 16,
+          "interlineado": 1.4,
+          "id": "rdtpzwr5",
+          "contenido": [
+            [
+              {
+                "texto": "Informes"
+              }
+            ],
+            [
+              {
+                "texto": "Por confirmar"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 688,
+          "h": 22,
+          "texto": "Antigua estación del ferrocarril de Acámbaro, hoy museo.",
+          "fuente": "serif",
+          "tam": 12,
+          "color": "#6b6458",
+          "interlineado": 1.5,
+          "x": 56,
+          "y": 476,
+          "id": "kjeaun0n",
+          "contenido": [
+            [
+              {
+                "texto": "Antigua estación del ferrocarril de Acámbaro, hoy museo."
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "lugar-para-visitar"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "fundido",
+      "titulo": "Contenido patrocinado",
+      "seccion": "Publicidad",
+      "enIndice": false,
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "nlsf0cop",
+        "3d008wes",
+        "p31ps9nz",
+        "gr36xyeo",
+        "n79qn9pw",
+        "9erpt9ws",
+        "34qgwsrf",
+        "fz0ghq0d",
+        "q5ctego2"
+      ],
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 24,
+          "w": 420,
+          "h": 20,
+          "texto": "PUBLICIDAD · CONTENIDO PATROCINADO",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.22,
+          "color": "tintaSuave",
+          "id": "nlsf0cop"
+        },
+        {
+          "tipo": "imagen",
+          "x": 0,
+          "y": 56,
+          "w": 800,
+          "h": 430,
+          "tono": "ocre",
+          "alt": "Locomotora diésel en escala HO sobre su vía",
+          "ajuste": "cubrir",
+          "id": "3d008wes",
+          "src": "/media/modelismo/ho-locomotora.jpg",
+          "credito": "Foto: Ottawa Model Railfan, CC BY-SA 4.0"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 516,
+          "w": 680,
+          "h": 130,
+          "texto": "Cómo elegir tu primera locomotora",
+          "fuente": "display",
+          "tam": 42,
+          "peso": 900,
+          "interlineado": 1.08,
+          "id": "p31ps9nz",
+          "contenido": [
+            [
+              {
+                "texto": "Cómo elegir tu primera locomotora"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 656,
+          "w": 120,
+          "h": 4,
+          "color": "terracota",
+          "id": "gr36xyeo"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 680,
+          "w": 680,
+          "h": 220,
+          "texto": "Antes de comprar, decide la escala y el tipo de vía: en escala HO, la más común, hay más modelos y más refacciones. Una locomotora de arranque con buena tracción y un transformador sencillo bastan para empezar.\n\nRevisa que las ruedas giren sin atorarse, pruébala en vía recta antes de llevarla a una curva y pide siempre garantía. Hobby Rieles te asesora sin compromiso.",
+          "fuente": "serif",
+          "tam": 19,
+          "interlineado": 1.6,
+          "id": "n79qn9pw",
+          "contenido": [
+            [
+              {
+                "texto": "Antes de comprar, decide la escala y el tipo de vía: en escala HO, la más común, hay más modelos y más refacciones. Una locomotora de arranque con buena tracción y un transformador sencillo bastan para empezar."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "Revisa que las ruedas giren sin atorarse, pruébala en vía recta antes de llevarla a una curva y pide siempre garantía. Hobby Rieles te asesora sin compromiso."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 920,
+          "w": 680,
+          "h": 130,
+          "color": "papel2",
+          "radio": 8,
+          "id": "9erpt9ws"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 938,
+          "w": 440,
+          "h": 28,
+          "texto": "Hobby Rieles",
+          "fuente": "display",
+          "tam": 22,
+          "peso": 800,
+          "id": "34qgwsrf",
+          "contenido": [
+            [
+              {
+                "texto": "Hobby Rieles"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 972,
+          "w": 460,
+          "h": 60,
+          "texto": "Calle del Riel 123, Acámbaro\nLun a Sáb 10:00 a 19:00 · 000 000 0000",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.5,
+          "id": "fz0ghq0d",
+          "contenido": [
+            [
+              {
+                "texto": "Calle del Riel 123, Acámbaro"
+              }
+            ],
+            [
+              {
+                "texto": "Lun a Sáb 10:00 a 19:00 · 000 000 0000"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 660,
+          "y": 960,
+          "w": 56,
+          "h": 56,
+          "color": "oliva",
+          "id": "q5ctego2"
+        }
+      ],
+      "sinMaestra": true
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Tu primera maqueta en una tabla",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "x": 0,
+          "y": 0,
+          "w": 800,
+          "h": 430,
+          "tono": "terracota",
+          "alt": "Una maqueta ferroviaria en construcción, con vías tendidas y el paisaje sin terminar",
+          "ajuste": "cubrir",
+          "id": "bglrisre",
+          "src": "/media/modelismo/taller.jpg",
+          "credito": "Foto: Nathaniel Railroad, CC0"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 462,
+          "w": 400,
+          "h": 24,
+          "texto": "TALLER",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "wtvr33im",
+          "contenido": [
+            [
+              {
+                "texto": "TALLER"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 494,
+          "w": 680,
+          "h": 90,
+          "texto": "Tu primera maqueta en una tabla",
+          "fuente": "display",
+          "tam": 46,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "qj3ub5sa",
+          "contenido": [
+            [
+              {
+                "texto": "Tu primera maqueta en una tabla"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "clock",
+          "x": 60,
+          "y": 598,
+          "w": 24,
+          "h": 24,
+          "color": "terracota",
+          "id": "3cm9k9r5"
+        },
+        {
+          "tipo": "texto",
+          "x": 94,
+          "y": 598,
+          "w": 200,
+          "h": 26,
+          "texto": "1 fin de semana",
+          "fuente": "sans",
+          "tam": 16,
+          "color": "tintaSuave",
+          "id": "9tn4c2ui",
+          "contenido": [
+            [
+              {
+                "texto": "1 fin de semana"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "users",
+          "x": 300,
+          "y": 598,
+          "w": 24,
+          "h": 24,
+          "color": "terracota",
+          "id": "nqzrn7yk"
+        },
+        {
+          "tipo": "texto",
+          "x": 334,
+          "y": 598,
+          "w": 200,
+          "h": 26,
+          "texto": "1 persona",
+          "fuente": "sans",
+          "tam": 16,
+          "color": "tintaSuave",
+          "id": "phryt58m",
+          "contenido": [
+            [
+              {
+                "texto": "1 persona"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 650,
+          "w": 680,
+          "h": 2,
+          "color": "tintaSuave",
+          "opacidad": 0.4,
+          "id": "ipys2omq"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 676,
+          "w": 250,
+          "h": 26,
+          "texto": "MATERIALES",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.16,
+          "id": "809zznpw",
+          "contenido": [
+            [
+              {
+                "texto": "MATERIALES"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 712,
+          "w": 250,
+          "h": 340,
+          "texto": "• Un óvalo de vía en escala HO\n• Una locomotora y 3 vagones de arranque\n• Un transformador (fuente de poder)\n• Una tabla de 120 × 60 cm\n• Pegamento y cinta",
+          "fuente": "serif",
+          "tam": 19,
+          "interlineado": 1.7,
+          "id": "696dntl8",
+          "contenido": [
+            [
+              {
+                "texto": "• Un óvalo de vía en escala HO"
+              }
+            ],
+            [
+              {
+                "texto": "• Una locomotora y 3 vagones de arranque"
+              }
+            ],
+            [
+              {
+                "texto": "• Un transformador (fuente de poder)"
+              }
+            ],
+            [
+              {
+                "texto": "• Una tabla de 120 × 60 cm"
+              }
+            ],
+            [
+              {
+                "texto": "• Pegamento y cinta"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 676,
+          "w": 390,
+          "h": 26,
+          "texto": "PREPARACIÓN",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.16,
+          "id": "c09fatwh"
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 712,
+          "w": 390,
+          "h": 340,
+          "texto": "1. Marca el óvalo sobre la tabla y verifica que los vagones den la curva sin atorarse.\n\n2. Fija la vía y conecta la corriente en un solo punto.\n\n3. Prueba la locomotora despacio antes de agregar el paisaje.",
+          "fuente": "serif",
+          "tam": 19,
+          "interlineado": 1.6,
+          "id": "h5zi4oyh",
+          "contenido": [
+            [
+              {
+                "texto": "1. Marca el óvalo sobre la tabla y verifica que los vagones den la curva sin atorarse."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "2. Fija la vía y conecta la corriente en un solo punto."
+              }
+            ],
+            [],
+            [
+              {
+                "texto": "3. Prueba la locomotora despacio antes de agregar el paisaje."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 688,
+          "h": 22,
+          "texto": "Una maqueta en construcción: primero las vías, después el paisaje. Foto: Nathaniel Railroad (CC0).",
+          "fuente": "serif",
+          "tam": 12,
+          "color": "#6b6458",
+          "interlineado": 1.5,
+          "x": 56,
+          "y": 440,
+          "id": "g12ul9mg",
+          "contenido": [
+            [
+              {
+                "texto": "Una maqueta en construcción: primero las vías, después el paisaje. Foto: Nathaniel Railroad (CC0)."
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "receta"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "fundido",
+      "titulo": "Cupones de descuento",
+      "seccion": "Publicidad",
+      "enIndice": false,
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "2jzg6av9",
+        "k8hyo9b0",
+        "0uovj8w0",
+        "hqbxjglc",
+        "2yxzohir",
+        "ygrfmtxc",
+        "5ie5i06c",
+        "24zukvv4",
+        "e40ljhzw",
+        "hxyd1vll",
+        "b53m2snn",
+        "z40r3ztl",
+        "u6k1z1u2",
+        "2no1cclk",
+        "mmxp0x7y",
+        "anehpsti",
+        "lexn8w5p",
+        "qvhxvuum",
+        "whqehl47",
+        "y3sze6x4",
+        "p4wbs46z",
+        "rxegvpaq",
+        "wdoz1q4o"
+      ],
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 36,
+          "w": 680,
+          "h": 70,
+          "texto": "Cupones para modelistas",
+          "fuente": "display",
+          "tam": 42,
+          "peso": 900,
+          "id": "2jzg6av9",
+          "contenido": [
+            [
+              {
+                "texto": "Cupones para modelistas"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 104,
+          "w": 300,
+          "h": 20,
+          "texto": "PUBLICIDAD",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.22,
+          "color": "tintaSuave",
+          "id": "k8hyo9b0"
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 150,
+          "w": 680,
+          "h": 280,
+          "color": "blanco",
+          "borde": 3,
+          "colorBorde": "terracota",
+          "radio": 14,
+          "id": "0uovj8w0"
+        },
+        {
+          "tipo": "icono",
+          "icono": "scissors",
+          "x": 78,
+          "y": 162,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "hqbxjglc"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 190,
+          "w": 280,
+          "h": 130,
+          "texto": "2×1",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "color": "terracota",
+          "alinear": "centro",
+          "vertical": "centro",
+          "id": "2yxzohir",
+          "contenido": [
+            [
+              {
+                "texto": "2×1"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 190,
+          "w": 370,
+          "h": 110,
+          "texto": "Hobby Rieles\n2×1 en vagones de arranque",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "interlineado": 1.35,
+          "id": "ygrfmtxc",
+          "contenido": [
+            [
+              {
+                "texto": "Hobby Rieles"
+              }
+            ],
+            [
+              {
+                "texto": "2×1 en vagones de arranque"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 310,
+          "w": 370,
+          "h": 60,
+          "texto": "Válido hasta el 30/11 · Muestra esta página",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.4,
+          "id": "5ie5i06c",
+          "contenido": [
+            [
+              {
+                "texto": "Válido hasta el 30/11 · Muestra esta página"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 664,
+          "y": 368,
+          "w": 44,
+          "h": 44,
+          "color": "oliva",
+          "id": "24zukvv4"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 382,
+          "w": 500,
+          "h": 24,
+          "texto": "Calle del Riel 123 · 000 000 0000",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "e40ljhzw",
+          "contenido": [
+            [
+              {
+                "texto": "Calle del Riel 123 · 000 000 0000"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 460,
+          "w": 680,
+          "h": 280,
+          "color": "blanco",
+          "borde": 3,
+          "colorBorde": "terracota",
+          "radio": 14,
+          "id": "hxyd1vll"
+        },
+        {
+          "tipo": "icono",
+          "icono": "scissors",
+          "x": 78,
+          "y": 472,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "b53m2snn"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 500,
+          "w": 280,
+          "h": 130,
+          "texto": "20 %",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "color": "terracota",
+          "alinear": "centro",
+          "vertical": "centro",
+          "id": "z40r3ztl",
+          "contenido": [
+            [
+              {
+                "texto": "20 %"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 500,
+          "w": 370,
+          "h": 110,
+          "texto": "Taller Vía Estrecha\n20 % en la revisión de tu locomotora",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "interlineado": 1.35,
+          "id": "u6k1z1u2",
+          "contenido": [
+            [
+              {
+                "texto": "Taller Vía Estrecha"
+              }
+            ],
+            [
+              {
+                "texto": "20 % en la revisión de tu locomotora"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 620,
+          "w": 370,
+          "h": 60,
+          "texto": "Válido hasta el 30/11 · Muestra esta página",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.4,
+          "id": "2no1cclk",
+          "contenido": [
+            [
+              {
+                "texto": "Válido hasta el 30/11 · Muestra esta página"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 664,
+          "y": 678,
+          "w": 44,
+          "h": 44,
+          "color": "oliva",
+          "id": "mmxp0x7y"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 692,
+          "w": 500,
+          "h": 24,
+          "texto": "Calle del Durmiente 45 · 000 000 0000",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "anehpsti",
+          "contenido": [
+            [
+              {
+                "texto": "Calle del Durmiente 45 · 000 000 0000"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 770,
+          "w": 680,
+          "h": 280,
+          "color": "blanco",
+          "borde": 3,
+          "colorBorde": "terracota",
+          "radio": 14,
+          "id": "lexn8w5p"
+        },
+        {
+          "tipo": "icono",
+          "icono": "scissors",
+          "x": 78,
+          "y": 782,
+          "w": 30,
+          "h": 30,
+          "color": "terracota",
+          "id": "qvhxvuum"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 810,
+          "w": 280,
+          "h": 130,
+          "texto": "15 %",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "color": "terracota",
+          "alinear": "centro",
+          "vertical": "centro",
+          "id": "whqehl47",
+          "contenido": [
+            [
+              {
+                "texto": "15 %"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 810,
+          "w": 370,
+          "h": 110,
+          "texto": "El Pincel Fino\n15 % en pinturas y polvos de paisaje",
+          "fuente": "sans",
+          "tam": 20,
+          "peso": 700,
+          "interlineado": 1.35,
+          "id": "y3sze6x4",
+          "contenido": [
+            [
+              {
+                "texto": "El Pincel Fino"
+              }
+            ],
+            [
+              {
+                "texto": "15 % en pinturas y polvos de paisaje"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 350,
+          "y": 930,
+          "w": 370,
+          "h": 60,
+          "texto": "Válido hasta el 30/11 · Muestra esta página",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "tintaSuave",
+          "interlineado": 1.4,
+          "id": "p4wbs46z",
+          "contenido": [
+            [
+              {
+                "texto": "Válido hasta el 30/11 · Muestra esta página"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 664,
+          "y": 988,
+          "w": 44,
+          "h": 44,
+          "color": "oliva",
+          "id": "rxegvpaq"
+        },
+        {
+          "tipo": "texto",
+          "x": 84,
+          "y": 1002,
+          "w": 500,
+          "h": 24,
+          "texto": "Plaza del Andén, local 3 · 000 000 0000",
+          "fuente": "sans",
+          "tam": 13,
+          "color": "tintaSuave",
+          "id": "wdoz1q4o",
+          "contenido": [
+            [
+              {
+                "texto": "Plaza del Andén, local 3 · 000 000 0000"
+              }
+            ]
+          ]
+        }
+      ],
+      "sinMaestra": true
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Ideas para seguir en el tema",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 50,
+          "w": 400,
+          "h": 24,
+          "texto": "PARA SEGUIR",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "color": "#a8501c",
+          "id": "z8a0g141",
+          "contenido": [
+            [
+              {
+                "texto": "PARA SEGUIR"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 84,
+          "w": 680,
+          "h": 90,
+          "texto": "Ideas para seguir en el tema",
+          "fuente": "display",
+          "tam": 46,
+          "peso": 900,
+          "interlineado": 1.05,
+          "id": "0o80b5uj",
+          "contenido": [
+            [
+              {
+                "texto": "Ideas para seguir en el tema"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 210,
+          "w": 120,
+          "h": 130,
+          "color": "#a8501c",
+          "radio": 10,
+          "id": "njoi5cmk"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 224,
+          "w": 120,
+          "h": 70,
+          "texto": "1",
+          "fuente": "display",
+          "tam": 56,
+          "peso": 900,
+          "alinear": "centro",
+          "color": "papel",
+          "id": "dv2d8zej",
+          "contenido": [
+            [
+              {
+                "texto": "1"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 298,
+          "w": 120,
+          "h": 30,
+          "texto": "IDEA",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.16,
+          "alinear": "centro",
+          "color": "blanco",
+          "id": "9um5urt3",
+          "contenido": [
+            [
+              {
+                "texto": "IDEA"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 216,
+          "w": 530,
+          "h": 44,
+          "texto": "Arma un óvalo de vía",
+          "fuente": "display",
+          "tam": 28,
+          "peso": 800,
+          "interlineado": 1.1,
+          "id": "h1upykfq",
+          "contenido": [
+            [
+              {
+                "texto": "Arma un óvalo de vía"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 266,
+          "w": 530,
+          "h": 32,
+          "texto": "En casa · un fin de semana",
+          "fuente": "sans",
+          "tam": 16,
+          "color": "tintaSuave",
+          "id": "lh3xluoa",
+          "contenido": [
+            [
+              {
+                "texto": "En casa · un fin de semana"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 302,
+          "w": 530,
+          "h": 36,
+          "texto": "Con una tabla, vía HO y una locomotora de arranque.",
+          "fuente": "serif",
+          "tam": 16,
+          "cursiva": true,
+          "color": "tintaSuave",
+          "id": "w24fez3q",
+          "contenido": [
+            [
+              {
+                "texto": "Con una tabla, vía HO y una locomotora de arranque."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 380,
+          "w": 120,
+          "h": 130,
+          "color": "#a8501c",
+          "radio": 10,
+          "id": "y25iermm"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 394,
+          "w": 120,
+          "h": 70,
+          "texto": "2",
+          "fuente": "display",
+          "tam": 56,
+          "peso": 900,
+          "alinear": "centro",
+          "color": "papel",
+          "id": "q3nqnpbl",
+          "contenido": [
+            [
+              {
+                "texto": "2"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 468,
+          "w": 120,
+          "h": 30,
+          "texto": "IDEA",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.16,
+          "alinear": "centro",
+          "color": "blanco",
+          "id": "zpub3dvm",
+          "contenido": [
+            [
+              {
+                "texto": "IDEA"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 386,
+          "w": 530,
+          "h": 44,
+          "texto": "Visita la antigua estación",
+          "fuente": "display",
+          "tam": 28,
+          "peso": 800,
+          "interlineado": 1.1,
+          "id": "25w8x5p2",
+          "contenido": [
+            [
+              {
+                "texto": "Visita la antigua estación"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 436,
+          "w": 530,
+          "h": 32,
+          "texto": "Acámbaro · confirma horarios",
+          "fuente": "sans",
+          "tam": 16,
+          "color": "tintaSuave",
+          "id": "0mqltx94",
+          "contenido": [
+            [
+              {
+                "texto": "Acámbaro · confirma horarios"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 472,
+          "w": 530,
+          "h": 36,
+          "texto": "Mira de cerca una locomotora real y compárala con tu modelo.",
+          "fuente": "serif",
+          "tam": 16,
+          "cursiva": true,
+          "color": "tintaSuave",
+          "id": "wdthhv4n",
+          "contenido": [
+            [
+              {
+                "texto": "Mira de cerca una locomotora real y compárala con tu modelo."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 60,
+          "y": 550,
+          "w": 120,
+          "h": 130,
+          "color": "#a8501c",
+          "radio": 10,
+          "id": "lowck085"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 564,
+          "w": 120,
+          "h": 70,
+          "texto": "3",
+          "fuente": "display",
+          "tam": 56,
+          "peso": 900,
+          "alinear": "centro",
+          "color": "papel",
+          "id": "znephuqk",
+          "contenido": [
+            [
+              {
+                "texto": "3"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 638,
+          "w": 120,
+          "h": 30,
+          "texto": "IDEA",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.16,
+          "alinear": "centro",
+          "color": "blanco",
+          "id": "bv7kwmdw",
+          "contenido": [
+            [
+              {
+                "texto": "IDEA"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 556,
+          "w": 530,
+          "h": 44,
+          "texto": "Pinta tu primer vagón",
+          "fuente": "display",
+          "tam": 28,
+          "peso": 800,
+          "interlineado": 1.1,
+          "id": "58ru8tty",
+          "contenido": [
+            [
+              {
+                "texto": "Pinta tu primer vagón"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 606,
+          "w": 530,
+          "h": 32,
+          "texto": "En casa · una tarde",
+          "fuente": "sans",
+          "tam": 16,
+          "color": "tintaSuave",
+          "id": "d0aqrdz3",
+          "contenido": [
+            [
+              {
+                "texto": "En casa · una tarde"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 210,
+          "y": 642,
+          "w": 530,
+          "h": 36,
+          "texto": "Con pintura acrílica y paciencia, un vagón de fábrica se vuelve único.",
+          "fuente": "serif",
+          "tam": 16,
+          "cursiva": true,
+          "color": "tintaSuave",
+          "id": "vyasjott",
+          "contenido": [
+            [
+              {
+                "texto": "Con pintura acrílica y paciencia, un vagón de fábrica se vuelve único."
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "agenda-de-eventos"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "fundido",
+      "titulo": "Con el apoyo de",
+      "seccion": "Patrocinadores",
+      "enIndice": false,
+      "fondo": "papel",
+      "alto": 1100,
+      "movil": "apilar",
+      "ordenMovil": [
+        "abykd6my",
+        "mgozqkzi",
+        "1txtpniu",
+        "3t0vfo5v",
+        "nvnccn4o",
+        "adxsx42o",
+        "jrymkp3g",
+        "v8gfwpbs",
+        "o23pwwte",
+        "j7mqm844",
+        "e4jtamec",
+        "mlpesftc"
+      ],
+      "elementos": [
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 80,
+          "w": 680,
+          "h": 80,
+          "texto": "Con el apoyo de",
+          "fuente": "display",
+          "tam": 46,
+          "peso": 900,
+          "cursiva": true,
+          "alinear": "centro",
+          "id": "abykd6my"
+        },
+        {
+          "tipo": "forma",
+          "x": 360,
+          "y": 170,
+          "w": 80,
+          "h": 3,
+          "color": "terracota",
+          "id": "mgozqkzi"
+        },
+        {
+          "tipo": "texto",
+          "x": 110,
+          "y": 196,
+          "w": 580,
+          "h": 60,
+          "texto": "Estos negocios de Acámbaro hacen posible cada edición. Visítalos y dile que los viste en la revista.",
+          "fuente": "serif",
+          "tam": 20,
+          "alinear": "centro",
+          "color": "tintaSuave",
+          "interlineado": 1.5,
+          "id": "1txtpniu",
+          "contenido": [
+            [
+              {
+                "texto": "Estos negocios de Acámbaro hacen posible cada edición. Visítalos y dile que los viste en la revista."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 1040,
+          "w": 680,
+          "h": 20,
+          "texto": "PUBLICIDAD",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.22,
+          "color": "tintaSuave",
+          "alinear": "centro",
+          "id": "mlpesftc"
+        },
+        {
+          "tipo": "texto",
+          "w": 600,
+          "h": 700,
+          "texto": "Hobby Rieles\nTaller Vía Estrecha\nEl Pincel Fino\nPapelería La Estación\nPanadería El Andén\nFerretería Los Durmientes\nCafé La Locomotora\nImprenta Riel y Tinta",
+          "fuente": "display",
+          "tam": 34,
+          "peso": 900,
+          "color": "#1b262c",
+          "interlineado": 2.1,
+          "x": 100,
+          "y": 300,
+          "id": "iamdhnox",
+          "contenido": [
+            [
+              {
+                "texto": "Hobby Rieles"
+              }
+            ],
+            [
+              {
+                "texto": "Taller Vía Estrecha"
+              }
+            ],
+            [
+              {
+                "texto": "El Pincel Fino"
+              }
+            ],
+            [
+              {
+                "texto": "Papelería La Estación"
+              }
+            ],
+            [
+              {
+                "texto": "Panadería El Andén"
+              }
+            ],
+            [
+              {
+                "texto": "Ferretería Los Durmientes"
+              }
+            ],
+            [
+              {
+                "texto": "Café La Locomotora"
+              }
+            ],
+            [
+              {
+                "texto": "Imprenta Riel y Tinta"
+              }
+            ]
+          ],
+          "alinear": "centro"
+        }
+      ],
+      "sinMaestra": true
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Contraportada con redes",
+      "fondo": "#1b262c",
+      "alto": 1100,
+      "movil": "apilar",
+      "elementos": [
+        {
+          "tipo": "forma",
+          "x": 120,
+          "y": 270,
+          "w": 560,
+          "h": 170,
+          "color": "papel",
+          "radio": 12,
+          "id": "kgs5e40n"
+        },
+        {
+          "tipo": "imagen",
+          "x": 150,
+          "y": 290,
+          "w": 500,
+          "h": 130,
+          "tono": "ocre",
+          "alt": "ACOM-Di, Revista de Acámbaro",
+          "ajuste": "contener",
+          "src": "/brand/logo.svg",
+          "id": "u4ref50c"
+        },
+        {
+          "tipo": "texto",
+          "x": 60,
+          "y": 462,
+          "w": 680,
+          "h": 36,
+          "texto": "Rieles a escala · Edición especial",
+          "fuente": "display",
+          "tam": 22,
+          "cursiva": true,
+          "alinear": "centro",
+          "color": "papel",
+          "opacidad": 0.8,
+          "id": "8yqafrs3",
+          "contenido": [
+            [
+              {
+                "texto": "Rieles a escala · Edición especial"
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "forma",
+          "x": 360,
+          "y": 540,
+          "w": 80,
+          "h": 3,
+          "color": "terracota",
+          "id": "5or0n2hl"
+        },
+        {
+          "tipo": "texto",
+          "x": 100,
+          "y": 580,
+          "w": 600,
+          "h": 30,
+          "texto": "SÍGUENOS",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "mayusculas": true,
+          "espaciado": 0.2,
+          "alinear": "centro",
+          "color": "papel",
+          "id": "3kgg6hyi"
+        },
+        {
+          "tipo": "icono",
+          "icono": "instagram",
+          "x": 264,
+          "y": 630,
+          "w": 56,
+          "h": 56,
+          "color": "papel",
+          "animacion": {
+            "efecto": "subir"
+          },
+          "id": "vxr8lgla"
+        },
+        {
+          "tipo": "icono",
+          "icono": "facebook",
+          "x": 372,
+          "y": 630,
+          "w": 56,
+          "h": 56,
+          "color": "papel",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          },
+          "id": "rg622tql"
+        },
+        {
+          "tipo": "icono",
+          "icono": "whatsapp",
+          "x": 480,
+          "y": 630,
+          "w": 56,
+          "h": 56,
+          "color": "papel",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          },
+          "id": "hub3r5x4"
+        },
+        {
+          "tipo": "texto",
+          "x": 100,
+          "y": 960,
+          "w": 600,
+          "h": 30,
+          "texto": "Gracias por viajar con nosotros.",
+          "fuente": "sans",
+          "tam": 16,
+          "alinear": "centro",
+          "color": "papel",
+          "id": "dtjcu868",
+          "contenido": [
+            [
+              {
+                "texto": "Gracias por viajar con nosotros."
+              }
+            ]
+          ]
+        },
+        {
+          "tipo": "texto",
+          "w": 640,
+          "h": 90,
+          "texto": "{creditos}",
+          "fuente": "serif",
+          "tam": 12,
+          "color": "#cfc7b5",
+          "interlineado": 1.5,
+          "x": 80,
+          "y": 840,
+          "id": "a1du069m",
+          "contenido": [
+            [
+              {
+                "texto": "{creditos}"
+              }
+            ]
+          ]
+        }
+      ],
+      "ancla": "contraportada-con-redes",
+      "sinMaestra": true
+    }
+  ]
+}
