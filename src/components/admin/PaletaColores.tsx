@@ -405,7 +405,7 @@ export function BotonColor({ valor, onChange, vacio, etiqueta, degradado, onDegr
         <div
           ref={panel}
           data-paleta-flotante
-          className="fixed z-[60] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain rounded-md border border-ink/40 bg-paper p-3 shadow-xl"
+          className="fixed z-[100] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain rounded-md border border-ink/40 bg-paper p-3 shadow-xl"
           style={{ left: sitio.left, top: sitio.top, bottom: sitio.bottom, maxHeight: sitio.alto }}
         >
           <PaletaColores valor={valor} onChange={onChange} vacio={vacio} degradado={degradado} onDegradado={onDegradado} />

@@ -30,6 +30,7 @@ import BuscarReemplazar from "./BuscarReemplazar";
 import { ItemMenu, MenuSuperior, SeparadorMenu } from "./MenuSuperior";
 import Versiones from "./Versiones";
 import AyudaEditor from "./AyudaEditor";
+import CambiarColor from "./CambiarColor";
 import { EstilosEdicionContext, PaletaEdicionContext } from "./ContextosEdicion";
 import VistaPreviaLector from "./VistaPreviaLector";
 import { useMenuContextual, type ItemMenu as ItemCtx } from "./MenuContextual";
@@ -128,6 +129,7 @@ export default function Editor({
   const [verVersiones, setVerVersiones] = useState(false);
   const [verMedios, setVerMedios] = useState(false);
   const [verBuscar, setVerBuscar] = useState(false);
+  const [verColor, setVerColor] = useState(false);
   const [verAyuda, setVerAyuda] = useState(false);
   const { abrir: abrirMenu, menu: menuContextual } = useMenuContextual();
   const [verLector, setVerLector] = useState(false);
@@ -594,6 +596,7 @@ export default function Editor({
                   <SeparadorMenu />
                   <ItemMenu icono="↶" texto="Versiones anteriores…" nota="Ver y restaurar cómo estaba antes" onClick={() => { cerrar(); setVerVersiones(true); }} />
                   <ItemMenu icono="🔎" texto="Buscar y reemplazar…" atajo="Ctrl+Alt+H" nota="Cambia un texto o enlace en toda la edición" onClick={() => { cerrar(); setVerBuscar(true); }} />
+                  <ItemMenu icono="🎨" texto="Cambiar un color por otro…" nota="Opcional: en una página o en toda la edición" onClick={() => { cerrar(); setVerColor(true); }} />
                   <ItemMenu icono="🖼" texto="Fotos y videos…" nota="Todo lo que has subido" onClick={() => { cerrar(); setVerMedios(true); }} />
                   <ItemMenu icono="✎" texto="Datos de la edición" nota="Fecha, tema, número y publicación" marcado={undefined} onClick={() => { cerrar(); setVerDatos((v) => !v); }} />
                   <SeparadorMenu />
@@ -1034,6 +1037,22 @@ export default function Editor({
             else setSel(pagina - 1);
           }}
           onCerrar={() => setVerBuscar(false)}
+        />
+      )}
+      {verColor && (
+        <CambiarColor
+          datos={datos}
+          pagina={idx}
+          ultimo={reemplazoAnterior ? { resumen: reemplazoAnterior.resumen } : null}
+          onAplicar={(nuevos, resumen) => {
+            setReemplazoAnterior({ antes: datos, resumen });
+            setDatos(nuevos);
+          }}
+          onDeshacer={() => {
+            if (reemplazoAnterior) setDatos(reemplazoAnterior.antes);
+            setReemplazoAnterior(null);
+          }}
+          onCerrar={() => setVerColor(false)}
         />
       )}
       {verMedios && <BibliotecaMedios edicionId={id} onCerrar={() => setVerMedios(false)} />}

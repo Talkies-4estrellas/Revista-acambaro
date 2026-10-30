@@ -137,6 +137,8 @@ export function leerCrudo(id: string): EdicionDatos | null {
     publicarEn: typeof raw.publicarEn === "string" ? raw.publicarEn : undefined,
     numeroFijo: raw.numeroFijo === true ? true : undefined,
     ...(raw.maestra && typeof raw.maestra === "object" ? { maestra: raw.maestra } : {}),
+    ...(Array.isArray(raw.paleta) ? { paleta: raw.paleta } : {}),
+    ...(Array.isArray(raw.estilos) ? { estilos: raw.estilos } : {}),
     paginas: Array.isArray(raw.paginas) ? raw.paginas : [],
   };
 }
@@ -282,6 +284,7 @@ export function crearEdicion(
 
   let paginas: EdicionDatos["paginas"] = [{ ...paginaNueva("lienzo"), titulo: "Portada" }];
   let maestra: EdicionDatos["maestra"];
+  let heredado: Pick<EdicionDatos, "paleta" | "estilos"> = {};
   if (secciones?.length) {
     paginas = paginasDeSecciones(secciones);
   } else if (duplicarDe) {
@@ -289,11 +292,12 @@ export function crearEdicion(
     if (!origen) throw new ErrorAdmin("La edición base no existe.", 404);
     paginas = origen.paginas;
     maestra = origen.maestra; // también los elementos que se repiten en todas las páginas
+    heredado = { ...(origen.paleta ? { paleta: origen.paleta } : {}), ...(origen.estilos ? { estilos: origen.estilos } : {}) }; // y su paleta y sus estilos
   }
   try {
     const otras = entradasNumeracion();
     const n = calcularNumeracion([...otras, { id, fecha: base.fecha, publicada: false }]).get(id);
-    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, ...(maestra ? { maestra } : {}), paginas });
+    escribir(id, { ...base, numero: formatoNumero(n?.numero ?? 1), publicada: false, ...(maestra ? { maestra } : {}), ...heredado, paginas });
   } catch (e) {
     throw new ErrorAdmin(e instanceof Error ? e.message.replace(/^\[ediciones\] /, "") : String(e));
   }

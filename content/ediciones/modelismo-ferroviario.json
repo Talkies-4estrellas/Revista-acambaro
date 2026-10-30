@@ -62,6 +62,20 @@
       }
     ]
   },
+  "estilos": [
+    {
+      "nombre": "Rótulo",
+      "tipo": "texto",
+      "valores": {
+        "fuente": "sans",
+        "tam": 14,
+        "peso": 700,
+        "color": "#a8501c",
+        "espaciado": 0.18,
+        "mayusculas": true
+      }
+    }
+  ],
   "paginas": [
     {
       "plantilla": "lienzo",
@@ -86,7 +100,8 @@
           "color": "#f3ead7",
           "alinear": "derecha",
           "animacion": {
-            "efecto": "aparecer"
+            "efecto": "subir",
+            "retraso": 150
           },
           "id": "pubeyeq0",
           "contenido": [
@@ -107,9 +122,9 @@
           "alt": "Maqueta ferroviaria en escala HO: una ciudad al fondo y trenes en las vías",
           "ajuste": "cubrir",
           "animacion": {
-            "efecto": "revelar",
+            "efecto": "subir",
             "duracion": 900,
-            "retraso": 450
+            "retraso": 300
           },
           "id": "y4qvicgu",
           "src": "/media/modelismo/portada.jpg",
@@ -124,7 +139,11 @@
           "x": 0,
           "y": 540,
           "id": "qz4aptdr",
-          "opacidad": 0.62
+          "opacidad": 0.62,
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -146,7 +165,11 @@
                 "texto": "PASATIEMPO"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "texto",
@@ -161,7 +184,7 @@
           "interlineado": 1.05,
           "animacion": {
             "efecto": "subir",
-            "retraso": 900
+            "retraso": 750
           },
           "id": "4y1sn01g",
           "contenido": [
@@ -192,7 +215,11 @@
               }
             ]
           ],
-          "cursiva": true
+          "cursiva": true,
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "imagen",
@@ -203,7 +230,10 @@
           "h": 80,
           "x": 40,
           "y": 26,
-          "id": "o0katztx"
+          "id": "o0katztx",
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -225,7 +255,11 @@
                 "texto": "P. 03"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1050
+          }
         },
         {
           "tipo": "texto",
@@ -246,7 +280,11 @@
                 "texto": "Carta del editor"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1500
+          }
         },
         {
           "tipo": "texto",
@@ -266,7 +304,11 @@
                 "texto": "Por qué un tren cabe sobre una mesa."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1950
+          }
         },
         {
           "tipo": "texto",
@@ -288,7 +330,11 @@
                 "texto": "P. 05"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1200
+          }
         },
         {
           "tipo": "texto",
@@ -309,7 +355,11 @@
                 "texto": "Escalas"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1650
+          }
         },
         {
           "tipo": "texto",
@@ -329,7 +379,11 @@
                 "texto": "HO, N, O y G: qué mide cada una."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2100
+          }
         },
         {
           "tipo": "texto",
@@ -351,7 +405,11 @@
                 "texto": "P. 08"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1350
+          }
         },
         {
           "tipo": "texto",
@@ -372,7 +430,11 @@
                 "texto": "Tu primera maqueta"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1800
+          }
         },
         {
           "tipo": "texto",
@@ -392,7 +454,11 @@
                 "texto": "Un óvalo de vía, en un fin de semana."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2250
+          }
         },
         {
           "tipo": "imagen",
@@ -404,7 +470,11 @@
           "x": 0,
           "y": 1030,
           "id": "2q6p8jum",
-          "src": "/media/05/rieles.svg"
+          "src": "/media/05/rieles.svg",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2400
+          }
         }
       ],
       "ancla": "portada",
@@ -833,7 +903,10 @@
           "mayusculas": true,
           "espaciado": 0.18,
           "color": "#a8501c",
-          "id": "gw4yatdd"
+          "id": "gw4yatdd",
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -853,7 +926,11 @@
                 "texto": "Vías en miniatura, historias enormes"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         },
         {
           "tipo": "forma",
@@ -862,7 +939,11 @@
           "w": 120,
           "h": 4,
           "color": "terracota",
-          "id": "jilz5f8a"
+          "id": "jilz5f8a",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "imagen",
@@ -875,7 +956,11 @@
           "ajuste": "cubrir",
           "molde": "circulo",
           "id": "jf8nl2lc",
-          "src": "/media/05/ndem-3034.jpg"
+          "src": "/media/05/ndem-3034.jpg",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -912,7 +997,11 @@
                 "texto": "Sube a bordo."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "texto",
@@ -932,7 +1021,11 @@
                 "texto": "La redacción"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "texto",
@@ -951,7 +1044,178 @@
                 "texto": "Revista de Acámbaro"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
+        },
+        {
+          "tipo": "forma",
+          "w": 688,
+          "h": 130,
+          "forma": "rectangulo",
+          "color": "#e9dfc6",
+          "x": 56,
+          "y": 880,
+          "id": "uc5ezil6",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1050
+          }
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 52,
+          "texto": "1:87",
+          "fuente": "display",
+          "tam": 38,
+          "peso": 900,
+          "color": "#a8501c",
+          "interlineado": 1.05,
+          "x": 80,
+          "y": 900,
+          "id": "j1o2met7",
+          "contenido": [
+            [
+              {
+                "texto": "1:87"
+              }
+            ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1200
+          }
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 36,
+          "texto": "HO, la escala más popular",
+          "fuente": "sans",
+          "tam": 13,
+          "peso": 700,
+          "color": "#3d3a33",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 80,
+          "y": 962,
+          "id": "vbq2x5pe",
+          "contenido": [
+            [
+              {
+                "texto": "HO, la escala más popular"
+              }
+            ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1650
+          }
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 52,
+          "texto": "16,5 mm",
+          "fuente": "display",
+          "tam": 38,
+          "peso": 900,
+          "color": "#a8501c",
+          "interlineado": 1.05,
+          "x": 304,
+          "y": 900,
+          "id": "lp1s9usp",
+          "contenido": [
+            [
+              {
+                "texto": "16,5 mm"
+              }
+            ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1350
+          }
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 36,
+          "texto": "ancho de vía en HO",
+          "fuente": "sans",
+          "tam": 13,
+          "peso": 700,
+          "color": "#3d3a33",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 304,
+          "y": 962,
+          "id": "gwrf8cps",
+          "contenido": [
+            [
+              {
+                "texto": "ancho de vía en HO"
+              }
+            ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1800
+          }
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 52,
+          "texto": "1 fin de semana",
+          "fuente": "display",
+          "tam": 26,
+          "peso": 900,
+          "color": "#a8501c",
+          "interlineado": 1.05,
+          "x": 528,
+          "y": 900,
+          "id": "siu1btnp",
+          "contenido": [
+            [
+              {
+                "texto": "1 fin de semana"
+              }
+            ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1500
+          }
+        },
+        {
+          "tipo": "texto",
+          "w": 210,
+          "h": 36,
+          "texto": "para armar tu primer óvalo",
+          "fuente": "sans",
+          "tam": 13,
+          "peso": 700,
+          "color": "#3d3a33",
+          "mayusculas": true,
+          "espaciado": 0.18,
+          "x": 528,
+          "y": 962,
+          "id": "ohqjjpv5",
+          "contenido": [
+            [
+              {
+                "texto": "para armar tu primer óvalo"
+              }
+            ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1950
+          }
         }
       ],
       "ancla": "carta-del-editor"
@@ -1156,7 +1420,10 @@
           "ajuste": "cubrir",
           "id": "qu00y0gj",
           "src": "/media/modelismo/que-es.jpg",
-          "credito": "Foto: 玄史生, CC0"
+          "credito": "Foto: 玄史生, CC0",
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -1178,7 +1445,11 @@
                 "texto": "EL PASATIEMPO"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "texto",
@@ -1198,7 +1469,11 @@
                 "texto": "¿Qué es el modelismo ferroviario?"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -1217,7 +1492,11 @@
                 "texto": "Por la redacción · 3 min de lectura"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "forma",
@@ -1226,7 +1505,11 @@
           "w": 120,
           "h": 4,
           "color": "terracota",
-          "id": "a8ni4yfm"
+          "id": "a8ni4yfm",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "texto",
@@ -1251,7 +1534,11 @@
                 "texto": "No hace falta un cuarto entero: una maqueta puede caber en una tabla de un metro. Lo que sí hace falta es calma. Colocar una vía, pintar un durmiente o cablear un cambio de agujas son tareas de horas, y por eso el pasatiempo se disfruta tanto en compañía."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "texto",
@@ -1271,7 +1558,11 @@
                 "texto": "Maqueta ferroviaria en una exposición de modelismo. Foto: 玄史生 (dominio público, CC0)."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         }
       ],
       "ancla": "reportaje-con-foto-grande"
@@ -1304,7 +1595,10 @@
                 "texto": "TÉCNICA"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -1324,7 +1618,11 @@
                 "texto": "Escalas: cuánto mide un tren en miniatura"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         },
         {
           "tipo": "texto",
@@ -1343,7 +1641,11 @@
                 "texto": "Por la redacción"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "forma",
@@ -1353,7 +1655,11 @@
           "h": 2,
           "color": "tintaSuave",
           "opacidad": 0.4,
-          "id": "903300sl"
+          "id": "903300sl",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -1378,7 +1684,11 @@
                 "texto": "En escala N, 1:160, la vía es de 9 milímetros y el tren cabe en espacios mucho más chicos."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "texto",
@@ -1403,7 +1713,11 @@
                 "texto": "Elegir la escala es la primera decisión: define el espacio, el costo y las piezas que podrás conseguir."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "texto",
@@ -1425,7 +1739,11 @@
                 "texto": "UNA LOCOMOTORA DE 8 METROS, A CUATRO ESCALAS"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "forma",
@@ -1435,7 +1753,11 @@
           "color": "#a8501c",
           "x": 56,
           "y": 706,
-          "id": "4ybzoj2h"
+          "id": "4ybzoj2h",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1050
+          }
         },
         {
           "tipo": "texto",
@@ -1455,7 +1777,11 @@
                 "texto": "G  ·  1:22,5  ·  36 cm"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1200
+          }
         },
         {
           "tipo": "forma",
@@ -1465,7 +1791,11 @@
           "color": "#a8501c",
           "x": 56,
           "y": 790,
-          "id": "3deu3nob"
+          "id": "3deu3nob",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1350
+          }
         },
         {
           "tipo": "texto",
@@ -1485,7 +1815,11 @@
                 "texto": "O  ·  1:48  ·  17 cm"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1500
+          }
         },
         {
           "tipo": "forma",
@@ -1495,7 +1829,11 @@
           "color": "#a8501c",
           "x": 56,
           "y": 874,
-          "id": "wsy1csnc"
+          "id": "wsy1csnc",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1650
+          }
         },
         {
           "tipo": "texto",
@@ -1515,7 +1853,11 @@
                 "texto": "HO  ·  1:87  ·  9 cm"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1800
+          }
         },
         {
           "tipo": "forma",
@@ -1525,7 +1867,11 @@
           "color": "#a8501c",
           "x": 56,
           "y": 958,
-          "id": "pwwm01hi"
+          "id": "pwwm01hi",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1950
+          }
         },
         {
           "tipo": "texto",
@@ -1545,7 +1891,11 @@
                 "texto": "N  ·  1:160  ·  5 cm"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2100
+          }
         }
       ],
       "ancla": "texto-en-dos-columnas"
@@ -1811,10 +2161,13 @@
           "w": 800,
           "h": 520,
           "tono": "indigo",
-          "alt": "Locomotora N. de M. 739 con un grupo de soldados zapatistas, 1911",
           "ajuste": "cubrir",
           "id": "zgz1iohb",
-          "src": "/media/05/ndem-739-1911.jpg"
+          "src": "/media/05/ndem-739-1911.jpg",
+          "alt": "Locomotora N. de M. 739 con un grupo de soldados zapatistas, 1911",
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -1836,7 +2189,11 @@
                 "texto": "HISTORIA"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "texto",
@@ -1856,7 +2213,11 @@
                 "texto": "Del vapor a la maqueta"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -1875,7 +2236,11 @@
                 "texto": "Por la redacción · 2 min de lectura"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "forma",
@@ -1884,7 +2249,11 @@
           "w": 120,
           "h": 4,
           "color": "terracota",
-          "id": "oxz61yvz"
+          "id": "oxz61yvz",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "texto",
@@ -1909,7 +2278,11 @@
                 "texto": "A finales de los años noventa el servicio de pasajeros casi desapareció, pero las locomotoras de vapor que se conservan en estaciones y museos siguen despertando curiosidad. Muchos modelistas nacieron mirando una de ellas."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "texto",
@@ -1929,7 +2302,11 @@
                 "texto": "Locomotora N. de M. 739 con un grupo de soldados zapatistas, 1911."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         }
       ],
       "ancla": "reportaje-con-foto-grande-2"
@@ -1952,7 +2329,10 @@
           "alt": "Antigua estación del ferrocarril de Acámbaro, hoy museo",
           "ajuste": "cubrir",
           "id": "cmsy0lcu",
-          "src": "/media/05/estacion.jpg"
+          "src": "/media/05/estacion.jpg",
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -1967,7 +2347,11 @@
           "mayusculas": true,
           "espaciado": 0.18,
           "color": "#a8501c",
-          "id": "ptjn0cjj"
+          "id": "ptjn0cjj",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "texto",
@@ -1987,7 +2371,11 @@
                 "texto": "La antigua estación de Acámbaro"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -2006,7 +2394,11 @@
                 "texto": "Hoy convertida en museo, la antigua estación del ferrocarril de Acámbaro conserva la memoria de los años en que los trenes de vapor pasaban por la ciudad. Si te gustan los trenes, es un buen lugar para ver de cerca el tamaño real de lo que los modelistas copian a escala."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "forma",
@@ -2016,7 +2408,11 @@
           "h": 2,
           "color": "tintaSuave",
           "opacidad": 0.4,
-          "id": "fcfcin8b"
+          "id": "fcfcin8b",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "icono",
@@ -2026,7 +2422,11 @@
           "w": 30,
           "h": 30,
           "color": "terracota",
-          "id": "1lewjkg5"
+          "id": "1lewjkg5",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "texto",
@@ -2050,7 +2450,11 @@
                 "texto": "Acámbaro, Guanajuato (confirma la dirección)"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1200
+          }
         },
         {
           "tipo": "icono",
@@ -2060,7 +2464,11 @@
           "w": 30,
           "h": 30,
           "color": "terracota",
-          "id": "vtk7ymgd"
+          "id": "vtk7ymgd",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1050
+          }
         },
         {
           "tipo": "texto",
@@ -2084,7 +2492,11 @@
                 "texto": "Consúltalo antes de ir"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1350
+          }
         },
         {
           "tipo": "icono",
@@ -2094,7 +2506,11 @@
           "w": 30,
           "h": 30,
           "color": "terracota",
-          "id": "jpxsdluw"
+          "id": "jpxsdluw",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1500
+          }
         },
         {
           "tipo": "texto",
@@ -2118,7 +2534,11 @@
                 "texto": "Por confirmar"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1800
+          }
         },
         {
           "tipo": "icono",
@@ -2128,7 +2548,11 @@
           "w": 30,
           "h": 30,
           "color": "terracota",
-          "id": "lt1lgxkk"
+          "id": "lt1lgxkk",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1650
+          }
         },
         {
           "tipo": "texto",
@@ -2152,7 +2576,11 @@
                 "texto": "Por confirmar"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1950
+          }
         },
         {
           "tipo": "texto",
@@ -2172,7 +2600,11 @@
                 "texto": "Antigua estación del ferrocarril de Acámbaro, hoy museo."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         }
       ],
       "ancla": "lugar-para-visitar"
@@ -2366,7 +2798,10 @@
           "ajuste": "cubrir",
           "id": "bglrisre",
           "src": "/media/modelismo/taller.jpg",
-          "credito": "Foto: Nathaniel Railroad, CC0"
+          "credito": "Foto: Nathaniel Railroad, CC0",
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -2388,7 +2823,11 @@
                 "texto": "TALLER"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "texto",
@@ -2408,7 +2847,11 @@
                 "texto": "Tu primera maqueta en una tabla"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "icono",
@@ -2418,7 +2861,11 @@
           "w": 24,
           "h": 24,
           "color": "terracota",
-          "id": "3cm9k9r5"
+          "id": "3cm9k9r5",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "texto",
@@ -2437,7 +2884,11 @@
                 "texto": "1 fin de semana"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "icono",
@@ -2447,7 +2898,11 @@
           "w": 24,
           "h": 24,
           "color": "terracota",
-          "id": "nqzrn7yk"
+          "id": "nqzrn7yk",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "texto",
@@ -2466,7 +2921,11 @@
                 "texto": "1 persona"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1050
+          }
         },
         {
           "tipo": "forma",
@@ -2476,7 +2935,11 @@
           "h": 2,
           "color": "tintaSuave",
           "opacidad": 0.4,
-          "id": "ipys2omq"
+          "id": "ipys2omq",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1200
+          }
         },
         {
           "tipo": "texto",
@@ -2497,7 +2960,11 @@
                 "texto": "MATERIALES"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1350
+          }
         },
         {
           "tipo": "texto",
@@ -2536,7 +3003,11 @@
                 "texto": "• Pegamento y cinta"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1650
+          }
         },
         {
           "tipo": "texto",
@@ -2550,7 +3021,11 @@
           "peso": 700,
           "mayusculas": true,
           "espaciado": 0.16,
-          "id": "c09fatwh"
+          "id": "c09fatwh",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1500
+          }
         },
         {
           "tipo": "texto",
@@ -2581,7 +3056,11 @@
                 "texto": "3. Prueba la locomotora despacio antes de agregar el paisaje."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1800
+          }
         },
         {
           "tipo": "texto",
@@ -2601,7 +3080,11 @@
                 "texto": "Una maqueta en construcción: primero las vías, después el paisaje. Foto: Nathaniel Railroad (CC0)."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         }
       ],
       "ancla": "receta"
@@ -3060,7 +3543,10 @@
                 "texto": "PARA SEGUIR"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir"
+          }
         },
         {
           "tipo": "texto",
@@ -3080,7 +3566,11 @@
                 "texto": "Ideas para seguir en el tema"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 150
+          }
         },
         {
           "tipo": "forma",
@@ -3090,7 +3580,11 @@
           "h": 130,
           "color": "#a8501c",
           "radio": 10,
-          "id": "njoi5cmk"
+          "id": "njoi5cmk",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 300
+          }
         },
         {
           "tipo": "texto",
@@ -3111,7 +3605,11 @@
                 "texto": "1"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 600
+          }
         },
         {
           "tipo": "texto",
@@ -3134,7 +3632,11 @@
                 "texto": "IDEA"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 900
+          }
         },
         {
           "tipo": "texto",
@@ -3154,7 +3656,11 @@
                 "texto": "Arma un óvalo de vía"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 450
+          }
         },
         {
           "tipo": "texto",
@@ -3173,7 +3679,11 @@
                 "texto": "En casa · un fin de semana"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 750
+          }
         },
         {
           "tipo": "texto",
@@ -3193,7 +3703,11 @@
                 "texto": "Con una tabla, vía HO y una locomotora de arranque."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1050
+          }
         },
         {
           "tipo": "forma",
@@ -3203,7 +3717,11 @@
           "h": 130,
           "color": "#a8501c",
           "radio": 10,
-          "id": "y25iermm"
+          "id": "y25iermm",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1200
+          }
         },
         {
           "tipo": "texto",
@@ -3224,7 +3742,11 @@
                 "texto": "2"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1500
+          }
         },
         {
           "tipo": "texto",
@@ -3247,7 +3769,11 @@
                 "texto": "IDEA"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1800
+          }
         },
         {
           "tipo": "texto",
@@ -3267,7 +3793,11 @@
                 "texto": "Visita la antigua estación"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1350
+          }
         },
         {
           "tipo": "texto",
@@ -3286,7 +3816,11 @@
                 "texto": "Acámbaro · confirma horarios"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1650
+          }
         },
         {
           "tipo": "texto",
@@ -3306,7 +3840,11 @@
                 "texto": "Mira de cerca una locomotora real y compárala con tu modelo."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 1950
+          }
         },
         {
           "tipo": "forma",
@@ -3316,7 +3854,11 @@
           "h": 130,
           "color": "#a8501c",
           "radio": 10,
-          "id": "lowck085"
+          "id": "lowck085",
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2100
+          }
         },
         {
           "tipo": "texto",
@@ -3337,7 +3879,11 @@
                 "texto": "3"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2400
+          }
         },
         {
           "tipo": "texto",
@@ -3360,7 +3906,11 @@
                 "texto": "IDEA"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2700
+          }
         },
         {
           "tipo": "texto",
@@ -3380,7 +3930,11 @@
                 "texto": "Pinta tu primer vagón"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2250
+          }
         },
         {
           "tipo": "texto",
@@ -3399,7 +3953,11 @@
                 "texto": "En casa · una tarde"
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2550
+          }
         },
         {
           "tipo": "texto",
@@ -3419,7 +3977,11 @@
                 "texto": "Con pintura acrílica y paciencia, un vagón de fábrica se vuelve único."
               }
             ]
-          ]
+          ],
+          "animacion": {
+            "efecto": "subir",
+            "retraso": 2850
+          }
         }
       ],
       "ancla": "agenda-de-eventos"

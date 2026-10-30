@@ -901,6 +901,12 @@ export function InspectorPagina({
           <button type="button" className={btnCls} onClick={onProbarTodo} disabled={!(pagina.elementos ?? []).some((e) => e.animacion)}>
             ▶ Probar las animaciones de la página
           </button>
+          <details className="border-t border-ink/15 pt-3">
+            <summary className="font-sans cursor-pointer select-none text-xs font-bold hover:text-terracota">Animar toda la página de una vez (opcional)</summary>
+            <div className="mt-3">
+              <AnimarPagina pagina={pagina} onChange={onChange} onProbarTodo={onProbarTodo} />
+            </div>
+          </details>
           <p className="font-sans text-[0.7rem] text-ink-soft">
             {(pagina.elementos ?? []).filter((e) => e.animacion).length} de {(pagina.elementos ?? []).length} elementos animados.
           </p>
@@ -916,6 +922,37 @@ export function InspectorPagina({
         <Area label="Resumen" value={pagina.bajada} onChange={(v) => set("bajada", v)} rows={2} />
         <Interruptor label="Mostrar en el índice" value={pagina.enIndice !== false} onChange={(v) => set("enIndice", v ? undefined : false)} />
       </Panel>
+    </div>
+  );
+}
+
+/** Opcional: aplica un efecto en cascada (de arriba abajo) a todos los elementos de la página, sin tener que elegirlos. */
+function AnimarPagina({ pagina, onChange, onProbarTodo }: { pagina: Pagina; onChange: (p: Pagina) => void; onProbarTodo: () => void }) {
+  const [efecto, setEfecto] = useState<Efecto>("subir");
+  const [paso, setPaso] = useState(120);
+  const [respetar, setRespetar] = useState(true);
+  const lista = pagina.elementos ?? [];
+  const candidatos = lista.filter((e) => !e.bloqueado && !e.oculto && !(respetar && e.animacion));
+  const aplicar = () => {
+    const orden = [...candidatos].sort((x, y) => x.y - y.y || x.x - y.x);
+    const retraso = new Map(orden.map((e, i) => [e.id!, i * paso]));
+    onChange({
+      ...pagina,
+      elementos: lista.map((e) => (retraso.has(e.id!) ? ({ ...e, animacion: { efecto: !esEfectoTexto(efecto) || e.tipo === "texto" ? efecto : "aparecer", duracion: e.animacion?.duracion, retraso: retraso.get(e.id!) || undefined } } as typeof e) : e)),
+    });
+    window.setTimeout(onProbarTodo, 80);
+  };
+  const quitar = () => onChange({ ...pagina, elementos: lista.map((e) => { if (!e.animacion) return e; const { animacion, ...resto } = e; void animacion; return resto as typeof e; }) });
+  return (
+    <div className="space-y-3">
+      <Selector label="Efecto" value={efecto} onChange={(v) => setEfecto(v ?? "subir")} opciones={EFECTOS_IDS.map((id) => ({ valor: id, etiqueta: EFECTOS[id].nombre }))} />
+      <Numero label="Pausa entre elementos (ms)" value={paso} onChange={(v) => setPaso(Math.max(0, v ?? 0))} min={0} max={2000} />
+      <Interruptor label="Respetar los que ya tienen animación" value={respetar} onChange={setRespetar} />
+      <div className="flex flex-wrap gap-2">
+        <button type="button" className={btnCls} onClick={aplicar} disabled={candidatos.length === 0}>▶ Animar {candidatos.length} elemento{candidatos.length === 1 ? "" : "s"}</button>
+        <button type="button" className={btnCls} onClick={quitar} disabled={!lista.some((e) => e.animacion)}>Quitar todas</button>
+      </div>
+      <p className="font-sans text-[0.7rem] text-ink-soft">De arriba abajo. No incluye los bloqueados ni los ocultos; los elementos repetidos de la edición no se tocan.</p>
     </div>
   );
 }

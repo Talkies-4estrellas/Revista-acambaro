@@ -102,3 +102,16 @@ Con lo que ya tiene, el editor llega a una edición **coherente y presentable** 
 - **Cada cupón son 4 textos; tres cupones, 12 ediciones** y es fácil equivocar el orden (se intercambiaron las cifras). Mismo problema de «filas repetibles» (D).
 - **Falso positivo corregido:** «Con el apoyo de» salía como «texto de ejemplo» solo por venir de la plantilla; ahora es un título válido (`lib/ejemplos.ts`, `TITULOS_VALIDOS`).
 - Revisar: **0 por corregir**; 5 por revisar (todos, textos de relleno de los anuncios de demostración) y 7 sugerencias (créditos de fotos del archivo de la revista y texto sobre la foto de la portada).
+
+---
+
+# Cuarta pasada: calidad con herramientas nativas (28-10-2026)
+
+**Qué se hizo (solo con el editor).** Animaciones: «Animar en cascada» (Ctrl+A → Subir, pausa de 150 ms) en 8 páginas de contenido → **110 animaciones** (antes 6; la edición 10 tiene 96). Ficha de datos en la carta (1:87 / 16,5 mm / 1 fin de semana) con caja, cifras y rótulos. Paleta y estilos nativos ya disponibles (estilo «Rótulo» guardado en la edición).
+**Resultado medido:** 206 elementos (la 10: 348), 110 animaciones, Revisar con 0 por corregir y 4 por revisar (textos de relleno de los anuncios de demostración).
+
+## Qué demostró
+- **La brecha de animación era trabajo mío, no del panel:** «Animar en cascada» ya existía y tomó 1 minuto por página. Lo que faltaba era una forma de hacerlo **para toda la página sin elegir nada** y de verlo en una vista de «línea de tiempo» (punto 2 pendiente).
+- **Sigue costando mucho lo repetitivo:** la ficha de 3 datos fueron 6 textos y una caja (≈35 acciones); con «estilos» ya se pueden aplicar, pero falta «duplicar con desplazamiento» y una plantilla de «ficha de datos».
+- **Lo que no cierra el panel por sí solo:** contenido y fotos. Las fotos relevantes (locomotoras mexicanas, modelismo en México) casi no existen libres en Wikimedia; el editor necesitaría un **buscador de fotos libres integrado** (Commons/Unsplash) con descarga y crédito automáticos. Esa es la pieza que más separa a esta edición de la 10 (que usa fotos de los propios lugares).
+- Un cambio hecho sin guardar (Ctrl+S) se pierde si se cierra el navegador antes de 3 s: ya avisa al salir, pero conviene un indicador más visible.

@@ -26,6 +26,8 @@ import { ejemploDe, esAltDeEjemplo } from "@/lib/ejemplos";
 import { ColoresPaginaContext, CuentagotasContext, FotosPaginaContext } from "./PaletaColores";
 import CuentagotasHoja from "./CuentagotasHoja";
 import { useMenuContextual, type ItemMenu } from "./MenuContextual";
+import { EstilosEdicionContext } from "./ContextosEdicion";
+import { tomarCredito } from "@/lib/creditos-pendientes";
 import { elementosBloque } from "@/lib/bloques";
 import { animarTexto } from "@/lib/animaciones-texto";
 import { aplicarEstilo, copiarEstilo, type EstiloCopiado } from "@/lib/estilo";
@@ -910,8 +912,8 @@ export default function EditorLienzo({
     avisar(n ? `Estilo copiado (${n} ajuste${n === 1 ? "" : "s"}): pégalo en otros elementos` : "Estilo copiado: este elemento no tiene ajustes (al pegarlo quita los de los demás)");
   };
 
-  const pegarEstiloSel = () => {
-    const estilo = estiloRef.current;
+  const pegarEstiloSel = (dado?: EstiloCopiado) => {
+    const estilo = dado ?? estiloRef.current;
     const ids = selRef.current;
     if (!estilo) {
       avisar("Primero copia el estilo de un elemento");
@@ -931,6 +933,30 @@ export default function EditorLienzo({
       }),
     );
     avisar(cambiados ? `Estilo aplicado a ${cambiados} elemento${cambiados === 1 ? "" : "s"}` : "Nada que cambiar: ya tienen ese estilo o son de otro tipo");
+  };
+
+  /* --------- Estilos con nombre de la edición (menú «🎨 Estilos» de la barra) --------- */
+  const estilosEd = useContext(EstilosEdicionContext);
+  const aplicarEstiloGuardado = (i: number) => {
+    const e = estilosEd?.estilos[i];
+    if (e) pegarEstiloSel({ tipo: e.tipo, valores: e.valores });
+  };
+  const guardarEstiloSel = () => {
+    const ids = selRef.current;
+    const el = ids.length === 1 ? getEls().find((x) => x.id === ids[0]) : undefined;
+    if (!el || !estilosEd) return;
+    const sugerido = el.tipo === "texto" ? "Rótulo" : "Mi estilo";
+    const nombre = window.prompt("Nombre del estilo (por ejemplo: Rótulo, Titular, Pie de foto):", sugerido)?.trim().slice(0, 40);
+    if (!nombre) return;
+    const c = copiarEstilo(el);
+    // Mismo nombre y tipo: se actualiza en vez de duplicar.
+    const resto = estilosEd.estilos.filter((x) => !(x.nombre === nombre && x.tipo === c.tipo));
+    if (resto.length >= 40) {
+      avisar("Ya hay 40 estilos: quita alguno antes de guardar otro.");
+      return;
+    }
+    estilosEd.cambiar([...resto, { nombre, tipo: c.tipo, valores: c.valores }]);
+    avisar(`Estilo «${nombre}» guardado: aplícalo desde 🎨 Estilos en cualquier página`);
   };
 
   const cortar = (): Carga | null => {
@@ -1555,15 +1581,16 @@ export default function EditorLienzo({
 
   /** Coloca en la hoja un archivo que ya estaba subido (galería «Subidos»): foto con su proporción, o video. Sin posición, al centro de lo que se ve. */
   async function colocarSubido(src: string, x?: number, y?: number) {
+    const credito = tomarCredito(src); // si la foto viene del buscador de fotos libres, ya trae su crédito
     const esVideo = /\.(mp4|webm)$/i.test(src);
     const marco = x !== undefined && y !== undefined && !esVideo ? elementoEn(x, y, ["imagen"]) : undefined;
     if (marco) {
-      aplicar(getEls().map((it) => (it.id === marco.id ? ({ ...it, src } as Elemento) : it)));
+      aplicar(getEls().map((it) => (it.id === marco.id ? ({ ...it, src, ...(credito ? { credito } : {}) } as Elemento) : it)));
       setSel([marco.id!]);
       return;
     }
     const base = elementoNuevo(esVideo ? "video" : "imagen", x, y);
-    let el: Elemento = { ...base, src } as Elemento;
+    let el: Elemento = { ...base, src, ...(credito ? { credito } : {}) } as Elemento;
     if (!esVideo) {
       const d = await dimensionesImagen(src);
       if (d) {
@@ -1951,7 +1978,7 @@ export default function EditorLienzo({
             <button type="button" className={btnCls} onClick={alternarBloqueoSeleccion} disabled={sel.length === 0} title="Bloquear la selección para no moverla por accidente (se desbloquea en la lista de capas)" aria-label="Bloquear la selección">🔒</button>
             <button type="button" className={btnCls} onClick={guardarSeleccion} disabled={sel.length === 0} title="Guardar la selección en Mis elementos (para usarla en cualquier edición)" aria-label="Guardar la selección en Mis elementos">☆</button>
             <button type="button" className={btnCls} onClick={copiarEstiloSel} disabled={sel.length !== 1} title="Copiar el estilo de este elemento (fuente, color, borde, sombras, animaciones…) sin su contenido (Ctrl+Alt+C)" aria-label="Copiar estilo">🖌</button>
-            <button type="button" className={btnCls} onClick={pegarEstiloSel} disabled={sel.length === 0 || !estiloCopiado} title="Pegar el estilo copiado en los elementos seleccionados (Ctrl+Alt+V)" aria-label="Pegar estilo">🎨</button>
+            <button type="button" className={btnCls} onClick={() => pegarEstiloSel()} disabled={sel.length === 0 || !estiloCopiado} title="Pegar el estilo copiado en los elementos seleccionados (Ctrl+Alt+V)" aria-label="Pegar estilo">🎨</button>
             <button type="button" className={btnCls} onClick={copiarBoton} disabled={sel.length === 0} title="Copiar (Ctrl+C): se puede pegar en otra página o edición" aria-label="Copiar">⧉</button>
               <button type="button" className={btnCls} onClick={cortarBoton} disabled={sel.length === 0} title="Cortar (Ctrl+X)" aria-label="Cortar">✂</button>
               <button type="button" className={btnCls} onClick={pegarBoton} title="Pegar (Ctrl+V). Ctrl+Mayús+V pega en el mismo lugar" aria-label="Pegar">▣</button>
@@ -2068,8 +2095,12 @@ export default function EditorLienzo({
                 edicionId={edicionId ?? ""}
                 onSubido={(src) => {
                   if (biblioteca.reemplazar && unico?.tipo === "imagen") {
-                    // La descripción de fábrica de la plantilla ya no describe la foto nueva: se quita para que la revisión la pida.
-                    cambiar({ src, ...(esAltDeEjemplo(unico.alt) ? { alt: undefined } : {}) });
+                    // La descripción, el crédito y el encuadre eran de la foto anterior: con otra foto ya no valen. Se vacían y la revisión pide describir la nueva.
+                    if (src !== unico.src) {
+                      const vacia = !!(unico.alt?.trim() || unico.credito?.trim());
+                      cambiar({ src, alt: undefined, credito: tomarCredito(src), enfoque: undefined, zoom: undefined });
+                      if (vacia) avisar("Foto reemplazada: escribe su descripción y su crédito (los anteriores eran de la otra foto).");
+                    }
                     setBiblioteca((b) => (b ? { ...b, reemplazar: false } : b));
                   } else colocarSubido(src);
                 }}
@@ -2099,6 +2130,8 @@ export default function EditorLienzo({
             setTimeout(() => window.dispatchEvent(new CustomEvent("abrir-panel", { detail: titulo })), 80);
           }}
           acciones={{
+            aplicarEstilo: aplicarEstiloGuardado,
+            guardarEstilo: guardarEstiloSel,
             duplicar,
             eliminar,
             frente: () => moverGrupo("frente"),

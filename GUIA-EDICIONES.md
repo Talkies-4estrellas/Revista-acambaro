@@ -346,6 +346,22 @@ Al cambiar **Publicación** de Borrador a Publicada o Programada, si hay pendien
 - Al elegir un color (fondo de la hoja, texto, formas, bordes, resaltado) se abre un panel con: **buscador** («azul», «verde menta» o un código como `#00c4cc` + Enter), **＋ color libre**, **💧 cuentagotas** (toma un color de lo que se ve **en el lienzo**: foto, texto o fondo de cualquier elemento, **incluso los que sobresalen de la hoja**; no de los paneles ni botones del editor ni del fondo gris. Se ve el código bajo el puntero; clic para elegir, Esc para cancelar; funciona en cualquier navegador). Los **últimos 5 colores tomados** quedan en la fila «Del cuentagotas»: el nuevo entra al principio y el último sale; si tomas uno que ya está, no se mueve nada y solo se marca donde está), **sin color**, los **colores de la página** (los que ya usas, para repetirlos), los **colores de las fotos** (de cada foto de la página: miniatura y hasta 6 colores que más aparecen; muestra 3 fotos y «Ver todo» el resto), los **colores de la revista**, **28 sólidos** predeterminados y, en texto y formas, **14 degradados**. Elegir un color liso quita el degradado.
 - Código: `src/components/admin/PaletaColores.tsx` (lectura de fotos en `src/lib/colores-foto.ts`; listas en `src/lib/esquema.ts`: `COLORES_SOLIDOS`, `NOMBRES_COLOR`, `DEGRADADOS`).
 
+## Buscar fotos libres
+- En el panel **Subidos**, el botón **🌐 Buscar fotos libres (Wikimedia Commons)** busca fotos con licencia que permite reutilizarlas (CC0, dominio público, CC BY, CC BY-SA). Cada resultado muestra su autor y su licencia; **Usar** descarga la foto a la edición y la pone en la hoja (o sustituye la elegida) **con su crédito ya escrito**. Escribe tú la descripción. Antes de publicar, comprueba en la «ficha ↗» que la licencia y el uso sean correctos. Si no hay Internet, el buscador avisa y el resto del panel sigue igual.
+
+## Cambiar un color por otro (opcional)
+- **Archivo → Cambiar un color por otro…**: elige uno de los colores que ya usas (con cuántas veces aparece), el color nuevo y si es solo en esta página o en toda la edición. Te dice cuántos lugares cambiarán y puedes deshacerlo desde el mismo cuadro. Sirve para cambiar la identidad de una edición entera. Un color de la revista («papel») y un hexadecimal que se ve igual cuentan como distintos.
+
+## Animar toda la página (opcional)
+- En el panel **Animaciones** de la página hay un desplegable «Animar toda la página de una vez»: elige efecto y pausa y pulsa «Animar N elementos». Va de arriba abajo, respeta por omisión lo que ya tiene animación y no toca bloqueados, ocultos ni repetidos. «Quitar todas» las borra. Si prefieres controlar cada elemento, ignóralo.
+
+## Estilos de la edición
+- Con un elemento elegido, **🎨 Estilos** (barra sobre la hoja) guarda su aspecto con un nombre («Rótulo», «Titular», «Pie de foto»…) y lo aplica a otros del mismo tipo con un clic, en cualquier página. Se guardan en la propia edición (máx. 40; con el mismo nombre se actualiza; ✕ quita uno). Copiar y pegar estilo (Ctrl+Alt+C / V) sigue igual, pero es temporal.
+- Los **colores de la edición** (selector de color → «Colores de la edición» → «＋ Guardar») funcionan igual: se guardan con la edición y salen primero en todos los selectores. Duplicar una edición conserva ambos.
+
+## Reemplazar una foto
+- Al cambiar una foto por otra (botón **Reemplazar** o el panel Subidos), se **vacían su descripción, su crédito y su encuadre**, porque eran de la foto anterior; el editor avisa y **Revisar** te pide escribir los nuevos.
+
 ## Tamaño de letra: se puede escribir
 - En la barra sobre la hoja, el campo del **tamaño del texto** acepta un número completo (escríbelo y pulsa Enter, o sal del campo); **Esc** lo deja como estaba y **↑ ↓** cambian de uno en uno. Los botones − y + siguen igual.
 

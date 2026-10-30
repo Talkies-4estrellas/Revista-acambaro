@@ -301,6 +301,7 @@ export default function BarraContextual({
         🔗 Enlace
       </button>
       <Sep />
+      <MenuEstilos el={el} acciones={acciones} />
       <Comunes acciones={acciones} />
     </Barra>
   );

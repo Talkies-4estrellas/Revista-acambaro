@@ -8,6 +8,7 @@ import { ANCHO_LIENZO, BOTONES, type ElementoGuardado, LOGOS, MOLDES, MOLDES_IDS
 import { BLOQUES, CATEGORIAS_BLOQUE } from "@/lib/bloques";
 import { btnCls, inputCls } from "./campos";
 import { GaleriaMedios } from "./BibliotecaMedios";
+import FotosLibres from "./FotosLibres";
 
 export const TIPO_BIBLIOTECA = "application/x-lienzo";
 
@@ -149,6 +150,7 @@ export default function BibliotecaLienzo({
   const [sub, setSub] = useState<ModoBiblioteca>("figuras");
   const m: ModoBiblioteca = modo === "elementos" ? sub : modo;
   const [busqueda, setBusqueda] = useState("");
+  const [buscandoLibres, setBuscandoLibres] = useState(false);
   const [categoria, setCategoria] = useState<string>("Todas");
   const [comoForma, setComoForma] = useState(false);
 
@@ -225,7 +227,16 @@ export default function BibliotecaLienzo({
       {m === "subidos" ? (
         <>
           {reemplazando && <p className="font-sans shrink-0 border-b border-ocre bg-ocre/20 px-3 py-1.5 text-xs font-semibold">Elige la foto que sustituirá a la seleccionada.</p>}
-          <GaleriaMedios edicionId={edicionId} onUsar={onSubido} arrastrable />
+          {buscandoLibres ? (
+            <FotosLibres edicionId={edicionId} onUsar={onSubido} onVolver={() => setBuscandoLibres(false)} />
+          ) : (
+            <>
+              <button type="button" onClick={() => setBuscandoLibres(true)} className="font-sans shrink-0 border-b border-ink/15 bg-paper-deep/60 px-3 py-1.5 text-left text-xs font-bold hover:bg-paper-deep" title="Busca fotos con licencia libre en Wikimedia Commons y las descarga a esta edición con su crédito">
+                🌐 Buscar fotos libres (Wikimedia Commons)
+              </button>
+              <GaleriaMedios edicionId={edicionId} onUsar={onSubido} arrastrable />
+            </>
+          )}
         </>
       ) : m === "mios" ? (
         <div className="p-3">
