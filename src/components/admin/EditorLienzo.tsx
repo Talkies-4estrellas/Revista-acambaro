@@ -1077,6 +1077,34 @@ export default function EditorLienzo({
     cambiar({ h: Math.max(10, Math.ceil(nodo.offsetHeight / escala() + 2 * (unico.relleno ?? 0))) });
   }
 
+  /**
+   * La caja de un texto crece sola cuando el texto ya no cabe (al escribir más, subir el tamaño de letra o hacerla más angosta). Solo
+   * crece (nunca se encoge, para no deshacer lo que alguien ajustó a propósito), se detiene al llegar al final de la hoja y avisa una vez.
+   */
+  const claveCrecer = unico?.tipo === "texto" ? `${unico.id}|${unico.texto}|${unico.tam}|${unico.w}|${unico.h}|${unico.fuente}|${unico.interlineado}|${unico.relleno}` : "";
+  const avisoCrecer = useRef(false);
+  useEffect(() => {
+    if (!claveCrecer || !unico || unico.tipo !== "texto") return;
+    const id = unico.id!;
+    const t = window.setTimeout(() => {
+      const el = getEls().find((x) => x.id === id);
+      const nodo = lienzo.current?.querySelector<HTMLElement>(`[data-elid="${id}"] [data-texto]`);
+      if (!el || el.tipo !== "texto" || !nodo) return;
+      const necesario = Math.ceil(nodo.offsetHeight / escala() + 2 * (el.relleno ?? 0)) + 2;
+      const tope = Math.max(el.h, alto - el.y);
+      const nuevo = Math.min(necesario, tope);
+      if (nuevo > el.h + 2) {
+        cambiar({ h: nuevo }, "crecer");
+        if (!avisoCrecer.current) {
+          avisoCrecer.current = true;
+          avisar("La caja del texto creció para que quepa. Puedes ajustarla con el tirador de abajo.");
+        }
+      }
+    }, 220);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claveCrecer]);
+
   /* ----------------------------- Alinear ------------------------------ */
 
   function alinear(tipo: Alineacion6) {

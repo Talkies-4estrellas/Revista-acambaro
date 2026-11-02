@@ -26,6 +26,7 @@
 | Ruta | Notas |
 |---|---|
 | `content/ediciones/NN.json` | Una edición por archivo (el nombre es el id). 01–13 de ejemplo; **14** = N.º 10 «Los Azufres» (55 págs.); **15** = edición demo resumida (24 págs.) |
+| `content/ediciones/muestra-bienvenida.json` | Edición de muestra (`"muestra": true`): solo se hojea en /bienvenida; no sale en archivo, buscador ni numeración |
 | `content/plantillas/` | Plantillas de página guardadas por el usuario (se comparten entre ediciones) |
 | `content/elementos/` | «Mis elementos»: grupos de elementos guardados por el usuario (se comparten entre ediciones; sus imágenes en `public/media/_plantillas/el-<id>/`) |
 | `content/clics.json`, `content/vistas.json` | Conteo de clics en enlaces y de vistas por página (estadísticas) |
@@ -52,6 +53,7 @@
 | `/buscar` | `app/buscar/page.tsx` | Búsqueda en todas las ediciones (excluye anuncios) |
 | `/suscribirse`, `/baja` | `app/suscribirse`, `app/baja` | Alta y baja del newsletter |
 | `/proyecto` | `app/proyecto/page.tsx` | Presentación del proyecto (para atraer colaboradores y marcas) |
+| `/bienvenida` | `app/bienvenida/page.tsx` | Presentación para quien llega por primera vez (el proxy lo manda aquí una vez; cookie `acomdi-bienvenida`): muestra hojeable, cupones, anunciantes, preguntas |
 | `/admin` | `app/admin/page.tsx` | Panel: lista de ediciones, nueva edición, **armar edición resumida** (`ResumenEdicion.tsx`) |
 | `/admin/[id]` | `app/admin/[id]/page.tsx` | Editor de una edición |
 | `/admin/clics`, `/admin/newsletter` | `app/admin/clics`, `app/admin/newsletter` | Estadística de clics y suscriptores/correo |
@@ -86,6 +88,8 @@
 |---|---|
 | `Lienzo.tsx` | Dibuja páginas de lienzo (800 × alto); `LienzoResponsivo` + `LienzoApilado` (columna del celular; `movil: ocultar \| solo`) |
 | `PageFlow.tsx`, `PageTurner.tsx` | Giro de página y navegación inferior (escritorio; en celular `PageFlow` se apaga) |
+| `MuestraHojeable.tsx` | Marco de «Hojéala aquí» en la bienvenida (carga la edición de muestra al pulsar; se adapta a PC y celular) |
+| `Revelar.tsx` | Hace que una sección suba y aparezca al entrar en pantalla (respeta «reducir movimiento») |
 | `FlujoMovil.tsx` + `lib/flujo-actions.tsx` | Scroll continuo en celular: agrega las páginas siguientes debajo (acción de servidor que dibuja cada página) |
 | `plantillas.tsx` | Páginas del lector por plantilla; barra superior del lector |
 | `Masthead.tsx`, `Footer.tsx` | Cabecera (buscador largo, botón de tema) y pie |

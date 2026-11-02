@@ -1,0 +1,1047 @@
+{
+  "numero": "00",
+  "fecha": "2026-11-02",
+  "tema": "Así se lee ACOM-Di (muestra)",
+  "publicada": false,
+  "muestra": true,
+  "paginas": [
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Muestra",
+      "fondo": "#013f4a",
+      "alto": 1100,
+      "movil": "apilar",
+      "enIndice": false,
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "id": "m001",
+          "x": 0,
+          "y": 560,
+          "w": 800,
+          "h": 540,
+          "ajuste": "cubrir",
+          "src": "/media/05/fidelita.jpg",
+          "alt": "La locomotora de vapor «La Fidelita», N. de M. 296, exhibida en Acámbaro",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 0
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m002",
+          "x": 0,
+          "y": 560,
+          "w": 800,
+          "h": 160,
+          "color": "#013f4a",
+          "opacidad": 0
+        },
+        {
+          "tipo": "imagen",
+          "id": "m003",
+          "x": 56,
+          "y": 40,
+          "w": 330,
+          "h": 80,
+          "ajuste": "contener",
+          "src": "/brand/logo-claro.svg",
+          "alt": "ACOM-Di, Revista de Acámbaro"
+        },
+        {
+          "tipo": "texto",
+          "id": "m004",
+          "x": 56,
+          "y": 170,
+          "w": 600,
+          "h": 24,
+          "texto": "Edición de muestra",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.2,
+          "color": "#e0a35a",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 110
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m005",
+          "x": 56,
+          "y": 204,
+          "w": 688,
+          "h": 200,
+          "texto": "Así se lee\nACOM-Di",
+          "fuente": "display",
+          "tam": 84,
+          "peso": 900,
+          "interlineado": 1,
+          "color": "#f6efe0",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 220
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m006",
+          "x": 56,
+          "y": 410,
+          "w": 640,
+          "h": 120,
+          "texto": "Seis páginas para que veas cómo se pasa, cómo se ve y qué encontrarás cada semana.",
+          "fuente": "serif",
+          "tam": 26,
+          "cursiva": true,
+          "interlineado": 1.35,
+          "color": "#e0a35a",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 330
+          }
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Cómo se pasa la página",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "enIndice": false,
+      "elementos": [
+        {
+          "tipo": "texto",
+          "id": "m007",
+          "x": 56,
+          "y": 72,
+          "w": 600,
+          "h": 24,
+          "texto": "Probémoslo",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.2,
+          "color": "#a8501c",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 0
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m008",
+          "x": 56,
+          "y": 106,
+          "w": 688,
+          "h": 190,
+          "texto": "Pasar la página es lo más fácil",
+          "fuente": "display",
+          "tam": 62,
+          "peso": 900,
+          "interlineado": 1.02,
+          "color": "#1b262c",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 110
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m009",
+          "x": 56,
+          "y": 360,
+          "w": 688,
+          "h": 1,
+          "color": "#1b262c",
+          "opacidad": 0.25
+        },
+        {
+          "tipo": "icono",
+          "id": "m010",
+          "icono": "book-open",
+          "x": 56,
+          "y": 394,
+          "w": 76,
+          "h": 76,
+          "color": "#068562",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 220
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m011",
+          "x": 164,
+          "y": 390,
+          "w": 580,
+          "h": 44,
+          "texto": "En la computadora",
+          "fuente": "display",
+          "tam": 30,
+          "peso": 800,
+          "color": "#1b262c",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 330
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m012",
+          "x": 164,
+          "y": 442,
+          "w": 580,
+          "h": 110,
+          "texto": "Gira la rueda del ratón o usa las flechas del teclado. Cada página entra con su propio giro.",
+          "fuente": "serif",
+          "tam": 20,
+          "interlineado": 1.5,
+          "color": "#3d3a33",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 440
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m013",
+          "x": 56,
+          "y": 580,
+          "w": 688,
+          "h": 1,
+          "color": "#1b262c",
+          "opacidad": 0.25
+        },
+        {
+          "tipo": "icono",
+          "id": "m014",
+          "icono": "smartphone",
+          "x": 56,
+          "y": 614,
+          "w": 76,
+          "h": 76,
+          "color": "#068562",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 550
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m015",
+          "x": 164,
+          "y": 610,
+          "w": 580,
+          "h": 44,
+          "texto": "En una pantalla táctil",
+          "fuente": "display",
+          "tam": 30,
+          "peso": 800,
+          "color": "#1b262c",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 660
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m016",
+          "x": 164,
+          "y": 662,
+          "w": 580,
+          "h": 110,
+          "texto": "Arrastra con el dedo o toca para pasar. En el celular, la página se acomoda en una columna para leer con el pulgar.",
+          "fuente": "serif",
+          "tam": 20,
+          "interlineado": 1.5,
+          "color": "#3d3a33",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 770
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m017",
+          "x": 56,
+          "y": 800,
+          "w": 688,
+          "h": 1,
+          "color": "#1b262c",
+          "opacidad": 0.25
+        },
+        {
+          "tipo": "icono",
+          "id": "m018",
+          "icono": "search",
+          "x": 56,
+          "y": 834,
+          "w": 76,
+          "h": 76,
+          "color": "#068562",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 880
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m019",
+          "x": 164,
+          "y": 830,
+          "w": 580,
+          "h": 44,
+          "texto": "Para encontrar algo",
+          "fuente": "display",
+          "tam": 30,
+          "peso": 800,
+          "color": "#1b262c",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 990
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m020",
+          "x": 164,
+          "y": 882,
+          "w": 580,
+          "h": 110,
+          "texto": "Escribe una palabra en el buscador del sitio y llegas a la página exacta, en cualquier edición.",
+          "fuente": "serif",
+          "tam": 20,
+          "interlineado": 1.5,
+          "color": "#3d3a33",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 1100
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m021",
+          "x": 56,
+          "y": 1040,
+          "w": 688,
+          "h": 28,
+          "texto": "Prueba ahora: pasa a la página siguiente →",
+          "fuente": "sans",
+          "tam": 15,
+          "peso": 700,
+          "color": "#a8501c",
+          "alinear": "derecha",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 1400
+          }
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Un reportaje",
+      "fondo": "#f6efe0",
+      "alto": 1100,
+      "movil": "apilar",
+      "enIndice": false,
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "id": "m022",
+          "x": 0,
+          "y": 0,
+          "w": 800,
+          "h": 500,
+          "ajuste": "cubrir",
+          "src": "/media/05/estacion.jpg",
+          "alt": "Antigua estación del ferrocarril de Acámbaro, hoy museo",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 0
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m023",
+          "x": 56,
+          "y": 530,
+          "w": 400,
+          "h": 24,
+          "texto": "Historia",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.2,
+          "color": "#a8501c",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 110
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m024",
+          "x": 56,
+          "y": 562,
+          "w": 688,
+          "h": 130,
+          "texto": "Un tren que sigue en Acámbaro",
+          "fuente": "display",
+          "tam": 52,
+          "peso": 900,
+          "interlineado": 1.05,
+          "color": "#1b262c",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 220
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m025",
+          "x": 56,
+          "y": 704,
+          "w": 688,
+          "h": 56,
+          "texto": "Así se ve una página de reportaje: foto grande, título, texto y créditos.",
+          "fuente": "serif",
+          "tam": 22,
+          "cursiva": true,
+          "color": "#6b6458",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 330
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m026",
+          "x": 56,
+          "y": 780,
+          "w": 120,
+          "h": 4,
+          "color": "#068562"
+        },
+        {
+          "tipo": "texto",
+          "id": "m027",
+          "x": 56,
+          "y": 806,
+          "w": 688,
+          "h": 220,
+          "texto": "La antigua estación del ferrocarril de Acámbaro es hoy un museo, y la locomotora de vapor «La Fidelita», N. de M. 296, se exhibe en la ciudad.\n\nEn cada edición, páginas como esta cuentan un lugar, un sabor o una persona de Acámbaro.",
+          "fuente": "serif",
+          "tam": 20,
+          "interlineado": 1.6,
+          "color": "#1b262c",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 440
+          }
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Qué encontrarás",
+      "fondo": "#013f4a",
+      "alto": 1100,
+      "movil": "apilar",
+      "enIndice": false,
+      "elementos": [
+        {
+          "tipo": "texto",
+          "id": "m028",
+          "x": 56,
+          "y": 72,
+          "w": 600,
+          "h": 24,
+          "texto": "Cada semana",
+          "fuente": "sans",
+          "tam": 14,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.2,
+          "color": "#49c59f",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 0
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m029",
+          "x": 56,
+          "y": 106,
+          "w": 688,
+          "h": 130,
+          "texto": "Un pueblo contado con calma",
+          "fuente": "display",
+          "tam": 60,
+          "peso": 900,
+          "interlineado": 1.02,
+          "color": "#f6efe0",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 110
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m030",
+          "x": 56,
+          "y": 330,
+          "w": 332,
+          "h": 300,
+          "color": "#ffffff",
+          "opacidad": 0.07,
+          "radio": 10
+        },
+        {
+          "tipo": "icono",
+          "id": "m031",
+          "icono": "landmark",
+          "x": 84,
+          "y": 358,
+          "w": 64,
+          "h": 64,
+          "color": "#49c59f",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 220
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m032",
+          "x": 84,
+          "y": 448,
+          "w": 276,
+          "h": 44,
+          "texto": "Historia",
+          "fuente": "display",
+          "tam": 34,
+          "peso": 900,
+          "color": "#f6efe0",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 330
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m033",
+          "x": 84,
+          "y": 502,
+          "w": 280,
+          "h": 112,
+          "texto": "El ferrocarril, los barrios y los hechos que explican cómo se hizo Acámbaro.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.45,
+          "color": "#cfd8d4",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 440
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m034",
+          "x": 412,
+          "y": 330,
+          "w": 332,
+          "h": 300,
+          "color": "#ffffff",
+          "opacidad": 0.07,
+          "radio": 10
+        },
+        {
+          "tipo": "icono",
+          "id": "m035",
+          "icono": "utensils",
+          "x": 440,
+          "y": 358,
+          "w": 64,
+          "h": 64,
+          "color": "#49c59f",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 550
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m036",
+          "x": 440,
+          "y": 448,
+          "w": 276,
+          "h": 44,
+          "texto": "Sabor",
+          "fuente": "display",
+          "tam": 34,
+          "peso": 900,
+          "color": "#f6efe0",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 660
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m037",
+          "x": 440,
+          "y": 502,
+          "w": 280,
+          "h": 112,
+          "texto": "El pan, los guisos, los mercados y las recetas que se heredan.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.45,
+          "color": "#cfd8d4",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 770
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m038",
+          "x": 56,
+          "y": 660,
+          "w": 332,
+          "h": 300,
+          "color": "#ffffff",
+          "opacidad": 0.07,
+          "radio": 10
+        },
+        {
+          "tipo": "icono",
+          "id": "m039",
+          "icono": "users",
+          "x": 84,
+          "y": 688,
+          "w": 64,
+          "h": 64,
+          "color": "#49c59f",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 880
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m040",
+          "x": 84,
+          "y": 778,
+          "w": 276,
+          "h": 44,
+          "texto": "Gente",
+          "fuente": "display",
+          "tam": 34,
+          "peso": 900,
+          "color": "#f6efe0",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 990
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m041",
+          "x": 84,
+          "y": 832,
+          "w": 280,
+          "h": 112,
+          "texto": "Oficios, familias y personajes: quienes hacen que el pueblo sea lo que es.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.45,
+          "color": "#cfd8d4",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 1100
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m042",
+          "x": 412,
+          "y": 660,
+          "w": 332,
+          "h": 300,
+          "color": "#ffffff",
+          "opacidad": 0.07,
+          "radio": 10
+        },
+        {
+          "tipo": "icono",
+          "id": "m043",
+          "icono": "mountain",
+          "x": 440,
+          "y": 688,
+          "w": 64,
+          "h": 64,
+          "color": "#49c59f",
+          "trazo": 1.6,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 1210
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m044",
+          "x": 440,
+          "y": 778,
+          "w": 276,
+          "h": 44,
+          "texto": "Paisajes",
+          "fuente": "display",
+          "tam": 34,
+          "peso": 900,
+          "color": "#f6efe0",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 1320
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m045",
+          "x": 440,
+          "y": 832,
+          "w": 280,
+          "h": 112,
+          "texto": "Lugares para visitar, caminos y rincones de Acámbaro y sus alrededores.",
+          "fuente": "serif",
+          "tam": 18,
+          "interlineado": 1.45,
+          "color": "#cfd8d4",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 1400
+          }
+        }
+      ]
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Así se ve un anuncio",
+      "fondo": "#a8501c",
+      "alto": 1100,
+      "movil": "apilar",
+      "enIndice": false,
+      "elementos": [
+        {
+          "tipo": "texto",
+          "id": "m046",
+          "x": 600,
+          "y": 24,
+          "w": 160,
+          "h": 20,
+          "texto": "Publicidad",
+          "fuente": "sans",
+          "tam": 12,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.2,
+          "color": "#f6efe0",
+          "alinear": "derecha"
+        },
+        {
+          "tipo": "icono",
+          "id": "m047",
+          "icono": "store",
+          "x": 320,
+          "y": 150,
+          "w": 160,
+          "h": 160,
+          "color": "#f6efe0",
+          "trazo": 1.4,
+          "animacion": {
+            "efecto": "zoom",
+            "duracion": 700,
+            "retraso": 0
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m048",
+          "x": 40,
+          "y": 400,
+          "w": 720,
+          "h": 200,
+          "texto": "Tu negocio\naquí",
+          "fuente": "display",
+          "tam": 90,
+          "peso": 900,
+          "color": "#f6efe0",
+          "alinear": "centro",
+          "interlineado": 1,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 110
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m049",
+          "x": 110,
+          "y": 640,
+          "w": 580,
+          "h": 130,
+          "texto": "Una página completa de la revista, con tu arte, tu dirección y tu WhatsApp.",
+          "fuente": "serif",
+          "tam": 28,
+          "color": "#f6efe0",
+          "alinear": "centro",
+          "interlineado": 1.4,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 220
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m050",
+          "x": 110,
+          "y": 800,
+          "w": 580,
+          "h": 60,
+          "texto": "Página de muestra: el negocio es de ejemplo.",
+          "fuente": "sans",
+          "tam": 16,
+          "color": "#f6efe0",
+          "opacidad": 0.8,
+          "alinear": "centro",
+          "animacion": {
+            "efecto": "aparecer",
+            "duracion": 700,
+            "retraso": 330
+          }
+        },
+        {
+          "tipo": "forma",
+          "id": "m051",
+          "x": 0,
+          "y": 1010,
+          "w": 800,
+          "h": 90,
+          "color": "#1b262c"
+        },
+        {
+          "tipo": "texto",
+          "id": "m052",
+          "x": 40,
+          "y": 1024,
+          "w": 480,
+          "h": 30,
+          "texto": "Nombre de tu negocio",
+          "fuente": "sans",
+          "tam": 18,
+          "peso": 700,
+          "color": "#f6efe0"
+        },
+        {
+          "tipo": "texto",
+          "id": "m053",
+          "x": 40,
+          "y": 1056,
+          "w": 560,
+          "h": 24,
+          "texto": "Dirección · Horario · Teléfono",
+          "fuente": "sans",
+          "tam": 14,
+          "color": "#f6efe0",
+          "opacidad": 0.8
+        },
+        {
+          "tipo": "icono",
+          "id": "m054",
+          "icono": "whatsapp",
+          "x": 700,
+          "y": 1027,
+          "w": 46,
+          "h": 46,
+          "color": "#f6efe0"
+        }
+      ],
+      "seccion": "Publicidad"
+    },
+    {
+      "plantilla": "lienzo",
+      "transicion": "izquierda",
+      "titulo": "Gracias por hojear",
+      "fondo": "#1b262c",
+      "alto": 1100,
+      "movil": "apilar",
+      "enIndice": false,
+      "elementos": [
+        {
+          "tipo": "imagen",
+          "id": "m055",
+          "x": 150,
+          "y": 210,
+          "w": 500,
+          "h": 122,
+          "ajuste": "contener",
+          "src": "/brand/logo-claro.svg",
+          "alt": "ACOM-Di, Revista de Acámbaro",
+          "animacion": {
+            "efecto": "zoom",
+            "duracion": 700,
+            "retraso": 0
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m056",
+          "x": 80,
+          "y": 420,
+          "w": 640,
+          "h": 130,
+          "texto": "Gracias por hojear",
+          "fuente": "display",
+          "tam": 70,
+          "peso": 900,
+          "color": "#f6efe0",
+          "alinear": "centro",
+          "cursiva": true,
+          "interlineado": 1,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 110
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m057",
+          "x": 130,
+          "y": 570,
+          "w": 540,
+          "h": 110,
+          "texto": "Esto fue una muestra. Las ediciones de verdad te esperan.",
+          "fuente": "serif",
+          "tam": 24,
+          "color": "#e0a35a",
+          "alinear": "centro",
+          "interlineado": 1.4,
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 220
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m058",
+          "x": 200,
+          "y": 740,
+          "w": 400,
+          "h": 64,
+          "texto": "Entrar a la revista →",
+          "fuente": "sans",
+          "tam": 18,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.14,
+          "color": "#1b262c",
+          "fondo": "#49c59f",
+          "alinear": "centro",
+          "vertical": "centro",
+          "enlace": "/",
+          "hover": "subir",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 330
+          }
+        },
+        {
+          "tipo": "texto",
+          "id": "m059",
+          "x": 200,
+          "y": 830,
+          "w": 400,
+          "h": 64,
+          "texto": "Recibir cada edición",
+          "fuente": "sans",
+          "tam": 18,
+          "peso": 800,
+          "mayusculas": true,
+          "espaciado": 0.14,
+          "color": "#1b262c",
+          "fondo": "#ffffff",
+          "alinear": "centro",
+          "vertical": "centro",
+          "enlace": "/suscribirse",
+          "hover": "subir",
+          "animacion": {
+            "efecto": "subir",
+            "duracion": 700,
+            "retraso": 440
+          }
+        }
+      ]
+    }
+  ]
+}

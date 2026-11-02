@@ -485,6 +485,7 @@ export function validarEdicion(raw: unknown, id: string, opciones: { tolerante?:
     publicada: raw.publicada !== false,
     ...(raw.publicarEn ? { publicarEn: raw.publicarEn as string } : {}),
     ...(raw.numeroFijo === true ? { numeroFijo: true } : {}),
+    ...(raw.muestra === true ? { muestra: true } : {}),
     ...(Array.isArray(raw.paleta) && raw.paleta.length ? { paleta: raw.paleta as string[] } : {}),
     ...(Array.isArray(raw.estilos) && raw.estilos.length ? { estilos: raw.estilos as unknown as Edicion["estilos"] } : {}),
     paginas: resolverReferencias(
@@ -529,9 +530,9 @@ export function getEdiciones(): Edicion[] {
       }
     });
   // El número lo decide el orden de publicación, no lo escrito en el archivo.
-  const numeros = calcularNumeracion(todas.map((e) => ({ id: e.id, fecha: e.fecha, publicada: e.publicada, publicarEn: e.publicarEn, fijo: numeroFijoDe(e) })));
+  const numeros = calcularNumeracion(todas.filter((e) => !e.muestra).map((e) => ({ id: e.id, fecha: e.fecha, publicada: e.publicada, publicarEn: e.publicarEn, fijo: numeroFijoDe(e) })));
   return todas
-    .map((e) => ({ ...e, numero: formatoNumero(numeros.get(e.id)?.numero ?? 0) }))
+    .map((e) => ({ ...e, numero: e.muestra ? "00" : formatoNumero(numeros.get(e.id)?.numero ?? 0) }))
     .sort((a, b) => b.fecha.localeCompare(a.fecha) || b.id.localeCompare(a.id));
 }
 
@@ -539,7 +540,7 @@ export const getEdicion = (id: string) => getEdiciones().find((e) => e.id === id
 /** Ediciones visibles al público ahora mismo: publicadas y con su hora programada ya cumplida. */
 export const getPublicadas = () => {
   const ahora = Date.now();
-  return getEdiciones().filter((e) => estadoEdicion(e, ahora) === "publicada");
+  return getEdiciones().filter((e) => !e.muestra && estadoEdicion(e, ahora) === "publicada");
 };
 export const getUltima = () => getPublicadas()[0];
 

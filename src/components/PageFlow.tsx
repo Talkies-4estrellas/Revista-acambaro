@@ -299,6 +299,23 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
     return () => mq.removeEventListener("change", alCambiar);
   }, []);
 
+  // En el marco de la presentación (en PC y en celular), los enlaces a otras partes del sitio se abren en la ventana completa, no dentro del marco.
+  useEffect(() => {
+    if (window.self === window.top) return;
+    const alClic = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const href = (e.target as Element | null)?.closest?.("a")?.getAttribute("href");
+      if (!href || !href.startsWith("/") || href.startsWith("//")) return;
+      const edicion = window.location.pathname.slice(0, window.location.pathname.lastIndexOf("/") + 1);
+      if (href.startsWith(edicion)) return; // otra página de esta misma edición: se queda en el marco
+      e.preventDefault();
+      e.stopPropagation();
+      window.top!.location.assign(href);
+    };
+    document.addEventListener("click", alClic, true);
+    return () => document.removeEventListener("click", alClic, true);
+  }, []);
+
   useEffect(() => {
     if (movil) return;
     const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -534,6 +551,10 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
       else if (start.top && dy > 90) go(idx - 1);
     };
 
+    // Dentro de un marco (la muestra de la presentación) la rueda no debe «escaparse» a la página de afuera al llegar al borde.
+    const enMarco = window.self !== window.top;
+    if (enMarco) document.documentElement.style.overscrollBehavior = "contain";
+
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("scroll", refreshEdges, { passive: true });
     window.addEventListener("resize", refreshEdges);
@@ -548,6 +569,7 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
     refreshEdges();
 
     return () => {
+      if (enMarco) document.documentElement.style.overscrollBehavior = "";
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("scroll", refreshEdges);
       window.removeEventListener("resize", refreshEdges);

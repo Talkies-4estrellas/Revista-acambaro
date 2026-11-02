@@ -879,6 +879,11 @@ export type EdicionDatos = {
   publicarEn?: string;
   /** Elementos que se repiten en todas las páginas de lienzo. */
   maestra?: Maestra;
+  /**
+   * Edición de muestra (por ejemplo, la que se hojea en la página de bienvenida): se lee por su dirección, pero no es una edición de la
+   * revista: no lleva número, no sale en el archivo ni en el buscador y no cuenta para la numeración.
+   */
+  muestra?: boolean;
   /** Colores propios de la edición (hexadecimales): salen primero en todos los selectores de color. */
   paleta?: string[];
   /** Estilos con nombre de la edición. */

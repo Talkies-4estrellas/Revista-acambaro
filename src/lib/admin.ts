@@ -85,6 +85,8 @@ export type ResumenEdicion = {
   /** Ya se publicó alguna vez: conserva su número aunque se desactive. */
   fijo?: boolean;
   paginas?: number;
+  /** Edición de muestra: no es una edición de la revista (sin número). */
+  muestra?: boolean;
   error?: string;
 };
 
@@ -99,7 +101,7 @@ export function listarEdicionesAdmin(): ResumenEdicion[] {
       try {
         const raw = JSON.parse(fs.readFileSync(path.join(DIR_EDICIONES, f), "utf8"));
         const ed = validarEdicion(raw, id);
-        return { id, numero: ed.numero, fecha: ed.fecha, tema: ed.tema, publicada: ed.publicada, publicarEn: ed.publicarEn, fijo: numeroFijoDe(ed) !== undefined, paginas: ed.paginas.length };
+        return { id, numero: ed.numero, muestra: ed.muestra, fecha: ed.fecha, tema: ed.tema, publicada: ed.publicada, publicarEn: ed.publicarEn, fijo: numeroFijoDe(ed) !== undefined, paginas: ed.paginas.length };
       } catch (e) {
         return { id, error: e instanceof Error ? e.message : String(e) };
       }
@@ -107,7 +109,7 @@ export function listarEdicionesAdmin(): ResumenEdicion[] {
   // Número automático: las que ya se publicaron lo conservan; las nuevas toman el siguiente; los borradores solo
   // muestran el que recibirían.
   const numeros = calcularNumeracion(
-    lista.filter((e) => !e.error).map((e) => ({ id: e.id, fecha: e.fecha!, publicada: !!e.publicada, publicarEn: e.publicarEn, fijo: e.fijo ? Number.parseInt(e.numero ?? "", 10) : undefined })),
+    lista.filter((e) => !e.error && !e.muestra).map((e) => ({ id: e.id, fecha: e.fecha!, publicada: !!e.publicada, publicarEn: e.publicarEn, fijo: e.fijo ? Number.parseInt(e.numero ?? "", 10) : undefined })),
   );
   return lista
     .map((e) => {
@@ -120,7 +122,7 @@ export function listarEdicionesAdmin(): ResumenEdicion[] {
 /** Resumen de las demás ediciones para calcular el número en el editor. */
 export function entradasNumeracion(): { id: string; fecha: string; publicada: boolean; publicarEn?: string; fijo?: number }[] {
   return listarEdicionesAdmin()
-    .filter((e) => !e.error)
+    .filter((e) => !e.error && !e.muestra)
     .map((e) => ({ id: e.id, fecha: e.fecha!, publicada: !!e.publicada, publicarEn: e.publicarEn, fijo: e.fijo ? Number.parseInt(e.numero ?? "", 10) : undefined }));
 }
 
@@ -136,6 +138,7 @@ export function leerCrudo(id: string): EdicionDatos | null {
     publicada: raw.publicada !== false,
     publicarEn: typeof raw.publicarEn === "string" ? raw.publicarEn : undefined,
     numeroFijo: raw.numeroFijo === true ? true : undefined,
+    ...(raw.muestra === true ? { muestra: true } : {}),
     ...(raw.maestra && typeof raw.maestra === "object" ? { maestra: raw.maestra } : {}),
     ...(Array.isArray(raw.paleta) ? { paleta: raw.paleta } : {}),
     ...(Array.isArray(raw.estilos) ? { estilos: raw.estilos } : {}),

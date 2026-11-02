@@ -1,4 +1,8 @@
 import { ETIQUETAS_PLANTILLA, type Elemento, type ElementoTexto, type Pagina } from "./esquema";
+import { PLANTILLAS_BASE } from "./plantillas-base";
+import { PLANTILLAS_EXTRA } from "./plantillas-extra";
+import { PLANTILLAS_ANUNCIO } from "./plantillas-anuncio";
+import { PLANTILLAS_COLLAGE, PLANTILLAS_EDITORIAL } from "./plantillas-editorial";
 
 /**
  * Generador de índice: arma una o más páginas «Contenido» con una fila por página de la edición (número + título, los dos con
@@ -20,6 +24,40 @@ export const slugAncla = (t: string, max = 36) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, max);
+
+/** Títulos que solo dicen de qué plantilla viene la página («Reportaje con foto grande», «Receta»…): no sirven para el índice. */
+const TITULOS_DE_PLANTILLA = new Set(
+  [...PLANTILLAS_BASE, ...PLANTILLAS_EXTRA, ...PLANTILLAS_ANUNCIO, ...PLANTILLAS_COLLAGE, ...PLANTILLAS_EDITORIAL]
+    .flatMap((p) => [p.nombre, p.pagina.titulo ?? ""])
+    .map((t) => t.trim().toLowerCase())
+    .filter(Boolean),
+);
+/** Estos sí se dejan: son títulos de sección con sentido para un lector. */
+const TITULOS_VALIDOS = new Set(["carta del editor", "portada", "contenido"]);
+
+/**
+ * El titular de una página de lienzo: el texto más grande (con letras, de 6 a 80 caracteres y sin referencias {n} ni {p:…}); si hay
+ * empate, el de más arriba. Devuelve undefined si no hay uno razonable.
+ */
+export function titularDePagina(p: Pagina): string | undefined {
+  if (p.plantilla !== "lienzo") return undefined;
+  const candidatos = (p.elementos ?? [])
+    .filter((e): e is ElementoTexto => e.tipo === "texto" && !e.oculto && !/\{[a-z]/i.test(e.texto))
+    .map((e) => ({ e, t: e.texto.split("\n")[0].replace(/\s+/g, " ").trim() }))
+    .filter(({ t }) => t.length >= 6 && t.length <= 80 && (t.match(/\p{L}/gu)?.length ?? 0) >= 4);
+  if (candidatos.length === 0) return undefined;
+  candidatos.sort((a, b) => (b.e.tam ?? 24) - (a.e.tam ?? 24) || a.e.y - b.e.y);
+  return candidatos[0].t;
+}
+
+/** El título que debe llevar la página en el índice: el propio, salvo que sea solo el nombre de su plantilla (entonces, su titular). */
+export function tituloParaIndice(p: Pagina): string {
+  const actual = (p.titulo ?? "").trim();
+  const clave = actual.toLowerCase();
+  if (/^contraportada/i.test(actual) || TITULOS_VALIDOS.has(clave)) return actual;
+  const generico = !actual || TITULOS_DE_PLANTILLA.has(clave) || /^p[aá]gina \d+$/i.test(actual);
+  return generico ? (titularDePagina(p) ?? actual) : actual;
+}
 
 const esIndiceGenerado = (p: Pagina) => !!p.ancla && (p.ancla === ANCLA_INDICE || /^indice-\d+$/.test(p.ancla));
 
@@ -93,7 +131,10 @@ export function construirIndice(paginas: Pagina[], opciones: { kicker?: string; 
   // Identificador para cada página que no lo tiene (único en toda la edición).
   const usadas = new Set(sin.map((p) => p.ancla).filter(Boolean) as string[]);
   usadas.add(ANCLA_INDICE);
-  const conAncla = sin.map((p, i) => {
+  const conAncla = sin.map((p0, i) => {
+    // Si el título de la página solo era el nombre de su plantilla, pasa a ser su titular (así coincide en el índice y en la lista de páginas).
+    const nuevo = p0.seccion === "Publicidad" || p0.plantilla !== "lienzo" ? undefined : tituloParaIndice(p0);
+    const p = nuevo && nuevo !== p0.titulo ? { ...p0, titulo: nuevo } : p0;
     if (p.ancla) return p;
     const base = slugAncla(p.titulo ?? "") || `pagina-${i + 1}`;
     let a = base;

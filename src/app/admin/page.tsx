@@ -29,8 +29,10 @@ export default function Admin() {
 
   const porNumero = (a: ResumenEdicion, b: ResumenEdicion) => Number(b.numero ?? 0) - Number(a.numero ?? 0);
   // "Ediciones": publicadas, programadas y desactivadas (ya tuvieron número). "Borradores": nunca publicadas.
-  const numeradas = ediciones.filter((e) => !e.error && (e.publicada || e.fijo)).sort(porNumero);
-  const borradores = ediciones.filter((e) => e.error || !(e.publicada || e.fijo)).sort((a, b) => (a.error ? 1 : 0) - (b.error ? 1 : 0) || porNumero(a, b));
+  // «Muestras»: ediciones que no son de la revista (p. ej. la que se hojea en la bienvenida); no llevan número.
+  const muestras = ediciones.filter((e) => e.muestra);
+  const numeradas = ediciones.filter((e) => !e.muestra && !e.error && (e.publicada || e.fijo)).sort(porNumero);
+  const borradores = ediciones.filter((e) => !e.muestra && (e.error || !(e.publicada || e.fijo))).sort((a, b) => (a.error ? 1 : 0) - (b.error ? 1 : 0) || porNumero(a, b));
 
   const fila = (e: ResumenEdicion) => {
     const desactivada = !e.publicada && e.fijo;
@@ -41,7 +43,7 @@ export default function Admin() {
             className={`font-display text-3xl font-black ${e.provisional || e.error ? "text-ink/30" : desactivada ? "text-terracota/50" : "text-terracota"}`}
             title={e.provisional ? "Número previsto: aún no cuenta como edición hasta que se publique" : undefined}
           >
-            {e.error ? "—" : (e.numero ?? "?")}
+            {e.error || e.muestra ? "—" : (e.numero ?? "?")}
           </span>
           <div className="min-w-0">
             <p className="font-display text-xl font-bold leading-snug sm:truncate">{e.tema ?? `Edición “${e.id}”`}</p>
@@ -49,6 +51,8 @@ export default function Admin() {
               {e.fecha && fechaLarga(e.fecha)} · {e.paginas ?? "?"} páginas · archivo {e.id}.json ·{" "}
               {e.error ? (
                 <span className="font-bold text-terracota">con errores</span>
+              ) : e.muestra ? (
+                <span className="font-bold">Muestra · no cuenta como edición</span>
               ) : e.publicada && estadoEdicion({ publicada: true, publicarEn: e.publicarEn }) === "programada" ? (
                 <span className="font-bold text-terracota">⏰ Programada · {e.publicarEn?.replace("T", " ")} (CDMX)</span>
               ) : e.publicada ? (
@@ -114,6 +118,14 @@ export default function Admin() {
           <h2 className="font-sans text-xs font-bold uppercase tracking-wider text-ink-soft">Borradores · {borradores.length}</h2>
           <p className="font-sans mt-1 text-xs text-ink-soft">No cuentan como edición hasta que se publiquen; el número tenue es el que recibirían.</p>
           <ol className="mt-2">{borradores.map(fila)}</ol>
+        </section>
+      )}
+
+      {muestras.length > 0 && (
+        <section className="mt-10" aria-label="Muestras">
+          <h2 className="font-sans text-xs font-bold uppercase tracking-wider text-ink-soft">Muestras · {muestras.length}</h2>
+          <p className="font-sans mt-1 text-xs text-ink-soft">No son ediciones de la revista: no llevan número ni salen en el archivo. La de la presentación se hojea en /bienvenida.</p>
+          <ol className="mt-2">{muestras.map(fila)}</ol>
         </section>
       )}
 

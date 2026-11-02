@@ -9,6 +9,7 @@ export default function Footer() {
           <a href="/ediciones" className="py-3 hover:underline">Ediciones</a>
           <a href="/suscribirse" className="py-3 hover:underline">Newsletter</a>
           <a href="/proyecto" className="py-3 hover:underline">El proyecto</a>
+          <a href="/bienvenida" className="py-3 hover:underline">Bienvenida</a>
         </nav>
         <p className="font-sans text-xs text-ink-soft">
           © 2026 · Hecho en Michoacán

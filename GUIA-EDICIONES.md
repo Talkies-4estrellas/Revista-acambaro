@@ -346,6 +346,12 @@ Al cambiar **Publicación** de Borrador a Publicada o Programada, si hay pendien
 - Al elegir un color (fondo de la hoja, texto, formas, bordes, resaltado) se abre un panel con: **buscador** («azul», «verde menta» o un código como `#00c4cc` + Enter), **＋ color libre**, **💧 cuentagotas** (toma un color de lo que se ve **en el lienzo**: foto, texto o fondo de cualquier elemento, **incluso los que sobresalen de la hoja**; no de los paneles ni botones del editor ni del fondo gris. Se ve el código bajo el puntero; clic para elegir, Esc para cancelar; funciona en cualquier navegador). Los **últimos 5 colores tomados** quedan en la fila «Del cuentagotas»: el nuevo entra al principio y el último sale; si tomas uno que ya está, no se mueve nada y solo se marca donde está), **sin color**, los **colores de la página** (los que ya usas, para repetirlos), los **colores de las fotos** (de cada foto de la página: miniatura y hasta 6 colores que más aparecen; muestra 3 fotos y «Ver todo» el resto), los **colores de la revista**, **28 sólidos** predeterminados y, en texto y formas, **14 degradados**. Elegir un color liso quita el degradado.
 - Código: `src/components/admin/PaletaColores.tsx` (lectura de fotos en `src/lib/colores-foto.ts`; listas en `src/lib/esquema.ts`: `COLORES_SOLIDOS`, `NOMBRES_COLOR`, `DEGRADADOS`).
 
+## Índice con los titulares
+- **Archivo → Generar el índice** usa el **titular** de cada página (su texto más grande) cuando el título de la página solo era el nombre de la plantilla; los títulos que escribiste tú no se cambian. Así no hay que renombrar cada página en el panel ÍNDICE.
+
+## Cajas de texto que crecen
+- Si un texto ya no cabe en su caja (escribiste más, subiste la letra o la hiciste más angosta), **la caja crece sola** hasta el final de la hoja y el editor avisa. Nunca se encoge sola: para eso está «Ajustar el alto al texto».
+
 ## Buscar fotos libres
 - En el panel **Subidos**, el botón **🌐 Buscar fotos libres (Wikimedia Commons)** busca fotos con licencia que permite reutilizarlas (CC0, dominio público, CC BY, CC BY-SA). Cada resultado muestra su autor y su licencia; **Usar** descarga la foto a la edición y la pone en la hoja (o sustituye la elegida) **con su crédito ya escrito**. Escribe tú la descripción. Antes de publicar, comprueba en la «ficha ↗» que la licencia y el uso sean correctos. Si no hay Internet, el buscador avisa y el resto del panel sigue igual.
 
@@ -684,3 +690,7 @@ Van dentro de `reportaje`, `galeria`, `video` y `libre`, en el orden en que se e
 - **Reporte:** `/admin/clics` (botón «↗ Estadísticas» del panel) muestra, por edición, las **vistas** de cada página, los **clics** por enlace (últimos 7 días, 30 y total), la **tasa de clics** (clics ÷ vistas de la página del enlace) y las páginas más vistas; los clics se exportan a CSV. Una página cuenta como vista cuando estuvo un segundo con la mitad o más a la vista; en el celular cuenta cada página que se baja.
 - Se cuentan los enlaces a direcciones, correo, teléfono, WhatsApp y rutas del sitio (los saltos entre páginas de la misma edición no). Solo cuentan ediciones **publicadas**; un mismo visitante suma una vez cada 10 minutos por enlace. Tus propias pruebas en el sitio también suman.
 - Los datos se guardan en `content/clics.json` y `content/vistas.json` (no se suben a git). En Vercel el disco es de solo lectura: define la variable `CLICS_WEBHOOK_URL` y cada clic se enviará por POST (JSON: `fecha, edicion, pagina, elemento, url, etiqueta, anuncio`) a una hoja de cálculo o servicio (Zapier, Make, Google Apps Script…). Sin webhook, en Vercel los clics no se guardan.
+
+## Ediciones de muestra
+
+Si una edición lleva `"muestra": true` en su JSON, se puede abrir por su dirección pero **no cuenta como edición de la revista**: no sale en el archivo, el buscador ni el inicio, no recibe número y aparece en el admin bajo «Muestras». La de la página de presentación es `muestra-bienvenida` (`/bienvenida`, sección «Hojéala aquí»).
