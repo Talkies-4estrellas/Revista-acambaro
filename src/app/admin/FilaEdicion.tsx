@@ -11,6 +11,7 @@ export default function FilaEdicion({
   borrable,
   numeroDesactivada,
   conError,
+  className = "border-t border-ink py-4",
   children,
 }: {
   id: string;
@@ -19,6 +20,8 @@ export default function FilaEdicion({
   borrable: boolean;
   numeroDesactivada?: string;
   conError: boolean;
+  /** Fila de la lista (por defecto) o tarjeta de la cuadrícula de portadas. */
+  className?: string;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -28,7 +31,8 @@ export default function FilaEdicion({
 
   return (
     <li
-      className="border-t border-ink py-4"
+      className={className}
+      data-edicion={id}
       onContextMenu={(e) => {
         const items: ItemMenu[] = [
           { texto: "Editar", icono: "✎", onClick: () => router.push(`/admin/${id}`) },

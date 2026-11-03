@@ -95,6 +95,16 @@ export default function Editor({
   );
   const [guardado, setGuardado] = useState(() => JSON.stringify(inicial));
   const [sel, setSel] = useState(0);
+  // «Continuar donde lo dejaste» del panel: se recuerda la página en la que se trabaja, y /admin/<id>#p=N abre esa página.
+  useEffect(() => {
+    const m = /^#p=(\d+)$/.exec(window.location.hash);
+    if (m) setSel(Math.max(0, Number(m[1]) - 1));
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(`revista:ultima-pagina:${id}`, String(Math.min(sel, inicial.paginas.length - 1) + 1));
+    } catch {}
+  }, [id, sel, inicial.paginas.length]);
   const [estado, setEstado] = useState<{ tipo: "ok" | "error" | "cargando"; texto: string } | null>(null);
   const [version, setVersion] = useState(0);
   const [verPrevia, setVerPrevia] = useState(true);
@@ -126,6 +136,10 @@ export default function Editor({
   /** Sube cada vez que se pide abrir las plantillas: en una página de lienzo se abre el panel lateral. */
   const [peticionPlantillas, setPeticionPlantillas] = useState(0);
   const [verRevisor, setVerRevisor] = useState(false);
+  // Desde la lista del panel (insignia «⚠ avisos»): /admin/<id>#revisar abre el revisor de diseño.
+  useEffect(() => {
+    if (window.location.hash === "#revisar") setVerRevisor(true);
+  }, []);
   const [verVersiones, setVerVersiones] = useState(false);
   const [verMedios, setVerMedios] = useState(false);
   const [verBuscar, setVerBuscar] = useState(false);

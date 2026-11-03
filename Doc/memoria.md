@@ -9,7 +9,7 @@ Cada sesión de trabajo con el asistente IA genera un archivo de sesión en `Doc
 2. **Crear el archivo al inicio** del trabajo, antes de comenzar; si ya existe el de hoy, seguir en él.
 3. **Registrar al final** qué se hizo, qué quedó pendiente y cualquier decisión importante.
 4. **Nunca editar sesiones de días anteriores** — son historial inmutable.
-5. **Los commits y el `git push` los hace el usuario** — el asistente nunca hace `git commit` ni `git push`.
+5. **Commits solo cuando el usuario los pide** — entonces los ejecuta el asistente (`git add` por archivo); `git push` nunca sin que lo pida.
 6. **Toda la documentación va en `Doc/`** — no en `.claude/`, ni sueltas por el proyecto. (La guía para quien arma ediciones,
    `GUIA-EDICIONES.md`, se queda en la raíz porque el panel de administración la menciona.)
 7. Al terminar un cambio importante, actualizar también `Doc/indice.md` (archivos nuevos) y `Doc/documentacion/documento.md`
@@ -44,6 +44,15 @@ Cualquier decisión de arquitectura o convención que valga recordar.
 |---|---|
 | [16-10-2026](sesiones/sesion-16-10-2026.md) | Edición 10 «Los Azufres» (55 págs.): anuncios en collage, cómic, noticias de México, modo oscuro, revisión móvil y edición demo |
 | [19-10-2026](sesiones/sesion-19-10-2026.md) | Mejoras al panel: números de página automáticos, revisor de diseño, plantillas nuevas y edición resumida |
+| [20-10-2026](sesiones/sesion-20-10-2026.md) | Editor más seguro: autoguardado y recuperación de cambios |
+| [21-10-2026](sesiones/sesion-21-10-2026.md) | Vista móvil del sitio (solo cambios para menos de 640 px) |
+| [23-10-2026](sesiones/sesion-23-10-2026.md) | Aviso de seguridad de Next.js, enlaces y estadísticas del editor, mapa de anuncios de Google |
+| [26-10-2026](sesiones/sesion-26-10-2026.md) | Editor al estilo Canva: plantillas como panel, tira de páginas, deshacer/rehacer, pantallas pequeñas |
+| [27-10-2026](sesiones/sesion-27-10-2026.md) | Galería de medios, selector de color, menú contextual y edición de modelismo |
+| [28-10-2026](sesiones/sesion-28-10-2026.md) | Estilos con nombre, reemplazar foto, animar la página, cambiar un color por otro |
+| [30-10-2026](sesiones/sesion-30-10-2026.md) | Fotos libres de Wikimedia, índice con titulares y cajas de texto que crecen |
+| [02-11-2026](sesiones/sesion-02-11-2026.md) | Página de bienvenida (estilo art-circles), edición de muestra hojeable, cupones y anunciantes |
+| [03-11-2026](sesiones/sesion-03-11-2026.md) | Panel del administrador: resumen, portadas, filtros, avisos, menú lateral, publicación, medios y papelera |
 
 > Lo hecho antes de existir esta carpeta (editor de lienzo, edición móvil «apilar», animaciones, clics, newsletter, ediciones 01–13)
 > está descrito en `documentacion/documento.md` y en `GUIA-EDICIONES.md`.

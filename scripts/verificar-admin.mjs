@@ -89,7 +89,7 @@ for (const f of candidatos) {
 bien.push(`sin ADMIN_ENABLED / ADMIN_ALLOW_REMOTE en archivos que se suben (${candidatos.length - ignorados} revisados)`);
 
 /* 6. Los datos privados están en .gitignore y no se han subido. */
-const PRIVADOS = ["content/suscriptores.json", "content/clics.json", "content/vistas.json", "content/papelera/x.json", "content/papelera-medios/x.png", "content/respaldos/x/x.json", ".env.local"];
+const PRIVADOS = ["content/suscriptores.json", "content/clics.json", "content/vistas.json", "content/anunciantes.json", "content/papelera/x.json", "content/papelera-medios/x.png", "content/respaldos/x/x.json", ".env.local"];
 let git = true;
 try {
   execFileSync("git", ["--version"], { stdio: "ignore" });
@@ -116,9 +116,9 @@ else {
     const subidos = execFileSync("git", ["ls-files", "content", ".env*"], { cwd: RAIZ, encoding: "utf8" })
       .split(/\r?\n/)
       .filter(Boolean)
-      .filter((f) => /^content\/(suscriptores|clics|vistas)\.json$|^content\/(papelera|papelera-medios|respaldos)\/|^\.env(\.|$)(?!example)/.test(f));
+      .filter((f) => /^content\/(suscriptores|clics|vistas|anunciantes)\.json$|^content\/(papelera|papelera-medios|respaldos)\/|^\.env(\.|$)(?!example)/.test(f));
     for (const f of subidos) mal(`${f} ya está en GitHub (git lo sigue). Sácalo con: git rm --cached "${f}" y confirma el cambio.`);
-    if (subidos.length === 0) bien.push("los datos privados (suscriptores, clics, vistas, papelera, respaldos, .env) no están en git");
+    if (subidos.length === 0) bien.push("los datos privados (suscriptores, clics, vistas, anunciantes, papelera, respaldos, .env) no están en git");
   }
 }
 

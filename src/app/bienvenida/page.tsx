@@ -14,6 +14,19 @@ import { buscar } from "@/lib/busqueda";
 export const metadata: Metadata = {
   title: "Bienvenida — ACOM-Di, Revista de Acámbaro",
   description: "ACOM-Di es una revista digital semanal sobre la historia, la gastronomía, la gente y los paisajes de Acámbaro. Conoce de qué trata y cómo se lee.",
+  // Al compartir el enlace (WhatsApp, Facebook…); la imagen la pone opengraph-image.tsx.
+  openGraph: {
+    type: "website",
+    locale: "es_MX",
+    siteName: "ACOM-Di · Revista de Acámbaro",
+    title: "ACOM-Di: la revista digital de Acámbaro",
+    description: "Historia, sabor, gente y paisajes de Acámbaro, contados cada semana en páginas que se hojean. Sin cuenta y en cualquier pantalla.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ACOM-Di: la revista digital de Acámbaro",
+    description: "Historia, sabor, gente y paisajes de Acámbaro, contados cada semana en páginas que se hojean.",
+  },
 };
 export const revalidate = 60;
 

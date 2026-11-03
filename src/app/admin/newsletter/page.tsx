@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getEdiciones, estadoEdicion, etiqueta, mesAnio } from "@/lib/ediciones";
 import { leerSuscriptores } from "@/lib/suscriptores";
 import PanelNewsletter from "./PanelNewsletter";
@@ -24,10 +23,7 @@ export default function Newsletter() {
   });
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-10">
-      <Link href="/admin" className="font-sans text-xs font-bold uppercase tracking-wider text-terracota hover:underline">
-        ← Ediciones
-      </Link>
+    <main className="mx-auto max-w-5xl px-5 py-8">
       <h1 className="font-display mt-2 text-5xl font-black italic">Newsletter</h1>
       <p className="font-sans mt-2 max-w-2xl text-sm text-ink-soft">
         Los correos de quienes se suscriben desde el sitio (<code>/suscribirse</code> o el bloque de suscripción) se guardan en{" "}

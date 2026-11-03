@@ -102,7 +102,7 @@ export default function PanelNewsletter({
   return (
     <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
       {/* Suscriptores */}
-      <section aria-label="Suscriptores">
+      <section id="suscriptores" aria-label="Suscriptores" className="scroll-mt-20">
         <div className="flex items-baseline justify-between gap-3 border-b border-ink pb-2">
           <h2 className="font-display text-2xl font-black">
             Suscriptores <span className="text-terracota">{lista.length}</span>
@@ -143,7 +143,7 @@ export default function PanelNewsletter({
       </section>
 
       {/* Correo */}
-      <section aria-label="Correo de la edición" className="space-y-3">
+      <section id="correo" aria-label="Correo de la edición" className="scroll-mt-20 space-y-3">
         <h2 className="font-display border-b border-ink pb-2 text-2xl font-black">Correo de la edición</h2>
         {ediciones.length === 0 ? (
           <p className="font-sans text-sm italic text-ink-soft">Crea una edición primero.</p>

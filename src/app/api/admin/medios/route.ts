@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { ErrorAdmin, adminPermitido, bibliotecaMedios, borrarMedio, guardarMedio, listarMedios, verificarId, verificarPeticion } from "@/lib/admin";
+import { ErrorAdmin, adminPermitido, bibliotecaMedios, guardarMedio, listarMedios, verificarId, verificarPeticion } from "@/lib/admin";
+import { quitarMedio } from "@/lib/admin-extra";
 
 function responderError(e: unknown) {
   if (e instanceof ErrorAdmin) return NextResponse.json({ error: e.message }, { status: e.status });
@@ -20,12 +21,12 @@ export async function GET(req: Request) {
   }
 }
 
-/** DELETE { src } → quita un archivo sin uso (pasa a content/papelera-medios). */
+/** DELETE { src } → quita un archivo sin uso en ediciones, sitio, plantillas o «Mis elementos» (pasa a content/papelera-medios). */
 export async function DELETE(req: Request) {
   try {
     verificarPeticion(req);
     const b = await req.json();
-    borrarMedio(String(b.src ?? ""));
+    quitarMedio(String(b.src ?? ""));
     return NextResponse.json({ ok: true });
   } catch (e) {
     return responderError(e);

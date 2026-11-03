@@ -13,6 +13,7 @@ next-env.d.ts
 content/suscriptores.json
 content/clics.json
 content/vistas.json
+content/anunciantes.json
 content/papelera/
 content/papelera-medios/
 content/respaldos/

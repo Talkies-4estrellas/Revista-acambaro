@@ -32,6 +32,8 @@ Archivo `content/ediciones/NN.json`:
 ```json
 { "fecha": "2026-11-02", "tema": "Los Azufres, Michoacán", "publicada": true, "numeroFijo": true, "paginas": [ … ] }
 ```
+- **Edición de muestra:** `"muestra": true` (opcional). Se lee por su dirección, pero `getPublicadas` la excluye (archivo, buscador,
+  inicio), no entra en la numeración (número «00») y no se puede publicar (`cambiarPublicacion` la rechaza). La usa `/bienvenida`.
 - **Número de edición:** automático (`lib/numeracion.ts`). Se asigna al publicar por primera vez, a continuación de la última
   publicada, y queda fijo aunque se desactive. Los borradores muestran el número previsto.
 - **Página de lienzo:** `plantilla: "lienzo"`, hoja de 800 de ancho y `alto` (normal 1100; más alto para cómics), `fondo`, `titulo`,
@@ -70,6 +72,17 @@ Archivo `content/ediciones/NN.json`:
   son **«posibles»**: la medición dio falsos avisos en pruebas.
 - **Armar edición resumida:** elegir y ordenar páginas de otra edición; `lib/resumen.ts` reacomoda el índice, la portada y los enlaces.
 - **Orden en el celular**, **vista previa móvil**, publicación programada, numeración automática, clics y newsletter (ver guía).
+- **Marco del panel** (`app/admin/MarcoAdmin.tsx`): barra de arriba y menú lateral con submenús en /admin, /admin/clics,
+  /admin/newsletter, /admin/medios y /admin/papelera (no en el editor).
+- **Lista de ediciones** (`app/admin/page.tsx`, `ListaEdiciones.tsx`): resumen con vistas/clics de 7 días (`vistasRecientes`,
+  `clicsRecientes`) y suscriptores; lista o portadas; estado en color; filtros en la URL (`?f=publicada|programada|borrador|avisos|sinSubir|muestra`);
+  «por revisar» = errores + avisos de diseño de `revisarDatos`/`revisarAccesibilidad` (los de accesibilidad aparte, «♿ N»).
+- **Publicar desde la lista:** `POST /api/admin/ediciones/[id]/publicacion` { modo: publicar | programar | desactivar, publicarEn? } →
+  `cambiarPublicacion` (`lib/admin-extra.ts`), que guarda con `guardarEdicion` (respaldo y número fijo).
+- **Papelera:** `listarPapelera`, `recuperarEdicion`, `recuperarMedio` (`lib/admin-extra.ts`); `GET/POST /api/admin/papelera`.
+- **Medios:** `bibliotecaMedios` + `usoFueraDeEdiciones` (código del sitio, plantillas, «Mis elementos»); `DELETE /api/admin/medios`
+  usa `quitarMedio`, que se niega si algo lo usa.
+- **Estado de git** (`lib/git-estado.ts`, solo lectura): cambios sin commit por edición, medios y código, y commits sin push.
 
 ## Mejoras del editor (23-10-2026)
 - **Lista antes de publicar:** `listaAntesDePublicar` y nuevas comprobaciones de `revisarDatos` (`lib/revision.ts`: página vacía, imagen sin archivo, texto vacío, elementos ocultos, enlace a edición no publicada); se muestra arriba del revisor (`RevisorDiseno.tsx`) y `Editor.tsx` la consulta al publicar (`confirmarPublicacion`).

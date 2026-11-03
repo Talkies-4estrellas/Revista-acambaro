@@ -54,11 +54,16 @@
 | `/suscribirse`, `/baja` | `app/suscribirse`, `app/baja` | Alta y baja del newsletter |
 | `/proyecto` | `app/proyecto/page.tsx` | Presentación del proyecto (para atraer colaboradores y marcas) |
 | `/bienvenida` | `app/bienvenida/page.tsx` | Presentación para quien llega por primera vez (el proxy lo manda aquí una vez; cookie `acomdi-bienvenida`): muestra hojeable, cupones, anunciantes, preguntas |
-| `/admin` | `app/admin/page.tsx` | Panel: lista de ediciones, nueva edición, **armar edición resumida** (`ResumenEdicion.tsx`) |
+| `/admin` | `app/admin/page.tsx` | Panel: resumen (publicadas, borradores, vistas y clics de 7 días, suscriptores), ediciones en lista o portadas (`ListaEdiciones.tsx`) con estado de color y datos; «+ Nueva edición» y «Edición resumida» arriba (`AccionesPanel.tsx`, `ResumenEdicion.tsx`); continuar donde lo dejaste (`ContinuarEditando.tsx`) y cambios sin subir (`lib/git-estado.ts`). Barra de arriba y menú lateral con submenús para /admin, /admin/clics y /admin/newsletter (`MarcoAdmin.tsx`, en `admin/layout.tsx`) |
 | `/admin/[id]` | `app/admin/[id]/page.tsx` | Editor de una edición |
 | `/admin/clics`, `/admin/newsletter` | `app/admin/clics`, `app/admin/newsletter` | Estadística de clics y suscriptores/correo |
+| `/admin/anunciantes` | `app/admin/anunciantes` (`PanelAnunciantes.tsx`; lógica `lib/anunciantes.ts`) | Anunciantes (privado: `content/anunciantes.json`): páginas, enlaces, vencimiento, vistas/clics y tasa; páginas de publicidad sin anunciante |
+| `/admin/anunciantes/[id]/reporte` | `app/admin/anunciantes/[id]/reporte` | Reporte imprimible / PDF para mandar al anunciante (sin el menú del panel) |
+| `/admin/medios` | `app/admin/medios` (`PanelMedios.tsx`) | Biblioteca de medios: peso, dónde se usa, «sin uso» (también revisa código, plantillas y «Mis elementos») y quitar |
+| `/admin/papelera` | `app/admin/papelera` (`BotonRecuperar.tsx`) | Ediciones y medios borrados, con «Recuperar» |
 | `/api/admin/*` | `app/api/admin/...` | Ediciones, medios, plantillas, clics, suscriptores (solo en local) |
 | `/api/clic`, `/api/vista`, `/api/suscribir`, `/api/baja` | `app/api/...` | Registro de clics y vistas, y newsletter (públicos) |
+| `opengraph-image` | `app/bienvenida/opengraph-image.tsx`, `app/ediciones/[id]/[pagina]/opengraph-image.tsx` (lógica `lib/og.tsx`) | Imagen al compartir el enlace (1200 × 630, JPEG) |
 | `globals.css` | `app/globals.css` | Variables de color (modo claro/oscuro), `.paleta-clara`, contenedores del lienzo |
 | `layout.tsx` | `app/layout.tsx` | Raíz: fuentes, script del tema (claro/oscuro) |
 

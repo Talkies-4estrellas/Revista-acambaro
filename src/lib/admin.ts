@@ -18,10 +18,15 @@ import { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
  */
 
 export const ID_RE = /^[a-z0-9][a-z0-9_-]{0,39}$/i;
+/** Nombres que ya son páginas del panel (/admin/clics, /admin/medios…): una edición con ese id no se podría abrir en el editor. */
+const IDS_RESERVADOS = ["clics", "newsletter", "medios", "papelera", "anunciantes"];
+const verificarIdLibre = (id: string) => {
+  if (IDS_RESERVADOS.includes(id.toLowerCase())) throw new ErrorAdmin(`«${id}» es el nombre de una sección del panel; elige otro identificador.`);
+};
 
-const DIR_MEDIA = path.join(process.cwd(), "public", "media");
+export const DIR_MEDIA = path.join(process.cwd(), "public", "media");
 const MAX_MEDIO = 60 * 1024 * 1024; // 60 MB
-const TIPOS_MEDIO: Record<string, string> = {
+export const TIPOS_MEDIO: Record<string, string> = {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   png: "image/png",
@@ -69,7 +74,7 @@ export function verificarId(id: string) {
   return id;
 }
 
-const archivoEdicion = (id: string) => path.join(DIR_EDICIONES, `${verificarId(id)}.json`);
+export const archivoEdicion = (id: string) => path.join(DIR_EDICIONES, `${verificarId(id)}.json`);
 
 /* ---------------------------- Ediciones ------------------------------ */
 
@@ -283,6 +288,7 @@ export function crearEdicion(
   duplicarDe?: string,
   secciones?: string[],
 ) {
+  verificarIdLibre(id);
   if (fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin(`Ya existe una edición con el id "${id}".`, 409);
 
   let paginas: EdicionDatos["paginas"] = [{ ...paginaNueva("lienzo"), titulo: "Portada" }];
@@ -311,6 +317,7 @@ export function crearEdicion(
  * Devuelve los avisos de lo que se ajustó (índice, portada, enlaces).
  */
 export function crearResumen(id: string, base: { fecha: string; tema: string }, origenId: string, indices: number[]): string[] {
+  verificarIdLibre(id);
   if (fs.existsSync(archivoEdicion(id))) throw new ErrorAdmin(`Ya existe una edición con el id "${id}".`, 409);
   const origen = leerCrudo(origenId);
   if (!origen) throw new ErrorAdmin("La edición de origen no existe.", 404);

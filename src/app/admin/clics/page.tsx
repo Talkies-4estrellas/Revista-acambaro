@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { clicsRecientes, leerClics, type RegistroClics } from "@/lib/clics";
 import { getEdiciones } from "@/lib/ediciones";
 import { leerVistas, vistasRecientes, type RegistroVistas } from "@/lib/vistas";
@@ -24,10 +23,7 @@ export default function Clics() {
   const hayDatos = registros.length > 0 || vistas.length > 0;
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-10">
-      <Link href="/admin" className="font-sans text-xs font-bold uppercase tracking-wider text-terracota hover:underline">
-        ← Ediciones
-      </Link>
+    <main className="mx-auto max-w-5xl px-5 py-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="font-display mt-2 text-5xl font-black italic">Estadísticas</h1>
         {registros.length > 0 && (
