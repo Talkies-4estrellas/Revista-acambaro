@@ -51,6 +51,15 @@ const PORQUES = [
   { icono: "map-pin", t: "Hecha aquí", x: "Todo el contenido es de Acámbaro y sobre Acámbaro: su gente, su historia, su mesa." },
 ];
 
+/** Para quién es la revista (píldoras junto a «¿Te resulta familiar?»). */
+const LECTORES = [
+  { icono: "house", texto: "Gente de Acámbaro" },
+  { icono: "plane", texto: "Quienes viven lejos" },
+  { icono: "luggage", texto: "Visitantes" },
+  { icono: "library", texto: "Curiosos de la historia" },
+  { icono: "store", texto: "Negocios locales" },
+];
+
 const FORMATOS = [
   { icono: "image", titulo: "Página completa", texto: "Tu arte a sangre, con una franja de contacto: lo primero que se ve al llegar a la página." },
   { icono: "newspaper", titulo: "Media página", texto: "Dos negocios por página, cada uno con su pie de dirección y WhatsApp." },
@@ -259,6 +268,17 @@ export default function Bienvenida() {
                 Lo mejor de Acámbaro <span className="italic text-terracota">anda disperso</span>
               </h2>
               <p className="mt-5 text-lg text-ink-soft">ACOM-Di junta en un solo lugar lo que vale la pena guardar y lo deja ordenado, con su fecha y su autor.</p>
+              <div className="mt-6">
+                <h3 className="kicker text-ink-soft">Hecha para</h3>
+                <ul className="font-sans mt-3 flex flex-wrap gap-2 text-sm font-semibold">
+                  {LECTORES.map((l) => (
+                    <li key={l.texto} className="flex items-center gap-2 rounded-full border border-ink/15 bg-paper-deep/60 px-3 py-1.5">
+                      <IconoSvg icono={l.icono} color="#068562" trazo={1.8} className="h-4 w-4 shrink-0" />
+                      {l.texto}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <Revelar>
               <ol className="grid overflow-hidden rounded-2xl border border-ink/15 sm:grid-cols-2">
@@ -495,9 +515,19 @@ export default function Bienvenida() {
               Tu negocio, en una revista <span className="italic">que se lee</span>
             </h2>
             <p className="mt-4 max-w-2xl text-lg text-paper/85">
-              Quien abre ACOM-Di viene a leer sobre Acámbaro: justo la gente que le interesa lo que se hace aquí. Tu anuncio es una página más de la
-              revista, no un recuadro que estorba.
+              Quien abre ACOM-Di viene a leer sobre Acámbaro: justo la gente que le interesa lo que se hace aquí.
             </p>
+            <aside className="mt-6 flex max-w-3xl items-start gap-4 rounded-2xl border border-[#49c59f]/40 bg-white/[0.08] p-5">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#49c59f]/20">
+                <IconoSvg icono="book-open" color="#49c59f" trazo={1.7} className="h-6 w-6" />
+              </span>
+              <div>
+                <h3 className="font-display text-xl font-black">Tu anuncio es una página más, no un estorbo</h3>
+                <p className="mt-1 text-[0.95rem] leading-relaxed text-paper/85">
+                  No salta encima del texto ni tapa la lectura: el lector lo encuentra al pasar la hoja, como en una revista impresa, y va marcado como publicidad.
+                </p>
+              </div>
+            </aside>
             <Revelar>
               <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {FORMATOS.map((x) => (
