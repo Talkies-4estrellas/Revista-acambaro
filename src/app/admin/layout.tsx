@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // Solo disponible en desarrollo y desde esta misma máquina (ver lib/admin.ts).
   if (!adminPermitido((await headers()).get("host"))) notFound();
-  // Barra de arriba y menú lateral en las secciones del panel (Ediciones, Calendario, Estadísticas, Newsletter, Anunciantes, Medios, Papelera, Ajustes);
+  // Barra de arriba (con el buscador rápido, Ctrl+K) y menú lateral en las secciones del panel (Ediciones, Calendario, Estadísticas, Newsletter, Anunciantes, Medios, Papelera, Ajustes);
   // el editor de una edición y el reporte para anunciantes van sin ellos.
   return (
     <div className="min-h-screen bg-paper">

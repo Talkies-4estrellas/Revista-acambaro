@@ -96,7 +96,7 @@ export default function MenuPublicacion({
         {cargando ? "Guardando…" : "Publicación ▾"}
       </button>
       {abierto && (
-        <div role="menu" className="font-sans absolute right-0 z-30 mt-1 w-64 overflow-hidden rounded-lg border border-ink/20 bg-paper text-sm font-normal shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]">
+        <div role="menu" className="font-sans absolute right-0 z-30 mt-1 w-64 overflow-hidden max-sm:fixed max-sm:inset-x-4 max-sm:bottom-4 max-sm:z-50 max-sm:w-auto rounded-lg border border-ink/20 bg-paper text-sm font-normal shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]">
           <button type="button" role="menuitem" className={item} disabled={estado === "publicada"} onClick={() => aplicar("publicar")}>
             <b>Publicar ahora</b>
             <span className="block text-xs text-ink-soft">{estado === "publicada" ? "Ya está publicada" : "Visible en cuanto subas los cambios"}</span>

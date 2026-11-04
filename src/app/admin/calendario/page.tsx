@@ -75,11 +75,12 @@ export default async function Calendario({ searchParams }: { searchParams: Promi
   });
   const vaciasProximas = proximas.filter((s) => resumenSemana(s.dias).salen.length === 0).length;
 
-  const Chip = ({ x }: { x: EnCalendario }) => (
+  /** `completa`: el título entero (la lista del celular); en la cuadrícula se corta para caber en el día. */
+  const Chip = ({ x, completa = false }: { x: EnCalendario; completa?: boolean }) => (
     <Link
       href={`/admin/${x.e.id}`}
       title={`${NOMBRE[x.tipo]}${x.e.numero ? ` · N.º ${x.e.numero}` : ""} · ${x.e.tema ?? x.e.id}${x.hora ? ` · se publica a las ${x.hora}` : ""}`}
-      className={`font-sans block truncate rounded px-1.5 py-0.5 text-[0.7rem] font-bold leading-snug hover:underline ${ESTILO[x.tipo]}`}
+      className={`font-sans block rounded font-bold leading-snug hover:underline ${completa ? "px-2 py-1 text-sm" : "truncate px-1.5 py-0.5 text-[0.7rem]"} ${ESTILO[x.tipo]}`}
     >
       {x.e.numero ? `${x.e.numero} · ` : ""}
       {x.hora ? `${x.hora} · ` : ""}
@@ -122,7 +123,48 @@ export default async function Calendario({ searchParams }: { searchParams: Promi
       </div>
 
       {/* Mes en cuadrícula: 7 días y, a la derecha, si la semana tiene edición */}
-      <div className="mt-4 overflow-x-auto">
+      {/* En celular, una tarjeta por semana con las ediciones completas: la cuadrícula de 7 días no cabe en la pantalla */}
+      <ol className="mt-4 space-y-3 sm:hidden" aria-label={`Semanas de ${nombreMes(mes)}`}>
+        {semanas.map((dias) => {
+          const { salen } = resumenSemana(dias);
+          const conEdicion = dias.map((d, i) => ({ d, nombre: DIAS_SEMANA[i], lista: porDia.get(d) ?? [] })).filter((x) => x.lista.length > 0);
+          const pasada = dias[6] < hoy;
+          const esHoy = dias.includes(hoy);
+          return (
+            <li key={dias[0]} className={`rounded-xl border p-4 ${esHoy ? "border-2 border-terracota" : salen.length || pasada ? "border-ink/15" : "border-amber-500/50 bg-amber-500/[0.07]"}`}>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="font-sans text-xs font-bold uppercase tracking-wider text-ink-soft">
+                  {fechaCorta(dias[0])} – {fechaCorta(dias[6])}
+                  {esHoy ? " · esta semana" : ""}
+                </p>
+                {salen.length > 0 ? (
+                  <span className="font-sans shrink-0 text-xs font-bold text-terracota">✓ {salen.length === 1 ? "1 edición" : `${salen.length} ediciones`}</span>
+                ) : (
+                  <span className={`font-sans shrink-0 text-xs font-bold ${pasada ? "text-ink-soft" : "text-amber-800 dark:text-amber-300"}`}>{pasada ? "Sin edición" : "⚠ Sin edición"}</span>
+                )}
+              </div>
+              {conEdicion.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {conEdicion.map((x) => (
+                    <li key={x.d} className="grid grid-cols-[3rem_1fr] items-start gap-2">
+                      <span className="font-sans pt-1 text-xs font-bold text-ink-soft">
+                        {x.nombre} {Number(x.d.slice(8))}
+                      </span>
+                      <div className="min-w-0 space-y-1">
+                        {x.lista.map((c) => (
+                          <Chip key={c.e.id} x={c} completa />
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="mt-4 overflow-x-auto max-sm:hidden">
         <div className="min-w-[44rem]">
           <div className="font-sans grid grid-cols-[repeat(7,minmax(0,1fr))_8.5rem] gap-px text-center text-[0.7rem] font-bold uppercase tracking-wider text-ink-soft">
             {DIAS_SEMANA.map((d) => (

@@ -7,6 +7,7 @@ import MuestraHojeable from "@/components/MuestraHojeable";
 import FormSuscripcion from "@/components/FormSuscripcion";
 import ThemeToggle from "@/components/ThemeToggle";
 import Revelar from "@/components/Revelar";
+import MenuSecciones from "@/components/MenuSecciones";
 import LienzoVista, { IconoSvg } from "@/components/Lienzo";
 import { fechaLarga, getEdiciones, getPublicadas, hrefPagina, type Edicion } from "@/lib/ediciones";
 import { buscar } from "@/lib/busqueda";
@@ -189,9 +190,10 @@ export default function Bienvenida() {
       <header className="sticky top-0 z-30 border-b-4 border-double border-ink bg-paper/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3">
           <Link href="/bienvenida" aria-label="ACOM-Di, Revista de Acámbaro">
-            <Logo className="h-10 w-auto sm:h-12" />
+            <Logo className="h-8 w-auto sm:h-12" />
           </Link>
-          <nav aria-label="Secciones" className="font-sans hidden items-center gap-6 text-sm font-semibold md:flex">
+          <MenuSecciones />
+          <nav aria-label="En esta página" className="font-sans hidden items-center gap-6 text-sm font-semibold lg:flex">
             {[["#porque", "Por qué"], ["#como", "Cómo funciona"], ["#hojear", "Hojéala"], ["#anunciar", "Negocios"], ["#preguntas-t", "Preguntas"]].map(([h, t]) => (
               <a key={h} href={h} className="hover:text-terracota hover:underline decoration-2 underline-offset-4">{t}</a>
             ))}
@@ -409,6 +411,7 @@ export default function Bienvenida() {
             </Bloque>
 
             {cupones && (
+              <div id="cupones" className="scroll-mt-24">
               <Bloque
                 icono="ticket"
                 kicker="Para ahorrar"
@@ -423,6 +426,7 @@ export default function Bienvenida() {
                 </div>
                 <p className="font-sans mt-5 text-center text-xs text-white/80">Página de muestra: los negocios y las promociones son de ejemplo</p>
               </Bloque>
+              </div>
             )}
           </div>
         </section>

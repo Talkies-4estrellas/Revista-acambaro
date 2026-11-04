@@ -345,7 +345,7 @@ export default function Admin() {
           <span className="font-sans hidden text-right text-xs text-ink-soft md:block" title="Páginas">
             {e.paginas ?? "?"} p.
           </span>
-          <div className="font-sans col-span-2 flex flex-wrap justify-start gap-1.5 text-[0.7rem] font-bold uppercase tracking-wider md:col-span-1 md:justify-end">{acciones}</div>
+          <div className="font-sans col-span-2 flex flex-wrap items-center justify-start gap-1.5 text-[0.7rem] font-bold uppercase tracking-wider md:col-span-1 md:justify-end max-sm:[&>a]:inline-flex max-sm:[&>a]:min-h-10 max-sm:[&>a]:items-center max-sm:[&>a]:px-2.5 max-sm:[&>button]:!px-2.5 max-sm:[&>button]:!text-[0.7rem] max-sm:[&>div>button]:min-h-10 max-sm:[&>div>button]:px-2.5">{acciones}</div>
         </div>
         {e.error && <p className="font-sans mt-1 break-words text-xs text-terracota">{e.error}</p>}
       </FilaEdicion>

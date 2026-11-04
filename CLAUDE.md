@@ -41,6 +41,7 @@ Toda la documentación va en **`Doc/`** (ver `Doc/memoria.md` para la convenció
   Detalle en `Doc/indice.md`.
 - **Sitio público:** `/` portada, `/ediciones/<id>/<n>` lector (giro de página en PC, columna en celular), `/buscar`, `/suscribirse`,
   `/proyecto` y `/bienvenida` (presentación: `src/proxy.ts` manda ahí la primera visita a `/`, cookie `acomdi-bienvenida`).
+- **Bienvenida:** el menú «Secciones» está en `src/components/MenuSecciones.tsx`.
 - **Imagen para compartir:** `src/lib/og.tsx` + `opengraph-image.tsx` en `/bienvenida` y `/ediciones/[id]/[pagina]` (JPEG 1200 × 630,
   foto principal de la página y título). Al publicar hay que definir `NEXT_PUBLIC_SITE_URL`.
 - **Edición de muestra:** `"muestra": true` en el JSON (hoy `muestra-bienvenida.json`): se abre por su dirección y se hojea en
@@ -54,5 +55,5 @@ Toda la documentación va en **`Doc/`** (ver `Doc/memoria.md` para la convenció
   datos privados en `content/anunciantes.json`), Medios (`/admin/medios`) y Papelera (`/admin/papelera`). El editor `/admin/<id>` va a pantalla
   completa (`#revisar` abre el revisor, `#p=N` una página). Lógica nueva en `src/lib/admin-extra.ts` y `src/lib/git-estado.ts`.
   Ids reservados para ediciones: clics, newsletter, medios, papelera, anunciantes, calendario, ajustes. El menú lateral abre por defecto solo el grupo
-  de la página actual. Si sale un aviso de hidratación en el menú tras cambiarlo, suele ser el servidor de desarrollo con una
+  de la página actual. Ctrl+K abre el buscador rápido (`BuscadorRapido.tsx`). Si sale un aviso de hidratación en el menú tras cambiarlo, suele ser el servidor de desarrollo con una
   versión vieja de la ruta: tocar `admin/layout.tsx` lo recompila (no reiniciar el servidor del usuario).

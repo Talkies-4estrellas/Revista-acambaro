@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { IconoSvg } from "@/components/Lienzo";
+import BuscadorRapido, { type SeccionRapida } from "./BuscadorRapido";
 
 type Enlace = { texto: string; href: string; externo?: boolean };
 type Grupo = { clave: string; texto: string; icono: string; href: string; hijos?: Enlace[] };
@@ -99,6 +100,17 @@ const MENU: Grupo[] = [
 ];
 
 /** Abre «Nueva edición» o «Edición resumida» en la página del panel (si ya está abierta; si no, lo hace el # al llegar). */
+/** Todo lo del menú lateral, para el buscador rápido (Ctrl+K). */
+const SECCIONES_RAPIDAS: SeccionRapida[] = [
+  ...new Map(
+    MENU.flatMap((g): SeccionRapida[] =>
+      g.hijos
+        ? [...(g.clave === "sitio" ? [] : [{ texto: g.texto, grupo: "Sección del panel", href: g.href }]), ...g.hijos.map((h) => ({ texto: h.texto, grupo: g.texto, href: h.href, externo: h.externo }))]
+        : [{ texto: g.texto, grupo: "Sección del panel", href: g.href }],
+    ).map((s) => [s.href, s]),
+  ).values(),
+];
+
 const avisarPanel = (href: string) => {
   const frag = href.split("#")[1];
   if (frag === "nueva" || frag === "resumen") window.dispatchEvent(new CustomEvent("acomdi:panel", { detail: frag }));
@@ -264,6 +276,7 @@ export default function MarcoAdmin({ children }: { children: ReactNode }) {
             <span className="font-semibold text-ink">{TITULOS[ruta] ?? "Panel"}</span>
           </span>
           <div className="ml-auto flex items-center gap-2">
+            <BuscadorRapido secciones={SECCIONES_RAPIDAS} alIr={avisarPanel} />
             <a href="/" target="_blank" rel="noreferrer" className="font-sans hidden rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-ink-soft hover:bg-ink/[0.07] hover:text-ink sm:inline-block">
               Ver sitio ↗
             </a>

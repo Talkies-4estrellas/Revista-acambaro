@@ -97,6 +97,8 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
   const [consulta, setConsulta] = useState("");
   const [mes, setMes] = useState("");
   const [pagina, setPagina] = useState(1);
+  const [verFiltros, setVerFiltros] = useState(false);
+  const [angosto, setAngosto] = useState(false);
   const [irA, setIrA] = useState("");
   const [avisoIrA, setAvisoIrA] = useState("");
   const buscador = useRef<HTMLInputElement>(null);
@@ -106,6 +108,7 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
     setVistaEstado(leerPref<Vista>(PREF.vista, ["compacta", "lista", "portadas"], "compacta"));
     setPorPaginaEstado(leerPref<number>(PREF.porPagina, [...POR_PAGINA, 0], 20));
     setOrdenEstado(leerPref<Orden>(PREF.orden, ORDENES.map((o) => o.id), "normal"));
+    setAngosto(window.matchMedia("(max-width: 639px)").matches); // en celular, un texto de ayuda más corto
     // «/» lleva al buscador (si no se está escribiendo en otro campo).
     const tecla = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
@@ -238,6 +241,9 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
     );
 
   const control = "font-sans rounded-full border border-ink/25 bg-paper px-3 py-1.5 text-xs";
+  // En celular los filtros van plegados tras un botón (ocupaban más de media pantalla); desde 640 px siempre se ven.
+  const plegable = verFiltros ? "" : "max-sm:hidden";
+  const filtrosActivos = (filtro !== "todas" ? 1 : 0) + (mes ? 1 : 0);
   let seccionAnterior: string | null = null;
 
   return (
@@ -245,7 +251,7 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
       {/* Barra de búsqueda: se queda arriba al bajar */}
       <div className="-mx-5 border-b border-ink/10 bg-paper/95 px-5 py-3 backdrop-blur md:sticky md:top-14 md:z-20">
         <div className="flex flex-wrap items-center gap-2">
-          <label className="relative min-w-[14rem] flex-1">
+          <label className="relative min-w-[14rem] flex-1 max-sm:min-w-0">
             <span className="sr-only">Buscar ediciones</span>
             <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft">
               ⌕
@@ -255,11 +261,20 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
               type="search"
               value={consulta}
               onChange={(e) => setConsulta(e.target.value)}
-              placeholder="Buscar por tema, número, fecha o título de una página…  ( / )"
+              placeholder={angosto ? "Buscar…" : "Buscar por tema, número, fecha o título de una página…  ( / )"}
               className="font-sans w-full rounded-full border border-ink/25 bg-paper py-2 pl-8 pr-4 text-sm outline-none focus:border-terracota"
             />
           </label>
-          <form onSubmit={irANumero} className="flex items-center gap-1" title="Escribe un número y pulsa Enter">
+          <button
+            type="button"
+            aria-expanded={verFiltros}
+            aria-controls="filtros-lista"
+            onClick={() => setVerFiltros((v) => !v)}
+            className={`font-sans shrink-0 rounded-full border px-3 py-2 text-xs font-bold sm:hidden ${verFiltros || filtrosActivos ? "border-ink bg-ink text-paper" : "border-ink/25"}`}
+          >
+            Filtros{filtrosActivos ? ` · ${filtrosActivos}` : ""} {verFiltros ? "▴" : "▾"}
+          </button>
+          <form onSubmit={irANumero} className={`flex items-center gap-1 ${plegable}`} title="Escribe un número y pulsa Enter">
             <label className="font-sans text-xs font-bold" htmlFor="ir-a">
               Ir a la N.º
             </label>
@@ -268,7 +283,7 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
               Ir
             </button>
           </form>
-          <div role="group" aria-label="Cómo ver las ediciones" className="font-sans inline-flex rounded-full border border-ink/25 p-1 text-xs font-bold">
+          <div role="group" aria-label="Cómo ver las ediciones" className={`font-sans inline-flex rounded-full border border-ink/25 p-1 text-xs font-bold ${plegable}`}>
             {(
               [
                 ["compacta", "☰ Compacta"],
@@ -282,7 +297,7 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
             ))}
           </div>
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div id="filtros-lista" className={`mt-2 flex flex-wrap items-center gap-2 ${plegable}`}>
           <div role="group" aria-label="Filtrar por estado" className="font-sans flex flex-wrap gap-1.5 text-xs font-bold">
             {FILTROS.map((f) => (
               <button
