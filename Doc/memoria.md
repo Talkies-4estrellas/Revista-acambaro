@@ -52,7 +52,8 @@ Cualquier decisión de arquitectura o convención que valga recordar.
 | [28-10-2026](sesiones/sesion-28-10-2026.md) | Estilos con nombre, reemplazar foto, animar la página, cambiar un color por otro |
 | [30-10-2026](sesiones/sesion-30-10-2026.md) | Fotos libres de Wikimedia, índice con titulares y cajas de texto que crecen |
 | [02-11-2026](sesiones/sesion-02-11-2026.md) | Página de bienvenida (estilo art-circles), edición de muestra hojeable, cupones y anunciantes |
-| [03-11-2026](sesiones/sesion-03-11-2026.md) | Panel del administrador: resumen, portadas, filtros, avisos, menú lateral, publicación, medios y papelera |
+| [03-11-2026](sesiones/sesion-03-11-2026.md) | Panel del administrador: resumen, portadas, filtros, avisos, menú lateral, publicación, medios, papelera, calendario y ajustes |
+| [04-11-2026](sesiones/sesion-04-11-2026.md) | Revisión final del calendario de publicación |
 
 > Lo hecho antes de existir esta carpeta (editor de lienzo, edición móvil «apilar», animaciones, clics, newsletter, ediciones 01–13)
 > está descrito en `documentacion/documento.md` y en `GUIA-EDICIONES.md`.

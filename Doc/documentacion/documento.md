@@ -82,6 +82,8 @@ Archivo `content/ediciones/NN.json`:
 - **Papelera:** `listarPapelera`, `recuperarEdicion`, `recuperarMedio` (`lib/admin-extra.ts`); `GET/POST /api/admin/papelera`.
 - **Medios:** `bibliotecaMedios` + `usoFueraDeEdiciones` (código del sitio, plantillas, «Mis elementos»); `DELETE /api/admin/medios`
   usa `quitarMedio`, que se niega si algo lo usa.
+- **Calendario** (`app/admin/calendario/page.tsx`): semanas de lunes a domingo; una semana «tiene edición» si algo publicado o programado cae en ella (las programadas cuentan el día de `publicarEn`, hora del centro de México).
+- **Ajustes:** `AJUSTES`, `leerEnvLocal`, `guardarAjustes` (`lib/ajustes.ts`) y `POST /api/admin/ajustes`: solo las editables, con validación y copia en `content/respaldos/env-local/`. El servidor lee `.env.local` al arrancar: los cambios piden reiniciar.
 - **Estado de git** (`lib/git-estado.ts`, solo lectura): cambios sin commit por edición, medios y código, y commits sin push.
 
 ## Mejoras del editor (23-10-2026)

@@ -59,6 +59,8 @@
 | `/admin/clics`, `/admin/newsletter` | `app/admin/clics`, `app/admin/newsletter` | Estadística de clics y suscriptores/correo |
 | `/admin/anunciantes` | `app/admin/anunciantes` (`PanelAnunciantes.tsx`; lógica `lib/anunciantes.ts`) | Anunciantes (privado: `content/anunciantes.json`): páginas, enlaces, vencimiento, vistas/clics y tasa; páginas de publicidad sin anunciante |
 | `/admin/anunciantes/[id]/reporte` | `app/admin/anunciantes/[id]/reporte` | Reporte imprimible / PDF para mandar al anunciante (sin el menú del panel) |
+| `/admin/calendario` | `app/admin/calendario/page.tsx` | Calendario de publicación: el mes, si cada semana tiene edición y las próximas 8 semanas |
+| `/admin/ajustes` | `app/admin/ajustes` (`PanelAjustes.tsx`; lógica `lib/ajustes.ts`) | Variables de entorno en un solo lugar; guarda en `.env.local` con copia previa; las que abren el panel son solo lectura |
 | `/admin/medios` | `app/admin/medios` (`PanelMedios.tsx`) | Biblioteca de medios: peso, dónde se usa, «sin uso» (también revisa código, plantillas y «Mis elementos») y quitar |
 | `/admin/papelera` | `app/admin/papelera` (`BotonRecuperar.tsx`) | Ediciones y medios borrados, con «Recuperar» |
 | `/api/admin/*` | `app/api/admin/...` | Ediciones, medios, plantillas, clics, suscriptores (solo en local) |

@@ -3,11 +3,12 @@
 > **No escribas aquí contraseñas ni claves reales.** Este archivo solo lista qué variables existen y para qué sirven. Los valores
 > viven en `.env.local` (no se sube a Git) y en el panel de Vercel (Settings → Environment Variables).
 
-El proyecto no usa base de datos ni cuentas de usuario: todo son archivos JSON. Estas variables son **opcionales**:
+El proyecto no usa base de datos ni cuentas de usuario: todo son archivos JSON. Estas variables son **opcionales** (las principales se cambian en el panel, `/admin/ajustes`, que escribe `.env.local`; hay que reiniciar `npm run dev` para que se usen):
 
 | Variable | Dónde | Para qué |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `.env.local` y Vercel | Dirección pública del sitio (imágenes al compartir, enlaces del newsletter) |
+| `NEXT_PUBLIC_CONTACTO_ANUNCIOS` | `.env.local` y Vercel | A dónde lleva «Quiero anunciarme» en la bienvenida (enlace de WhatsApp, `mailto:` o página). Es público |
 | `CLICS_WEBHOOK_URL` | Vercel | En Vercel no se puede escribir archivos: envía cada clic a una hoja de cálculo o servicio |
 | `SUSCRIPCION_WEBHOOK_URL` | Vercel | Envía altas del newsletter a una hoja o servicio |
 | `ADMIN_ENABLED` | `.env.local` | Activa el panel `/admin` en una compilación de producción local (`next start`). **Nunca en Vercel**: allí el panel está cerrado de todos modos |

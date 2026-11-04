@@ -30,6 +30,7 @@ const MENU: Grupo[] = [
       { texto: "⧉ Edición resumida", href: "/admin#resumen" },
     ],
   },
+  { clave: "calendario", texto: "Calendario", icono: "calendar-days", href: "/admin/calendario" },
   {
     clave: "estadisticas",
     texto: "Estadísticas",
@@ -94,6 +95,7 @@ const MENU: Grupo[] = [
       { texto: "Buscar ↗", href: "/buscar", externo: true },
     ],
   },
+  { clave: "ajustes", texto: "Ajustes", icono: "ajustes", href: "/admin/ajustes" },
 ];
 
 /** Abre «Nueva edición» o «Edición resumida» en la página del panel (si ya está abierta; si no, lo hace el # al llegar). */
@@ -102,8 +104,18 @@ const avisarPanel = (href: string) => {
   if (frag === "nueva" || frag === "resumen") window.dispatchEvent(new CustomEvent("acomdi:panel", { detail: frag }));
 };
 
-const TITULOS: Record<string, string> = { "/admin": "Ediciones", "/admin/clics": "Estadísticas", "/admin/newsletter": "Newsletter", "/admin/anunciantes": "Anunciantes", "/admin/medios": "Medios", "/admin/papelera": "Papelera" };
+const TITULOS: Record<string, string> = { "/admin": "Ediciones", "/admin/clics": "Estadísticas", "/admin/newsletter": "Newsletter", "/admin/anunciantes": "Anunciantes", "/admin/medios": "Medios", "/admin/papelera": "Papelera", "/admin/calendario": "Calendario", "/admin/ajustes": "Ajustes" };
 /** Grupos que el usuario abrió o cerró a mano (se recuerda en el navegador). Sin elegir, solo está abierto el de la página actual. */
+/** Engrane (tampoco está en el catálogo de iconos). Trazo de Lucide (ISC). */
+function IconoAjustes({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 const ELEGIDOS = "acomdi-admin-menu-abiertos";
 
 /** Bote de basura (el catálogo de iconos no tiene uno; la «x» parecía el logo de X). Trazo de Lucide (ISC). */
@@ -179,6 +191,8 @@ export default function MarcoAdmin({ children }: { children: ReactNode }) {
               >
                 {g.icono === "papelera" ? (
                   <IconoPapelera className="h-[1.1rem] w-[1.1rem] shrink-0" />
+                ) : g.icono === "ajustes" ? (
+                  <IconoAjustes className="h-[1.1rem] w-[1.1rem] shrink-0" />
                 ) : (
                   <IconoSvg icono={g.icono} color={act ? "papel" : "tinta"} trazo={1.8} className="h-[1.1rem] w-[1.1rem] shrink-0" />
                 )}

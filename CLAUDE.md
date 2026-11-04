@@ -49,9 +49,10 @@ Toda la documentación va en **`Doc/`** (ver `Doc/memoria.md` para la convenció
   (resumen; lista con vistas compacta / con portada / portadas, páginas de resultados, «Ir a la N.º», mes, orden, buscador que
   también mira los títulos de las páginas —tecla «/»—, filtros `?f=`; avisos del revisor, «Publicación ▾», continuar, cambios sin
   subir; las portadas se piden al llegar a la pantalla con `PortadaPerezosa.tsx`), Estadísticas
-  (`/admin/clics`), Newsletter, Anunciantes (`/admin/anunciantes`, con reporte imprimible en `/admin/anunciantes/<id>/reporte`;
+  (`/admin/clics`), Calendario (`/admin/calendario`), Ajustes (`/admin/ajustes`: escribe `.env.local` con copia previa; las variables que abren el
+  panel son solo lectura), Newsletter, Anunciantes (`/admin/anunciantes`, con reporte imprimible en `/admin/anunciantes/<id>/reporte`;
   datos privados en `content/anunciantes.json`), Medios (`/admin/medios`) y Papelera (`/admin/papelera`). El editor `/admin/<id>` va a pantalla
   completa (`#revisar` abre el revisor, `#p=N` una página). Lógica nueva en `src/lib/admin-extra.ts` y `src/lib/git-estado.ts`.
-  Ids reservados para ediciones: clics, newsletter, medios, papelera, anunciantes. El menú lateral abre por defecto solo el grupo
+  Ids reservados para ediciones: clics, newsletter, medios, papelera, anunciantes, calendario, ajustes. El menú lateral abre por defecto solo el grupo
   de la página actual. Si sale un aviso de hidratación en el menú tras cambiarlo, suele ser el servidor de desarrollo con una
   versión vieja de la ruta: tocar `admin/layout.tsx` lo recompila (no reiniciar el servidor del usuario).

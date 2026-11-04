@@ -19,7 +19,7 @@ import { calcularNumeracion, formatoNumero, numeroFijoDe } from "./numeracion";
 
 export const ID_RE = /^[a-z0-9][a-z0-9_-]{0,39}$/i;
 /** Nombres que ya son páginas del panel (/admin/clics, /admin/medios…): una edición con ese id no se podría abrir en el editor. */
-const IDS_RESERVADOS = ["clics", "newsletter", "medios", "papelera", "anunciantes"];
+const IDS_RESERVADOS = ["clics", "newsletter", "medios", "papelera", "anunciantes", "calendario", "ajustes"];
 const verificarIdLibre = (id: string) => {
   if (IDS_RESERVADOS.includes(id.toLowerCase())) throw new ErrorAdmin(`«${id}» es el nombre de una sección del panel; elige otro identificador.`);
 };
