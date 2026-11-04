@@ -8,6 +8,7 @@ import FormSuscripcion from "@/components/FormSuscripcion";
 import ThemeToggle from "@/components/ThemeToggle";
 import Revelar from "@/components/Revelar";
 import MenuSecciones from "@/components/MenuSecciones";
+import CompartirRevista from "@/components/CompartirRevista";
 import LienzoVista, { IconoSvg } from "@/components/Lienzo";
 import { fechaLarga, getEdiciones, getPublicadas, hrefPagina, type Edicion } from "@/lib/ediciones";
 import { buscar } from "@/lib/busqueda";
@@ -601,8 +602,27 @@ export default function Bienvenida() {
           </Revelar>
         </section>
 
+        {/* Compartir */}
+        <section aria-labelledby="compartir-t" className="bg-paper-deep/60">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-[1.1fr_1fr] md:gap-16">
+            <div>
+              <p className="kicker text-terracota">Compártela</p>
+              <h2 id="compartir-t" className="font-display mt-2 text-4xl font-black leading-tight sm:text-5xl">
+                Llega a donde <span className="italic text-terracota">estés</span>
+              </h2>
+              <p className="mt-5 max-w-lg text-lg text-ink-soft">
+                Basta un enlace: se abre en cualquier celular o computadora, sin instalar nada. Pásalo a quien vive lejos y extraña su pueblo; por WhatsApp o Facebook
+                llega con su foto y su título.
+              </p>
+            </div>
+            <Revelar>
+              <CompartirRevista />
+            </Revelar>
+          </div>
+        </section>
+
         {/* Preguntas */}
-        <section aria-labelledby="preguntas-t" className="mx-auto grid max-w-6xl scroll-mt-24 gap-10 px-5 pb-24 pt-4 md:grid-cols-[1fr_1.6fr] md:gap-16">
+        <section aria-labelledby="preguntas-t" className="mx-auto grid max-w-6xl scroll-mt-24 gap-10 px-5 pb-24 pt-16 md:grid-cols-[1fr_1.6fr] md:gap-16">
           <div>
             <p className="kicker text-terracota">Preguntas frecuentes</p>
             <h2 id="preguntas-t" className="font-display mt-2 text-4xl font-black leading-tight sm:text-5xl">
