@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { IconoSvg } from "@/components/Lienzo";
 
 const SECCIONES = [
-  { icono: "landmark", titulo: "Historia", texto: "El ferrocarril, los barrios y los edificios", href: "/buscar?q=historia" },
-  { icono: "utensils", titulo: "Sabor", texto: "El pan, los guisos y los mercados", href: "/buscar?q=sabor" },
-  { icono: "users", titulo: "Gente", texto: "Oficios, familias y personajes", href: "/buscar?q=gente" },
-  { icono: "mountain", titulo: "Paisajes", texto: "Lugares, caminos y rincones", href: "/buscar?q=paisaje" },
+  { icono: "landmark", titulo: "Historia", texto: "El ferrocarril, los barrios y los edificios", href: "/temas/historia" },
+  { icono: "utensils", titulo: "Sabor", texto: "El pan, los guisos y los mercados", href: "/temas/sabor" },
+  { icono: "users", titulo: "Gente", texto: "Oficios, familias y personajes", href: "/temas/gente" },
+  { icono: "mountain", titulo: "Paisajes", texto: "Lugares, caminos y rincones", href: "/temas/paisajes" },
   { icono: "ticket", titulo: "Cupones", texto: "Promociones de negocios locales", href: "#cupones" },
   { icono: "search", titulo: "Buscador", texto: "Encuentra cualquier página", href: "/buscar" },
 ];
@@ -56,8 +56,8 @@ export default function MenuSecciones() {
           {SECCIONES.map((s) => (
             <li key={s.titulo}>
               <a href={s.href} onClick={() => setAbierto(false)} className="font-sans flex items-center gap-3 rounded-xl p-2.5 hover:bg-ink/[0.06]">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#068562]/10">
-                  <IconoSvg icono={s.icono} color="#068562" trazo={1.7} className="h-5 w-5" />
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#067556]/10">
+                  <IconoSvg icono={s.icono} color="#067556" trazo={1.7} className="h-5 w-5" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-bold">{s.titulo}</span>

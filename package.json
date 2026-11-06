@@ -7,7 +7,9 @@
     "verificar-admin": "node scripts/verificar-admin.mjs",
     "prebuild": "node scripts/verificar-admin.mjs",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "dependencies": {
     "@tiptap/core": "^3.31.4",
@@ -17,16 +19,20 @@
     "@tiptap/starter-kit": "^3.31.4",
     "next": "16.4.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.3",
     "lucide": "^1.55.0",
     "simple-icons": "^16.35.0",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.1.0"
   }
 }

@@ -33,7 +33,7 @@ export function htmlCorreo(d: DatosCorreo): string {
   const filas = d.paginas
     .map(
       (p) => `<tr><td style="padding:10px 0;border-top:1px solid #cbd5e1;font-family:Georgia,'Times New Roman',serif;font-size:18px;">
-<a href="${esc(`${base}/ediciones/${encodeURIComponent(d.edicionId)}/${p.n}`)}" style="color:#1e293b;text-decoration:none;"><span style="color:#068562;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;">${String(p.n).padStart(2, "0")}</span>&nbsp;&nbsp;${esc(p.titulo)}</a></td></tr>`,
+<a href="${esc(`${base}/ediciones/${encodeURIComponent(d.edicionId)}/${p.n}`)}" style="color:#1e293b;text-decoration:none;"><span style="color:#067556;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;">${String(p.n).padStart(2, "0")}</span>&nbsp;&nbsp;${esc(p.titulo)}</a></td></tr>`,
     )
     .join("\n");
   const intro = d.intro
@@ -49,7 +49,7 @@ export function htmlCorreo(d: DatosCorreo): string {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e2e8f0;"><tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#f8fafc;border:1px solid #1e293b;">
 <tr><td style="padding:22px 28px 14px;text-align:center;border-bottom:4px double #1e293b;">
-<div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#068562;font-weight:bold;">Edición N.º ${esc(d.numero)} · ${esc(d.periodo)}</div>
+<div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#067556;font-weight:bold;">Edición N.º ${esc(d.numero)} · ${esc(d.periodo)}</div>
 <a href="${esc(base)}/" style="text-decoration:none;"><img src="${esc(base)}/brand/logo.png" alt="ACOM-Di, Revista de Acámbaro" width="300" style="display:inline-block;width:300px;max-width:100%;height:auto;border:0;margin-top:10px;font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:bold;color:#1e293b;"></a>
 </td></tr>${
     d.imagen

@@ -19,7 +19,7 @@ const PALETA: Record<string, string> = {
   tinta: "#1e293b",
   tintaSuave: "#475569",
   blanco: "#ffffff",
-  terracota: "#068562",
+  terracota: "#067556",
   ocre: "#49c59f",
   oliva: "#046a4b",
   indigo: "#013f4a",

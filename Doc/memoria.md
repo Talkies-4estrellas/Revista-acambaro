@@ -54,6 +54,7 @@ Cualquier decisión de arquitectura o convención que valga recordar.
 | [02-11-2026](sesiones/sesion-02-11-2026.md) | Página de bienvenida (estilo art-circles), edición de muestra hojeable, cupones y anunciantes |
 | [03-11-2026](sesiones/sesion-03-11-2026.md) | Panel del administrador: resumen, portadas, filtros, avisos, menú lateral, publicación, medios, papelera, calendario y ajustes |
 | [04-11-2026](sesiones/sesion-04-11-2026.md) | Calendario revisado, buscador rápido Ctrl+K, menú «Secciones» en la bienvenida y mejoras del panel en celular |
+| [06-11-2026](sesiones/sesion-06-11-2026.md) | Base del proyecto (ESLint, pruebas, documentación); compartir, temas, seguir leyendo, relacionadas y fotos adaptadas |
 
 > Lo hecho antes de existir esta carpeta (editor de lienzo, edición móvil «apilar», animaciones, clics, newsletter, ediciones 01–13)
 > está descrito en `documentacion/documento.md` y en `GUIA-EDICIONES.md`.

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { cargarPaginaFlujo } from "@/lib/flujo-actions";
+import { cargarPaginaFlujo, cargarRelacionadas } from "@/lib/flujo-actions";
+import { guardarLectura } from "@/lib/lectura";
 
 // Sin separación ni sombra: las hojas se pegan una a otra para que el scroll se sienta continuo.
 const HOJA = ""; // el ancho lo decide cada página (CuerpoFlujo): las de lienzo van en una hoja de 900 px, las clásicas ocupan todo el ancho
@@ -54,6 +55,7 @@ function Union() {
 export default function FlujoMovil({
   id,
   numero,
+  tema,
   desde,
   hrefs,
   titulos,
@@ -61,6 +63,8 @@ export default function FlujoMovil({
   id: string;
   /** Número de la edición (para el título del navegador). */
   numero: string;
+  /** Tema de la edición (para «Seguir leyendo»). */
+  tema: string;
   /** Número de la página con la que se abrió la ruta. */
   desde: number;
   hrefs: string[];
@@ -84,6 +88,21 @@ export default function FlujoMovil({
   const [lejanas, setLejanas] = useState<Set<number>>(() => new Set());
   const alturas = useRef(new Map<number, number>());
   const hay = siguiente <= total && !detenido;
+  const [relacionadas, setRelacionadas] = useState<ReactNode>(null);
+  const alFinal = movil && !hay && siguiente > total;
+
+  useEffect(() => {
+    if (!alFinal) return;
+    let vigente = true;
+    cargarRelacionadas(id)
+      .then((nodo) => {
+        if (vigente) setRelacionadas(nodo);
+      })
+      .catch(() => {}); // sin sugerencias el final de la edición sigue funcionando
+    return () => {
+      vigente = false;
+    };
+  }, [alFinal, id]);
 
   // Solo en celular.
   useEffect(() => {
@@ -159,6 +178,7 @@ export default function FlujoMovil({
       if (!visible || visible === actual) return;
       actual = visible;
       window.history.replaceState(window.history.state, "", hrefs[visible - 1]);
+      guardarLectura({ id, n: visible, total, tema, numero, href: hrefs[visible - 1] }); // este replaceState no llega al router: RegistrarLectura no lo ve
       document.title = `${titulos[visible - 1]} — Acámbaro N.º ${numero}`;
       const contador = document.querySelector("[data-contador]");
       if (contador) contador.textContent = `${visible}/${total}`;
@@ -173,7 +193,7 @@ export default function FlujoMovil({
       window.removeEventListener("scroll", programar);
       if (cuadro) cancelAnimationFrame(cuadro);
     };
-  }, [movil, hrefs, titulos, numero, total, paginas.length, desde]);
+  }, [movil, hrefs, titulos, numero, tema, id, total, paginas.length, desde]);
 
   return (
     <div className="sm:hidden">
@@ -232,6 +252,7 @@ export default function FlujoMovil({
           )}
         </div>
       )}
+      {relacionadas}
     </div>
   );
 }

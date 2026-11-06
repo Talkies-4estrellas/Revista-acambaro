@@ -3,6 +3,8 @@ import Masthead from "@/components/Masthead";
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
+import CompartirPagina from "@/components/CompartirPagina";
+import EdicionesRelacionadas from "@/components/EdicionesRelacionadas";
 import PageTurner from "@/components/PageTurner";
 import Ticker from "@/components/Ticker";
 import AnimacionesLienzo from "@/components/AnimacionesLienzo";
@@ -10,6 +12,7 @@ import FlujoMovil from "@/components/FlujoMovil";
 import ParallaxLienzo from "@/components/ParallaxLienzo";
 import { LienzoResponsivo } from "@/components/Lienzo";
 import Bloques, { Galeria, Imagen, Video } from "@/components/Bloques";
+import { fotoDestacada, srcsetMedia, tamanosHoja } from "@/lib/imagen";
 import {
   etiqueta,
   hrefPagina,
@@ -39,6 +42,7 @@ function FlujoDeEdicion({ ed, n }: { ed: Edicion; n: number }) {
     <FlujoMovil
       id={ed.id}
       numero={ed.numero}
+      tema={ed.tema}
       desde={n}
       hrefs={ed.paginas.map((_, i) => hrefPagina(ed, i + 1))}
       titulos={ed.paginas.map((pg) => etiqueta(pg))}
@@ -62,7 +66,7 @@ function Hoja({
   const next = ed.paginas[n];
   return (
     <>
-      <Masthead edicion={ed} compact={!full} />
+      <Masthead edicion={ed} compact={!full} accion={<CompartirPagina />} />
       {/* Celular: sin botones de abajo; se lee bajando y las páginas siguientes se agregan debajo (FlujoMovil). */}
       {prev && (
         <Link href={hrefPagina(ed, n - 1)} className="font-sans mx-auto block max-w-[900px] px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-ink-soft hover:text-terracota sm:hidden">
@@ -77,6 +81,7 @@ function Hoja({
           prev={prev && { href: hrefPagina(ed, n - 1), label: etiqueta(prev) }}
           next={next && { href: hrefPagina(ed, n + 1), label: etiqueta(next) }}
         />
+        {!next && <EdicionesRelacionadas ed={ed} />}
       </div>
       <Footer />
     </>
@@ -106,7 +111,7 @@ function Cabecera({ p }: { p: Pagina }) {
 
 /* ------------------------------ Portada ------------------------------ */
 
-function CuerpoPortada({ ed, n, pagina: p }: Props) {
+function CuerpoPortada({ ed, pagina: p }: Props) {
   const destino = hrefPagina(ed, p.enlace ?? Math.min(3, ed.paginas.length));
   const titulos = ed.paginas.filter(esIndice).map(etiqueta);
   return (
@@ -180,7 +185,7 @@ function Portada(props: Props) {
 
 /* ------------------------------- Índice ------------------------------ */
 
-function CuerpoIndice({ ed, n, pagina: p }: Props) {
+function CuerpoIndice({ ed, pagina: p }: Props) {
   const entradas = ed.paginas
     .map((pg, i) => ({ pg, i }))
     .filter(({ pg }) => esIndice(pg));
@@ -252,7 +257,7 @@ function Indice(props: Props) {
 
 /* ------------------------------ Reportaje ---------------------------- */
 
-function CuerpoReportaje({ ed, n, pagina: p }: Props) {
+function CuerpoReportaje({ pagina: p }: Props) {
   return (
     <>
       <main className="pb-6">
@@ -283,7 +288,7 @@ function Reportaje(props: Props) {
 
 /* ------------------------------- Galería ----------------------------- */
 
-function CuerpoGaleriaPagina({ ed, n, pagina: p }: Props) {
+function CuerpoGaleriaPagina({ pagina: p }: Props) {
   return (
     <>
       <main className="pb-6">
@@ -311,7 +316,7 @@ function GaleriaPagina(props: Props) {
 
 /* --------------------------------- Cita ------------------------------ */
 
-function CuerpoCita({ ed, n, pagina: p }: Props) {
+function CuerpoCita({ pagina: p }: Props) {
   return (
     <>
       <main className={`flex min-h-[65vh] items-center justify-center px-6 py-16 text-center ${FONDO[p.tono ?? "terracota"]}`}>
@@ -336,7 +341,7 @@ function Cita(props: Props) {
 
 /* --------------------------------- Video ----------------------------- */
 
-function CuerpoVideoPagina({ ed, n, pagina: p }: Props) {
+function CuerpoVideoPagina({ pagina: p }: Props) {
   return (
     <>
       <main className="pb-6">
@@ -365,7 +370,7 @@ function VideoPagina(props: Props) {
 
 /* --------------------------------- Libre ----------------------------- */
 
-function CuerpoLibre({ ed, n, pagina: p }: Props) {
+function CuerpoLibre({ pagina: p }: Props) {
   return (
     <>
       <main className="pb-6">
@@ -401,11 +406,26 @@ export function CuerpoLienzo({ ed, n, pagina: p }: Props) {
   );
 }
 
+/** Precarga la foto principal de la página (las fotos van con carga diferida y esta es la que se ve primero). React la sube al <head>. */
+function PrecargaFoto({ p }: { p: Pagina }) {
+  const foto = fotoDestacada(p.elementos);
+  const srcset = srcsetMedia(foto?.src);
+  if (!foto || !srcset) return null;
+  if (p.movil !== "apilar") return <link rel="preload" as="image" imageSrcSet={srcset} imageSizes={tamanosHoja(foto)} fetchPriority="high" />;
+  return (
+    <>
+      <link rel="preload" as="image" imageSrcSet={srcset} imageSizes="100vw" media="(max-width: 639px)" fetchPriority="high" />
+      <link rel="preload" as="image" imageSrcSet={srcset} imageSizes={tamanosHoja(foto)} media="(min-width: 640px)" fetchPriority="high" />
+    </>
+  );
+}
+
 function LienzoPagina({ ed, n, pagina: p }: Props) {
   const prev = ed.paginas[n - 2];
   const next = ed.paginas[n];
   return (
     <>
+      <PrecargaFoto p={p} />
       {/* Barra superior: tres zonas fijas (volver · logo · posición). Sin el estilo «kicker», cuyo espaciado de letras
           es enorme en pantallas de 360 px y partía «← Ediciones» y «N.º 10 · 1/54» en dos líneas. */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-ink/40 px-4 py-2 font-sans text-[0.72rem] font-bold uppercase leading-none tracking-[0.05em] text-ink-soft sm:px-5 sm:text-[0.68rem] sm:tracking-[0.18em]">
@@ -421,6 +441,7 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
             <span className="hidden sm:inline">N.º {ed.numero} · </span>
             <span data-contador>{n}/{ed.paginas.length}</span>
           </span>
+          <CompartirPagina />
           <ThemeToggle className="-mr-2 sm:mr-0" />
         </span>
       </div>
@@ -443,6 +464,7 @@ function LienzoPagina({ ed, n, pagina: p }: Props) {
           prev={prev && { href: hrefPagina(ed, n - 1), label: etiqueta(prev) }}
           next={next && { href: hrefPagina(ed, n + 1), label: etiqueta(next) }}
         />
+        {!next && <EdicionesRelacionadas ed={ed} />}
       </div>
       <Footer />
     </>

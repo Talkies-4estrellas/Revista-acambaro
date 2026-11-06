@@ -52,7 +52,7 @@ const Tarjetas = ({ lista, oscuro = false }: { lista: { icono: string; titulo: s
   <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {lista.map((f) => (
       <li key={f.titulo} className={`border p-5 ${oscuro ? "border-paper/25 bg-white/5" : "border-ink/25 bg-white/40"}`}>
-        <IconoSvg icono={f.icono} color={oscuro ? "#49c59f" : "#068562"} trazo={1.6} className="h-9 w-9" />
+        <IconoSvg icono={f.icono} color={oscuro ? "#49c59f" : "#067556"} trazo={1.6} className="h-9 w-9" />
         <h3 className="font-display mt-3 text-xl font-black">{f.titulo}</h3>
         <p className={`mt-1 text-[0.95rem] leading-relaxed ${oscuro ? "text-paper/80" : "text-ink-soft"}`}>{f.texto}</p>
       </li>

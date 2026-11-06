@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { CuerpoFlujo } from "@/components/plantillas";
+import EdicionesRelacionadas from "@/components/EdicionesRelacionadas";
 import { getEdicion } from "@/lib/ediciones";
 
 /**
@@ -14,4 +15,10 @@ export async function cargarPaginaFlujo(id: string, n: number): Promise<ReactNod
   if (!ed || n < 1 || n > ed.paginas.length) return null;
   const pagina = ed.paginas[n - 1];
   return <CuerpoFlujo ed={ed} n={n} pagina={pagina} />;
+}
+
+/** Las ediciones relacionadas para el final del scroll del celular: se piden al llegar, para no cargarlas con cada página. */
+export async function cargarRelacionadas(id: string): Promise<ReactNode | null> {
+  const ed = typeof id === "string" ? getEdicion(id) : undefined;
+  return ed ? <EdicionesRelacionadas ed={ed} /> : null;
 }

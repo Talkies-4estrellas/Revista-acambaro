@@ -213,7 +213,7 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
     arriba.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const Paginador = () =>
+  const paginador =
     paginas <= 1 ? null : (
       <nav aria-label="Páginas de resultados" className="font-sans flex flex-wrap items-center gap-1 text-xs font-bold">
         <button type="button" onClick={() => cambiarPagina(actual - 1)} disabled={actual === 1} className="rounded-full border border-ink/25 px-3 py-1.5 hover:border-ink disabled:opacity-30">
@@ -244,7 +244,6 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
   // En celular los filtros van plegados tras un botón (ocupaban más de media pantalla); desde 640 px siempre se ven.
   const plegable = verFiltros ? "" : "max-sm:hidden";
   const filtrosActivos = (filtro !== "todas" ? 1 : 0) + (mes ? 1 : 0);
-  let seccionAnterior: string | null = null;
 
   return (
     <div id="lista" ref={arriba} className="mt-10 scroll-mt-16">
@@ -362,17 +361,16 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
       </div>
 
       <div className="mt-4 flex justify-end">
-        <Paginador />
+        {paginador}
       </div>
 
       {vista === "portadas" ? (
         <ol className="mt-4 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">{enPagina.map((i) => i.tarjeta)}</ol>
       ) : (
         <ol className={vista === "compacta" ? "mt-2 border-t border-ink" : "mt-2"}>
-          {enPagina.map((i) => {
+          {enPagina.map((i, k) => {
             // En el orden normal se marca dónde empieza cada sección (Ediciones, Borradores, Muestras).
-            const titulo = orden === "normal" && !filtrando && i.seccion.clave !== seccionAnterior ? i.seccion : null;
-            seccionAnterior = i.seccion.clave;
+            const titulo = orden === "normal" && !filtrando && i.seccion.clave !== enPagina[k - 1]?.seccion.clave ? i.seccion : null;
             const coinciden = paginasQueCoinciden(i);
             return (
               <SinEnvoltorio key={i.id}>
@@ -406,7 +404,7 @@ export default function ListaEdiciones({ secciones }: { secciones: SeccionLista[
       )}
 
       <div className="mt-6 flex justify-center">
-        <Paginador />
+        {paginador}
       </div>
     </div>
   );

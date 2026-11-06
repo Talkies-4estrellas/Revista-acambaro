@@ -8,6 +8,7 @@ import FormSuscripcion from "@/components/FormSuscripcion";
 import ThemeToggle from "@/components/ThemeToggle";
 import Revelar from "@/components/Revelar";
 import MenuSecciones from "@/components/MenuSecciones";
+import { srcsetMedia } from "@/lib/imagen";
 import CompartirRevista from "@/components/CompartirRevista";
 import LienzoVista, { IconoSvg } from "@/components/Lienzo";
 import { fechaLarga, getEdiciones, getPublicadas, hrefPagina, type Edicion } from "@/lib/ediciones";
@@ -274,7 +275,7 @@ export default function Bienvenida() {
                 <ul className="font-sans mt-3 flex flex-wrap gap-2 text-sm font-semibold">
                   {LECTORES.map((l) => (
                     <li key={l.texto} className="flex items-center gap-2 rounded-full border border-ink/15 bg-paper-deep/60 px-3 py-1.5">
-                      <IconoSvg icono={l.icono} color="#068562" trazo={1.8} className="h-4 w-4 shrink-0" />
+                      <IconoSvg icono={l.icono} color="#067556" trazo={1.8} className="h-4 w-4 shrink-0" />
                       {l.texto}
                     </li>
                   ))}
@@ -308,7 +309,7 @@ export default function Bienvenida() {
             <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {TEMAS.map((t) => (
                 <li key={t.titulo} className="border-t-4 border-terracota pt-4">
-                  <IconoSvg icono={t.icono} color="#068562" trazo={1.6} className="h-9 w-9" />
+                  <IconoSvg icono={t.icono} color="#067556" trazo={1.6} className="h-9 w-9" />
                   <h3 className="font-display mt-3 text-2xl font-black">{t.titulo}</h3>
                   <p className="mt-1 text-ink-soft">{t.texto}</p>
                 </li>
@@ -421,7 +422,7 @@ export default function Bienvenida() {
               titulo={<>Hecha también <span className="italic">para el pulgar</span></>}
               texto="En pantallas pequeñas la página se acomoda en una columna para leerla de arriba abajo, sin hacer zoom."
               items={["La página se acomoda sola a tu pantalla", "Modo oscuro para leer de noche", "Aviso por correo de cada edición, si lo quieres"]}
-              fondo="linear-gradient(135deg, #068562, #49c59f)"
+              fondo="linear-gradient(135deg, #067556, #49c59f)"
             >
               <div className="mx-auto w-[min(15rem,70%)] rounded-[2.2rem] border-[8px] border-ink bg-ink shadow-[0_28px_60px_-16px_rgba(0,0,0,0.6)]">
                 <div aria-hidden className="mx-auto mb-1 h-1.5 w-14 rounded-full bg-paper/30" />
@@ -646,7 +647,7 @@ export default function Bienvenida() {
         {/* Cierre: foto a sangre, una frase y la tarjeta para entrar */}
         <section aria-labelledby="cierre-t" className="paleta-clara relative isolate overflow-hidden text-paper">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={FOTO_CIERRE.src} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover" />
+          <img src={FOTO_CIERRE.src} srcSet={srcsetMedia(FOTO_CIERRE.src)} sizes="100vw" alt="" loading="lazy" className="absolute inset-0 -z-10 h-full w-full object-cover" />
           <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-[#013f4a]/45 via-[#013f4a]/60 to-[#013f4a]/95" />
           <div className="mx-auto max-w-5xl px-5 pb-10 pt-28 md:pt-40">
             {/* eslint-disable-next-line @next/next/no-img-element */}

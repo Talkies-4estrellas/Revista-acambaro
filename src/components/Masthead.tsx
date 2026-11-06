@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { mesAnio, type Edicion } from "@/lib/ediciones";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
@@ -7,11 +8,14 @@ export default function Masthead({
   edicion,
   compact = false,
   sinBusquedaEnCelular = false,
+  accion,
 }: {
   edicion?: Pick<Edicion, "numero" | "fecha">;
   compact?: boolean;
   /** En celular se oculta el campo de búsqueda de la cabecera (la página de resultados ya trae el suyo); el botón de tema se queda. */
   sinBusquedaEnCelular?: boolean;
+  /** Botón extra junto a «Todas las ediciones» (en el lector: compartir la página). */
+  accion?: ReactNode;
 }) {
   return (
     <header className="border-b-4 border-double border-ink">
@@ -37,7 +41,10 @@ export default function Masthead({
             </button>
             <ThemeToggle className={`!h-auto w-11 self-stretch border border-ink/50 sm:w-8 ${sinBusquedaEnCelular ? "max-sm:!h-10 max-sm:w-10 max-sm:self-center max-sm:border-0" : ""}`} />
           </form>
-          <Link href="/ediciones" className="py-2 text-terracota hover:underline sm:py-0">Todas las ediciones</Link>
+          <span className="flex items-center gap-2">
+            <Link href="/ediciones" className="py-2 text-terracota hover:underline sm:py-0">Todas las ediciones</Link>
+            {accion}
+          </span>
         </div>
 
         {compact ? (

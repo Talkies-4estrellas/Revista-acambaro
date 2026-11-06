@@ -35,14 +35,14 @@ export default function CompartirRevista() {
       {opciones.map((o) => (
         <li key={o.nombre}>
           <a href={o.href} target="_blank" rel="noopener noreferrer" className={tarjeta} aria-label={`Compartir por ${o.nombre}`}>
-            <IconoSvg icono={o.icono} color="#068562" trazo={1.7} className="h-8 w-8" />
+            <IconoSvg icono={o.icono} color="#067556" trazo={1.7} className="h-8 w-8" />
             {o.nombre}
           </a>
         </li>
       ))}
       <li>
         <button type="button" onClick={copiar} className={`${tarjeta} w-full`}>
-          <IconoSvg icono={copiado ? "check" : "link"} color="#068562" trazo={1.7} className="h-8 w-8" />
+          <IconoSvg icono={copiado ? "check" : "link"} color="#067556" trazo={1.7} className="h-8 w-8" />
           <span aria-live="polite">{copiado ? "¡Copiado!" : "Copiar enlace"}</span>
         </button>
       </li>

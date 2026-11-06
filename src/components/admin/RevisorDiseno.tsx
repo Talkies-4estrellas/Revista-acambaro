@@ -13,7 +13,6 @@ import { btnCls } from "./campos";
  *     y mide lo que realmente se dibuja: textos que se encimen y letra demasiado chica para leerse en el celular.
  * --------------------------------------------------------------------------------------------------------------------- */
 
-const ESPERA_MS = 0; // (la espera real es hasta que terminen las animaciones; ver medirPagina)
 const CONCURRENCIA = 3; // páginas medidas a la vez
 const MIN_LETRA_CELULAR = 9.5; // px reales en un celular de 360 px
 

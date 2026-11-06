@@ -5,7 +5,7 @@
   --paper-deep: #e2e8f0;
   --ink: #1e293b;
   --ink-soft: #475569;
-  --terracota: #068562;
+  --terracota: #067556;
   --ocre: #49c59f;
   --oliva: #046a4b;
   --indigo: #013f4a;
@@ -31,7 +31,7 @@ html.dark .paleta-clara {
   --paper-deep: #e2e8f0;
   --ink: #1e293b;
   --ink-soft: #475569;
-  --terracota: #068562;
+  --terracota: #067556;
   --ocre: #49c59f;
   --oliva: #046a4b;
 }
@@ -103,6 +103,26 @@ body {
 
 .ticker-track {
   animation: ticker 40s linear infinite;
+}
+
+/* Foco de teclado: solo al navegar con teclado (no al hacer clic). Dos tonos para que se vea igual sobre papel, fotos y bandas de color.
+   Sin @layer a propósito: así también aplica a los campos con outline-none. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--paper);
+}
+
+/* El destino de «Saltar al contenido» recibe el foco, pero no es un control. */
+main:focus {
+  outline: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import SaltarContenido from "@/components/SaltarContenido";
 import { Playfair_Display, Source_Serif_4, Inter } from "next/font/google";
 import { clasesFuentes } from "./fuentes";
 import "./globals.css";
@@ -53,6 +54,7 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(t==null&&d))document.documentElement.classList.add('dark');}catch(e){}})();`,
           }}
         />
+        <SaltarContenido />
         {children}
       </body>
     </html>

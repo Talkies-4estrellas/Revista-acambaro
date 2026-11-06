@@ -8,6 +8,8 @@ Sin base de datos: las ediciones son archivos JSON en `content/ediciones/`. El p
 npm run dev       # servidor de desarrollo (el usuario lo mantiene en localhost:3000: no abrir otro ni tocar .next)
 npm run build     # verifica tipos y compilación (para probar sin tocar .next: NEXT_DIST_DIR=.next-build npx next build, y borrar .next-build)
 npx tsc --noEmit  # chequeo rápido de tipos
+npm test          # pruebas (tests/); las que tocan archivos usan una carpeta temporal
+npm run lint      # ESLint (las reglas del compilador de React van como avisos)
 ```
 
 ## Documentación (dónde va todo)
@@ -16,6 +18,7 @@ Toda la documentación va en **`Doc/`** (ver `Doc/memoria.md` para la convenció
 - Índice de archivos → `Doc/indice.md` (actualizarlo al agregar archivos).
 - Documentación técnica → `Doc/documentacion/documento.md` (actualizarla si cambia el modelo de datos o una función).
 - Variables de entorno (solo nombres, sin valores) → `Doc/credenciales.md`.
+- Protección del panel y qué hacer al agregarle algo → `Doc/protocolo-admin.md`.
 - La guía para quien arma ediciones es `GUIA-EDICIONES.md` (raíz, porque el panel la menciona): actualizarla al cambiar el editor.
 - **Commits:** el asistente solo hace `git commit` cuando el usuario lo pide, y entonces lo ejecuta él (`git add` archivo por archivo; el usuario
   lo revisa en GitKraken). **Nunca `git push`** sin que lo pida.

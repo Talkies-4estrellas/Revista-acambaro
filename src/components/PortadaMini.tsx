@@ -1,5 +1,6 @@
 import LienzoVista from "@/components/Lienzo";
 import type { Edicion } from "@/lib/ediciones";
+import { fotoDestacada, srcsetMedia, tamanosMiniatura } from "@/lib/imagen";
 
 const TONO: Record<string, string> = {
   terracota: "var(--terracota)",
@@ -10,11 +11,13 @@ const TONO: Record<string, string> = {
 };
 
 /** La primera página de una edición, en pequeño. Las páginas hechas con plantillas antiguas se resumen en una tarjeta. */
-export default function PortadaMini({ ed, className = "" }: { ed: Edicion; className?: string }) {
+export default function PortadaMini({ ed, className = "", prioridad = false }: { ed: Edicion; className?: string; /** Es lo primero que se ve: precarga su foto principal. */ prioridad?: boolean }) {
   const p = ed.paginas[0];
+  const foto = prioridad && p.plantilla === "lienzo" ? fotoDestacada(p.elementos) : undefined;
   if (p.plantilla === "lienzo") {
     return (
       <div className={`pointer-events-none overflow-hidden ${className}`} aria-hidden>
+        {foto && <link rel="preload" as="image" imageSrcSet={srcsetMedia(foto.src)} imageSizes={tamanosMiniatura(foto)} fetchPriority="high" />}
         <LienzoVista elementos={p.elementos ?? []} fondo={p.fondo} alto={p.alto} edicionId={ed.id} miniatura />
       </div>
     );

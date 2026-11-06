@@ -12,12 +12,14 @@ publicada (Vercel, privada por ahora) sirve como demo para atraer colaboradores 
 - **Datos:** archivos JSON en `content/` (sin base de datos). El panel solo existe en la computadora de quien publica.
 - **Deploy:** Vercel desde GitHub (`git push`); el panel de administración no se despliega.
 - **Fuentes:** Playfair Display (títulos), Source Serif 4 (texto), Inter (interfaz) vía `next/font`.
-- **Paleta (misma que AcambaGo):** `#068562` acento, `#013f4a`, `#49c59f`, fondo `#f1f5f9`, tinta `#1e293b`.
+- **Paleta (misma que AcambaGo):** `#067556` acento (en AcambaGo es `#068562`; aquí se oscureció el 06-11-2026 para cumplir el contraste AA), `#013f4a`, `#49c59f`, fondo `#f1f5f9`, tinta `#1e293b`.
 
 ## Comandos
 ```
 npm run dev     # servidor de desarrollo (en el equipo de quien publica se usa localhost:3000)
 npm run build   # build de producción (verifica tipos y compilación)
+npm test        # pruebas (Vitest, en tests/; las que tocan archivos usan una carpeta temporal)
+npm run lint    # ESLint
 npx tsc --noEmit
 ```
 

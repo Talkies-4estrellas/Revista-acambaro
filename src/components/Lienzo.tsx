@@ -23,6 +23,7 @@ import {
 } from "@/lib/esquema";
 import { createElement } from "react";
 import { CATALOGO } from "@/lib/catalogo-iconos";
+import { srcsetMedia, tamanosColumna, tamanosHoja, tamanosMiniatura } from "@/lib/imagen";
 import { resolverTextoReferencias, tieneReferencias } from "@/lib/referencias";
 import { Inline, Video } from "./Bloques";
 import GlobosVista, { type EdicionGlobos } from "./Globos";
@@ -322,6 +323,9 @@ export function ElementoVista({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={el.src}
+            // En el editor va el original: ahí se trabaja con la foto completa y recién subida.
+            srcSet={editor ? undefined : srcsetMedia(el.src)}
+            sizes={editor ? undefined : apilado ? tamanosColumna({ ...el, zoom }, apilado.ancho) : miniatura ? tamanosMiniatura({ ...el, zoom }) : tamanosHoja({ ...el, zoom })}
             alt={el.alt ?? ""}
             draggable={false}
             loading="lazy"

@@ -3,9 +3,11 @@ import Link from "next/link";
 import Masthead from "@/components/Masthead";
 import Footer from "@/components/Footer";
 import PortadaMini from "@/components/PortadaMini";
+import SeguirLeyendo from "@/components/SeguirLeyendo";
 import FormSuscripcion from "@/components/FormSuscripcion";
 import { IconoSvg } from "@/components/Lienzo";
 import { fechaLarga, getPublicadas, hrefPagina } from "@/lib/ediciones";
+import { TEMAS } from "@/lib/temas";
 
 /** Se regenera cada minuto para que una edición programada aparezca sola cuando llega su hora. */
 export const revalidate = 60;
@@ -24,6 +26,7 @@ export default function Home() {
   return (
     <>
       <Masthead />
+      <SeguirLeyendo publicadas={ediciones.map((e) => e.id)} />
       <main>
         {ultima ? (
           <section aria-label="Última edición" className="bg-paper-deep/60">
@@ -31,6 +34,7 @@ export default function Home() {
               <Link href={hrefPagina(ultima, 1)} aria-label={`Leer la edición N.º ${ultima.numero}: ${ultima.tema}`} className="group mx-auto block w-full max-w-sm">
                 <PortadaMini
                   ed={ultima}
+                  prioridad
                   className="shadow-[0_18px_50px_-14px_rgba(28,24,20,0.55)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-[-0.6deg]"
                 />
               </Link>
@@ -85,11 +89,32 @@ export default function Home() {
           </section>
         )}
 
+        <section aria-label="Temas" className="mx-auto max-w-6xl px-5 pb-14">
+          <div className="flex items-baseline justify-between border-b-2 border-ink pb-2">
+            <h2 className="font-display text-3xl font-black italic">Por tema</h2>
+            <Link href="/temas" className="kicker py-2 text-terracota hover:underline">
+              Ver todos
+            </Link>
+          </div>
+          <ul className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {TEMAS.map((t) => (
+              <li key={t.slug}>
+                <Link href={`/temas/${t.slug}`} className="font-display flex items-center gap-3 rounded-xl border border-ink/15 p-3 text-lg font-bold transition-colors hover:border-terracota">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#067556]/10">
+                    <IconoSvg icono={t.icono} color="#067556" trazo={1.7} className="h-5 w-5" />
+                  </span>
+                  {t.nombre}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section aria-label="Cómo se lee" className="border-y-4 border-double border-ink bg-paper-deep/50">
           <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 md:grid-cols-3 md:gap-12 md:py-16">
             {FORMAS_DE_LEER.map((f) => (
               <div key={f.titulo} className="text-center">
-                <IconoSvg icono={f.icono} color="#068562" trazo={1.6} className="mx-auto h-10 w-10 md:h-16 md:w-16" />
+                <IconoSvg icono={f.icono} color="#067556" trazo={1.6} className="mx-auto h-10 w-10 md:h-16 md:w-16" />
                 <h3 className="font-display mt-3 text-2xl font-black md:mt-4 md:text-3xl">{f.titulo}</h3>
                 <p className="mx-auto mt-2 max-w-sm text-ink-soft">{f.texto}</p>
               </div>

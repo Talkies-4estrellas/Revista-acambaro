@@ -1,11 +1,11 @@
 import type { Tono } from "@/lib/ediciones";
 
 const tones: Record<Tono, { bg: string; fg: string; accent: string }> = {
-  terracota: { bg: "#068562", fg: "#f1f5f9", accent: "#49c59f" },
-  ocre: { bg: "#49c59f", fg: "#1e293b", accent: "#068562" },
+  terracota: { bg: "#067556", fg: "#f1f5f9", accent: "#49c59f" },
+  ocre: { bg: "#49c59f", fg: "#1e293b", accent: "#067556" },
   oliva: { bg: "#046a4b", fg: "#f1f5f9", accent: "#e2e8f0" },
   indigo: { bg: "#013f4a", fg: "#f1f5f9", accent: "#49c59f" },
-  tinta: { bg: "#1e293b", fg: "#f1f5f9", accent: "#068562" },
+  tinta: { bg: "#1e293b", fg: "#f1f5f9", accent: "#067556" },
 };
 
 /** Ilustración geométrica provisional hasta tener fotografías reales. */

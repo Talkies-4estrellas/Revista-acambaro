@@ -3,7 +3,7 @@
 ## Con el panel (recomendado)
 
 1. `npm run dev` y abre **http://localhost:3000/admin** (el puerto que use tu servidor).
-2. **Nueva edición**: elige identificador, número, fecha y tema. Puedes empezar en blanco o copiando otra edición.
+2. **+ Nueva edición** (arriba): elige identificador, fecha y tema; el número se asigna solo al publicar. Puedes empezar en blanco o copiando otra edición.
 3. En el editor: las **páginas, con miniaturas en vivo**, están a la izquierda (una miniatura se actualiza mientras editas la
    página; los reportajes y demás plantillas con formulario muestran una tarjeta con su tipo). Cambia la vista con los botones
    ☰ lista / ▤ miniaturas / ▦ miniaturas grandes. **Arrastra una página para reordenarla**: una línea terracota marca dónde
@@ -23,6 +23,24 @@
 El panel **solo funciona en desarrollo y desde tu propio equipo** (en producción responde 404), porque escribe archivos
 del proyecto. Variables opcionales: `ADMIN_ENABLED=true` (activarlo fuera de desarrollo) y `ADMIN_ALLOW_REMOTE=true`
 (permitir otros equipos de la red). Úsalas solo si sabes lo que haces: el panel no tiene contraseña.
+
+## La pantalla del panel
+
+Arriba está la barra con **Ir a…** y **+ Nueva edición**; a la izquierda, el menú con submenús (se abre solo el grupo de la página donde estás). En el celular, el menú se abre con ☰.
+
+- **Buscador rápido (Ctrl+K):** salta a una sección, una edición o una página escribiendo. Un número solo pone primero esa edición.
+- **Inicio / Ediciones:** resumen (publicadas, borradores, vistas, clics, suscriptores), **Continuar donde lo dejaste** (abre la página en la que ibas) y **Cambios sin subir** (lo que aún no está en GitHub; solo informa).
+- **Lista de ediciones:** vistas Compacta, Con portada y Portadas; filtros por estado (también por mes), orden, páginas de resultados e **Ir a la N.º**. El buscador también mira los títulos de las páginas; la tecla **/** lo enfoca. En el celular, los filtros están dentro del botón **Filtros**.
+- **Etiquetas de cada edición:** color por estado, **⚠ por revisar** (errores y avisos de diseño) y **♿** (accesibilidad). Al tocarlas se abre el revisor.
+- **Publicación ▾:** publicar, programar o desactivar sin abrir el editor. Avisa si hay cosas por revisar.
+- **Calendario:** qué sale cada semana, qué semanas quedan vacías y las próximas 8 semanas. Las programadas van el día en que se publican.
+- **Estadísticas y Newsletter:** vistas y clics; suscriptores y correo de la edición.
+- **Anunciantes:** contacto, fecha de vencimiento, sus páginas y enlaces, y sus números. **Reporte** abre una página para imprimir o guardar en PDF. **Páginas sin anunciante** propone los datos desde cada anuncio. Se guarda en `content/anunciantes.json`, que no va a GitHub: respáldalo tú.
+- **Medios:** todas las fotos y videos, con su peso y dónde se usan. **Sin uso** ayuda a limpiar; «Quitar» solo aparece si nada los usa.
+- **Papelera:** ediciones y medios borrados, con **Recuperar**. Si ya hay otro con ese nombre, vuelve como «…-recuperada».
+- **Ajustes:** dirección del sitio, contacto para anunciantes y webhooks. Se guardan en `.env.local`; hay que reiniciar `npm run dev`, y en Vercel se ponen aparte.
+
+Los nombres `clics`, `newsletter`, `medios`, `papelera`, `anunciantes`, `calendario` y `ajustes` están reservados: una edición no puede llamarse así.
 
 ## Páginas en blanco (lienzo)
 
@@ -418,6 +436,9 @@ Solo cuentan en las páginas de lienzo. Los repetidos no aparecen en los resulta
 Al subir una foto (jpg, png o webp) de más de 150 KB, el panel la **reduce y comprime** solo: la gira según la cámara, la limita a 2000 px de ancho, quita los datos ocultos (ubicación, cámara) y la guarda más ligera; un PNG sin
 transparencia pasa a WebP y los PNG con transparencia siguen siendo PNG. Arriba aparece, por ejemplo, «Foto optimizada: 4,2 MB → 380 KB (WebP)». GIF, video y archivos ya ligeros no se tocan. (El archivo que ya estaba subido no cambia.)
 
+## Tamaños adaptados en el sitio
+Además de la optimización al subir, el sitio pide a cada pantalla una copia del ancho que necesita (`src/lib/imagen.ts`): no hay nada que hacer al armar una edición, y los archivos de `public/media` no cambian. El editor sigue mostrando el original.
+
 ## Editar desde el celular
 
 En pantallas de menos de 768 px el editor se adapta: la hoja se abre **ajustada al ancho** (con **Entera** la ves completa) y las **propiedades van en un cajón** abajo: se abre solo al tocar un elemento
@@ -671,6 +692,9 @@ Van dentro de `reportaje`, `galeria`, `video` y `libre`, en el orden en que se e
 - **Videos largos**: súbelos a YouTube o Vimeo y usa solo el ID.
 - **Imágenes**: ~1600 px de ancho y comprimidas (≤ 300 KB) para que el giro de página sea fluido.
 - Se puede ver el cambio recargando la página en `npm run dev`; no hace falta reiniciar.
+
+## Temas
+Las páginas salen en **/temas** (Historia, Sabor, Gente, Paisajes) según su campo **Sección**. La lista de secciones de cada tema está en `src/lib/temas.ts`; no importan acentos ni mayúsculas. Una sección nueva que no esté ahí no aparece en ningún tema: agrégala a la lista. Publicidad queda fuera a propósito. La tarjeta usa la foto más grande de la página o, si no tiene, la portada de la edición.
 
 ## Búsqueda
 

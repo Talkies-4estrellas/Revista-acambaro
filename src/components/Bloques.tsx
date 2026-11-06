@@ -1,6 +1,10 @@
 import type { Ancho, Bloque, Medio, VideoData } from "@/lib/ediciones";
+import { srcsetMedia } from "@/lib/imagen";
 import FormSuscripcion from "./FormSuscripcion";
 import Placeholder from "./Placeholder";
+
+/** Fotos de las plantillas clásicas: a lo sumo el ancho de la columna grande. */
+const TAMANOS_BLOQUE = "(max-width: 1100px) 100vw, 1100px";
 
 const RATIO: Record<string, string> = {
   "16/9": "aspect-video",
@@ -45,11 +49,11 @@ export function Imagen({
   if (m.src) {
     if (!ratio)
       // eslint-disable-next-line @next/next/no-img-element
-      return <img src={m.src} alt={m.alt ?? ""} loading="lazy" className={`block h-auto w-full ${className}`} />;
+      return <img src={m.src} srcSet={srcsetMedia(m.src)} sizes={TAMANOS_BLOQUE} alt={m.alt ?? ""} loading="lazy" className={`block h-auto w-full ${className}`} />;
     return (
       <div className={`relative overflow-hidden bg-paper-deep ${ratio} ${className}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={m.src} alt={m.alt ?? ""} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={m.src} srcSet={srcsetMedia(m.src)} sizes={TAMANOS_BLOQUE} alt={m.alt ?? ""} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
       </div>
     );
   }

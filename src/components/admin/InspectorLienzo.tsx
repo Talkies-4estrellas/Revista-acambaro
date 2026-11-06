@@ -25,7 +25,6 @@ import {
   COLAS_GLOBO,
   FUENTES,
   TONOS,
-  colorCss,
   MOLDES,
   MOLDES_IDS,
   estiloMolde,
@@ -236,7 +235,6 @@ export function InspectorMultiple({
 
 /* ------------------------------ Elemento ----------------------------- */
 
-const num = (v: number | undefined, d: number) => (Number.isFinite(v as number) ? (v as number) : d);
 
 type TipoDestino = "" | "pagina" | "ancla" | "suscribirse" | "inicio" | "buscar" | "edicion" | "correo" | "telefono" | "whatsapp" | "ruta" | "externo";
 

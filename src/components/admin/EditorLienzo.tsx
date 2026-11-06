@@ -5,7 +5,6 @@ import { ElementoVista, IconoSvg } from "@/components/Lienzo";
 import {
   ALTO_LIENZO,
   ANCHO_LIENZO,
-  PRESETS,
   colorCss,
   esColorValido,
   elementoBoton,
@@ -22,7 +21,7 @@ import {
   type PresetElemento,
 } from "@/lib/esquema";
 import { MediosContext, Panel, btnCls } from "./campos";
-import { ejemploDe, esAltDeEjemplo } from "@/lib/ejemplos";
+import { ejemploDe } from "@/lib/ejemplos";
 import { ColoresPaginaContext, CuentagotasContext, FotosPaginaContext } from "./PaletaColores";
 import CuentagotasHoja from "./CuentagotasHoja";
 import { useMenuContextual, type ItemMenu } from "./MenuContextual";
@@ -84,11 +83,6 @@ const Trazo = ({ children }: { children: React.ReactNode }) => (
   <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     {children}
   </svg>
-);
-const Vector = ({ id }: { id: string }) => (
-  <span className="block h-[26px] w-[26px]" aria-hidden>
-    <IconoSvg icono={id} color="currentColor" />
-  </span>
 );
 
 /** Herramientas del riel: las de `preset` agregan el elemento al instante; las de `modo` abren su panel con opciones. */
@@ -349,7 +343,6 @@ export default function EditorLienzo({
   /* Ids para elementos escritos a mano. */
   useEffect(() => {
     if (getEls().some((e) => !e.id)) setEls(getEls().map((e) => (e.id ? e : { ...e, id: nuevoId() })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ------------------------------ Vista -------------------------------- */

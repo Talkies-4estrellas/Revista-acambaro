@@ -10,13 +10,16 @@
 | `CLAUDE.md` | Instrucciones para el asistente IA (incluye dónde va la documentación) |
 | `GUIA-EDICIONES.md` | Guía para quien arma ediciones (panel, lienzo, plantillas, identificadores, revisor, resumen) |
 | `PRESENTACION.md` | Texto de presentación del proyecto |
-| `README.md` | Resumen y comandos |
+| `README.md` | Resumen, comandos y dónde está cada cosa |
+| `eslint.config.mjs`, `vitest.config.mts` | ESLint y pruebas |
+| `tests/` | Pruebas automáticas (`carpeta-temporal.ts`: los archivos van a una carpeta temporal) |
 | `L-ARecurso 8/` | Recursos de marca (arte original) |
 | `scripts/verificar-admin.mjs` | Verifica que el panel no pueda quedar expuesto (corre solo antes de `npm run build`; con una dirección prueba el sitio publicado) |
 | `src/proxy.ts`, `src/lib/admin-acceso.ts` | Muralla de entrada y regla única de acceso del panel (404 en /admin y /api/admin fuera de la máquina local; nunca en Vercel) |
 | `scripts/generar-figuras.mjs` | Genera el catálogo de figuras decorativas del editor (`src/lib/figuras-datos.ts`) |
 | `scripts/generar-iconos.mjs` | Genera el catálogo de iconos del editor (`src/lib/iconos-datos.ts`) |
 | `Doc/` | Esta carpeta: documentación y sesiones |
+| `Doc/protocolo-admin.md` | Por qué el panel nunca está en el sitio publicado, y qué hacer al agregarle algo |
 | `Doc/base-de-datos.md`, `Doc/base-de-datos-esquema.sql` | Plan de la base de datos (Supabase) y borrador del esquema SQL (sin ejecutar) |
 | `Doc/anuncios-google/` | Imágenes de referencia con los lugares posibles para anuncios de Google (no implementado) |
 
@@ -51,6 +54,7 @@
 | `/ediciones/[id]` | `app/ediciones/[id]/page.tsx` | Entrada a una edición |
 | `/ediciones/[id]/[pagina]` | `app/ediciones/[id]/[pagina]/page.tsx` | Lector: una página de la edición (giro, móvil) |
 | `/buscar` | `app/buscar/page.tsx` | Búsqueda en todas las ediciones (excluye anuncios) |
+| `/temas`, `/temas/[tema]` | `app/temas/` + `lib/temas.ts` | Páginas agrupadas en Historia, Sabor, Gente y Paisajes |
 | `/suscribirse`, `/baja` | `app/suscribirse`, `app/baja` | Alta y baja del newsletter |
 | `/proyecto` | `app/proyecto/page.tsx` | Presentación del proyecto (para atraer colaboradores y marcas) |
 | `/bienvenida` | `app/bienvenida/page.tsx` | Presentación para quien llega por primera vez (el proxy lo manda aquí una vez; cookie `acomdi-bienvenida`): muestra hojeable, cupones, anunciantes, preguntas |
@@ -102,6 +106,11 @@
 | `plantillas.tsx` | Páginas del lector por plantilla; barra superior del lector |
 | `Masthead.tsx`, `Footer.tsx` | Cabecera (buscador largo, botón de tema) y pie |
 | `Logo.tsx`, `ThemeToggle.tsx` | Logotipo con versión oscura; botón claro/oscuro |
+| `CompartirPagina.tsx` | Compartir la página que se lee (barra del lector) |
+| `SeguirLeyendo.tsx`, `RegistrarLectura.tsx` + `lib/lectura.ts` | «Seguir leyendo»: última página, solo en el navegador del lector |
+| `EdicionesRelacionadas.tsx` | Otras ediciones al terminar una (por temas en común) |
+| `SaltarContenido.tsx` | Enlace «Saltar al contenido» (teclado y lectores de pantalla) |
+| `lib/imagen.ts` | Tamaños adaptados de las fotos (`srcset` con `/_next/image`) y foto a precargar |
 | `PortadaMini.tsx`, `Ticker.tsx`, `Bloques.tsx`, `Placeholder.tsx` | Portadas pequeñas, cinta y bloques de las plantillas clásicas |
 | `CarruselEdiciones.tsx` | Carrusel «cover flow» de las ediciones anteriores en celular (portada central grande, laterales giradas, puntos) |
 | `admin/TiraPaginas.tsx` | Tira de miniaturas de las páginas bajo la hoja (estilo Canva) |

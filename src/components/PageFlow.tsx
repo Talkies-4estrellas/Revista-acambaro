@@ -584,7 +584,6 @@ export default function PageFlow({ pages }: { pages: FlowPage[] }) {
       window.clearTimeout(idle);
       if (current) cleanup(current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, movil]);
 
   return (

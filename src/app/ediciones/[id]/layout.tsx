@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import ContarVistas from "@/components/ContarVistas";
 import PageFlow from "@/components/PageFlow";
+import RegistrarLectura from "@/components/RegistrarLectura";
 import { etiqueta, getEdicion, getEdiciones, hrefPagina } from "@/lib/ediciones";
 
 export function generateStaticParams() {
@@ -29,6 +30,7 @@ export default async function EdicionLayout({
       {children}
       <PageFlow pages={pages} />
       <ContarVistas edicion={ed.id} />
+      <RegistrarLectura id={ed.id} total={ed.paginas.length} tema={ed.tema} numero={ed.numero} />
     </>
   );
 }

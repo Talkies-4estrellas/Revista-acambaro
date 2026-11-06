@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEdiciones } from "@/lib/ediciones";
 import { leerAnunciantes, numerosDe } from "@/lib/anunciantes";
@@ -57,9 +58,9 @@ export default async function Reporte({ params }: { params: Promise<{ id: string
   return (
     <div className="paleta-clara min-h-screen bg-[#e9edf2] py-8 text-ink print:bg-white print:py-0">
       <div className="mx-auto mb-4 flex max-w-[52rem] justify-end gap-2 px-5 print:hidden">
-        <a href="/admin/anunciantes" className="font-sans border border-ink px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
+        <Link href="/admin/anunciantes" className="font-sans border border-ink px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-ink hover:text-paper">
           ← Anunciantes
-        </a>
+        </Link>
         <BotonImprimir />
       </div>
 
