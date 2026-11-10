@@ -574,7 +574,58 @@ export type ElementoIcono = ElementoBase & {
   trazo?: number;
   alt?: string;
 };
-export type Elemento = ElementoTexto | ElementoImagen | ElementoVideo | ElementoForma | ElementoIcono;
+/**
+ * Datos de un cupón de AcambaGo guardados en la edición al elegirlo (una «foto»): con ellos se dibuja aunque AcambaGo no responda.
+ * El estado (vigente, vencido, agotado…) se consulta aparte al abrir la página; los datos solo cambian con «Actualizar datos» en el editor.
+ */
+export type DatosCupon = {
+  titulo: string;
+  descripcion?: string;
+  tipo: "percent" | "fixed";
+  valor: number;
+  codigo: string;
+  /** Lo que va dentro del QR, tal cual lo genera AcambaGo (su escáner lo lee así). */
+  qr: string;
+  negocio: string;
+  negocioId: string;
+  /** Vencimiento (ISO) o null si no vence. */
+  vence: string | null;
+  limite: number | null;
+  /** Cuándo se tomó esta foto de los datos. */
+  tomado: string;
+};
+/** Cupón real de AcambaGo ligado a la página: sus textos no se escriben a mano, salen del cupón. */
+export type ElementoCupon = ElementoBase & {
+  tipo: "cupon";
+  /** Id del cupón en la base de AcambaGo. */
+  cupon: string;
+  datos: DatosCupon;
+  /** Color de la franja del descuento (por defecto, terracota). */
+  color?: Color;
+  /** Muestra el QR en la página (por defecto sí; siempre aparece en la ventana que se abre al tocarlo). */
+  qr?: boolean;
+  /** Si el cupón deja de servir, mostrar otro vigente del mismo negocio (por defecto sí; `false` lo apaga). */
+  sustituir?: boolean;
+};
+export type Elemento = ElementoTexto | ElementoImagen | ElementoVideo | ElementoForma | ElementoIcono | ElementoCupon;
+
+/** Medidas con que nace un cupón (horizontal, como un vale). */
+export const TAMANO_CUPON = { w: 560, h: 200 };
+
+/** Elemento nuevo con un cupón de AcambaGo, centrado en (cx, cy). */
+export function elementoCupon(cupon: string, datos: DatosCupon, cx = ANCHO_LIENZO / 2, cy = 420): ElementoCupon {
+  const { w, h } = TAMANO_CUPON;
+  return {
+    tipo: "cupon",
+    cupon,
+    datos,
+    w,
+    h,
+    x: Math.round(Math.min(Math.max(0, cx - w / 2), ANCHO_LIENZO - w)),
+    y: Math.max(0, Math.round(cy - h / 2)),
+    id: nuevoId(),
+  };
+}
 
 /** Un grupo de elementos guardado por el usuario («Mis elementos»), con su esquina superior izquierda en (0, 0). */
 export type ElementoGuardado = { id: string; nombre: string; creada: string; w: number; h: number; elementos: Elemento[] };

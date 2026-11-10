@@ -17,6 +17,7 @@ const POR_TIPO: Record<Elemento["tipo"], readonly string[]> = {
   video: [...MARCO],
   forma: ["color", "forma", "degradado", "anguloDegradado", ...MARCO],
   icono: ["color", "trazo"],
+  cupon: ["color", "qr", "sustituir"],
 };
 
 /** Campos de estilo de un tipo de elemento. */

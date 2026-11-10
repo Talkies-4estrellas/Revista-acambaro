@@ -54,6 +54,7 @@ import {
   inputCls,
 } from "./campos";
 import { BotonColor } from "./PaletaColores";
+import InspectorCupon from "./InspectorCupon";
 
 /* ------------------------------- Color ------------------------------- */
 
@@ -423,6 +424,8 @@ export function InspectorElemento({
     seleccionarGrupo?: () => void;
     /** Abre la biblioteca para sustituir el icono (solo en iconos). */
     cambiarIcono?: () => void;
+    /** Abre el cajón de cupones para sustituir el cupón (solo en cupones de AcambaGo). */
+    cambiarCupon?: () => void;
     /** Reproduce la animación de entrada de este elemento en la hoja. */
     probarAnimacion?: () => void;
     /** Encuadrar la foto con el ratón / quitarle el fondo de color liso (solo en fotos con archivo). */
@@ -433,7 +436,7 @@ export function InspectorElemento({
   };
 }) {
   const set = (patch: Record<string, unknown>, clave?: string) => cambiar(patch as Partial<Elemento>, clave);
-  const nombre = { texto: "Texto", imagen: "Imagen", video: "Video", forma: "Forma", icono: "Icono" }[el.tipo];
+  const nombre = { texto: "Texto", imagen: "Imagen", video: "Video", forma: "Forma", icono: "Icono", cupon: "Cupón de AcambaGo" }[el.tipo];
 
   return (
     <div className="space-y-4">
@@ -627,6 +630,12 @@ export function InspectorElemento({
         </Panel>
       )}
 
+      {el.tipo === "cupon" && (
+        <Panel titulo="Cupón de AcambaGo">
+          <InspectorCupon el={el} set={(p) => set(p)} cambiarCupon={acciones.cambiarCupon} CampoColor={CampoColor} Interruptor={Interruptor} />
+        </Panel>
+      )}
+
       {el.tipo === "icono" && (
         <Panel titulo={el.icono.startsWith("fig-") ? "Figura" : "Icono"} plegable>
           <div className="flex items-center gap-3">
@@ -716,12 +725,14 @@ export function InspectorElemento({
           </>
         )}
       </Panel>
+      {el.tipo !== "cupon" && (
       <Panel titulo="Enlace" plegable abierto={el.enlace !== undefined} resumen={el.enlace === undefined ? "Sin enlace" : typeof el.enlace === "number" ? `Página ${el.enlace}` : el.enlace.slice(0, 30)} ayuda="Al hacer clic en el elemento (en el sitio publicado).">
         <SelectorDestino enlace={el.enlace} paginas={paginas} anclas={anclas} onChange={(enlace) => set({ enlace })} />
         {(tipoDestino(el.enlace) === "externo" || tipoDestino(el.enlace) === "ruta") && typeof el.enlace === "string" && (
           <Texto label="Dirección" value={el.enlace} onChange={(v) => set({ enlace: v || undefined }, "enlace")} placeholder="https://…" />
         )}
       </Panel>
+      )}
 
       <Panel titulo="Animación de entrada" plegable abierto={!!el.animacion} resumen={el.animacion ? EFECTOS[el.animacion.efecto].nombre.replace(/ \(.*/, "") : "Ninguna"} ayuda="Se reproduce cuando el elemento entra en pantalla en la página publicada.">
         <Selector

@@ -8,7 +8,7 @@ const SECCIONES = [
   { icono: "utensils", titulo: "Sabor", texto: "El pan, los guisos y los mercados", href: "/temas/sabor" },
   { icono: "users", titulo: "Gente", texto: "Oficios, familias y personajes", href: "/temas/gente" },
   { icono: "mountain", titulo: "Paisajes", texto: "Lugares, caminos y rincones", href: "/temas/paisajes" },
-  { icono: "ticket", titulo: "Cupones", texto: "Promociones de negocios locales", href: "#cupones" },
+  { icono: "ticket", titulo: "Cupones", texto: "Promociones de negocios locales", href: "/cupones" },
   { icono: "search", titulo: "Buscador", texto: "Encuentra cualquier página", href: "/buscar" },
 ];
 

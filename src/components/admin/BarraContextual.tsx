@@ -268,7 +268,7 @@ export default function BarraContextual({
   }
 
   /* ------------------------------ Un elemento ------------------------------ */
-  const etiqueta = el.tipo === "texto" ? "Texto" : el.tipo === "imagen" ? "Foto" : el.tipo === "video" ? "Video" : el.tipo === "forma" ? "Forma" : el.icono.startsWith("fig-") ? "Figura" : "Icono";
+  const etiqueta = el.tipo === "texto" ? "Texto" : el.tipo === "imagen" ? "Foto" : el.tipo === "video" ? "Video" : el.tipo === "forma" ? "Forma" : el.tipo === "cupon" ? "Cupón" : el.icono.startsWith("fig-") ? "Figura" : "Icono";
   return (
     <Barra etiqueta={etiqueta}>
       {el.tipo === "texto" && <ControlesTexto el={el} cambiar={cambiar} acciones={acciones} />}

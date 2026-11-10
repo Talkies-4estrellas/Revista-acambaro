@@ -96,6 +96,7 @@ function textosDePagina(p: Pagina): { texto: string; peso: number }[] {
     if (esRepetido(e) || e.oculto) return; // repetidos y ocultos no cuentan como contenido de la página // pie, encabezado y demás repetidos de la edición: no cuentan como contenido de la página
     if (e.tipo === "texto") add(e.texto, e.tam && e.tam >= 40 ? 4 : 1);
     else if (e.tipo === "imagen" || e.tipo === "icono") add(e.alt, 1);
+    else if (e.tipo === "cupon") add(`${e.datos.titulo} ${e.datos.negocio} cupón descuento`, 2);
   });
   return t;
 }

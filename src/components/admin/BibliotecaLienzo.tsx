@@ -1,5 +1,6 @@
 "use client";
 
+import SelectorCupones, { type CuponElegible } from "./SelectorCupones";
 import { useMemo, useState } from "react";
 import { ElementoVista, IconoSvg } from "@/components/Lienzo";
 import { CATEGORIAS_ICONO, ICONOS } from "@/lib/iconos-datos";
@@ -12,7 +13,7 @@ import FotosLibres from "./FotosLibres";
 
 export const TIPO_BIBLIOTECA = "application/x-lienzo";
 
-export type ModoBiblioteca = "plantillas" | "elementos" | "marcos" | "subidos" | "figuras" | "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios";
+export type ModoBiblioteca = "plantillas" | "elementos" | "marcos" | "subidos" | "figuras" | "texto" | "formas" | "iconos" | "moldes" | "logos" | "botones" | "bloques" | "mios" | "cupones";
 
 const TITULOS: Record<ModoBiblioteca, string> = {
   plantillas: "Plantillas",
@@ -28,6 +29,7 @@ const TITULOS: Record<ModoBiblioteca, string> = {
   moldes: "Moldes",
   logos: "Logos",
   mios: "Mis elementos",
+  cupones: "Cupones de AcambaGo",
 };
 
 /** Una línea bajo el título del panel: para qué sirve y cómo se usa. */
@@ -45,6 +47,7 @@ const DESCRIPCIONES: Record<ModoBiblioteca, string> = {
   moldes: "Marcos con forma (círculo, corazón…) para recortar una foto o video.",
   logos: "Logos de ACOM-Di y de la revista, listos para poner.",
   mios: "Lo que guardaste para reutilizar. Elige algo en la hoja y guárdalo aquí.",
+  cupones: "Cupones reales de AcambaGo, ligados a su base: el lector ve el QR y lo canjea en el negocio.",
 };
 
 const ANCHO_PREVIA_BLOQUE = 262;
@@ -110,6 +113,7 @@ export default function BibliotecaLienzo({
   onLogo,
   onBoton,
   onBloque,
+  onCupon,
   onPreset,
   mios,
   edicionId,
@@ -131,6 +135,8 @@ export default function BibliotecaLienzo({
   onLogo: (id: LogoId) => void;
   onBoton: (id: string) => void;
   onBloque: (id: string) => void;
+  /** Cupón de AcambaGo elegido en el cajón «Cupones». */
+  onCupon: (c: CuponElegible) => void;
   /** Elementos básicos (titular, párrafo, formas…). */
   onPreset: (id: PresetElemento) => void;
   /** «Mis elementos» guardados (null mientras se cargan). */
@@ -203,6 +209,7 @@ export default function BibliotecaLienzo({
               ["botones", "Botones"],
               ["logos", "Logo"],
               ["mios", "Míos"],
+              ["cupones", "Cupones"],
               ["marcos", "Foto y video"],
             ] as const
           ).map(([id, nombre]) => (
@@ -315,6 +322,8 @@ export default function BibliotecaLienzo({
             ))}
           </div>
         </div>
+      ) : m === "cupones" ? (
+        <SelectorCupones onElegir={onCupon} reemplazando={reemplazando} />
       ) : m === "bloques" ? (
         <div className="p-3">
           <p className="font-sans mb-2 text-[0.7rem] text-ink-soft">

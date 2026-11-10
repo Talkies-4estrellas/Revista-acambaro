@@ -21,6 +21,7 @@
 | `Doc/` | Esta carpeta: documentación y sesiones |
 | `Doc/protocolo-admin.md` | Por qué el panel nunca está en el sitio publicado, y qué hacer al agregarle algo |
 | `Doc/base-de-datos.md`, `Doc/base-de-datos-esquema.sql` | Plan de la base de datos (Supabase) y borrador del esquema SQL (sin ejecutar) |
+| `Doc/acambago-cupones-en-vivo.sql` | Línea para el Supabase de AcambaGo que activa el aviso en vivo de cupones |
 | `Doc/anuncios-google/` | Imágenes de referencia con los lugares posibles para anuncios de Google (no implementado) |
 
 ---
@@ -62,6 +63,10 @@
 | `/admin/[id]` | `app/admin/[id]/page.tsx` | Editor de una edición |
 | `/admin/clics`, `/admin/newsletter` | `app/admin/clics`, `app/admin/newsletter` | Estadística de clics y suscriptores/correo |
 | `/admin/anunciantes` | `app/admin/anunciantes` (`PanelAnunciantes.tsx`; lógica `lib/anunciantes.ts`) | Anunciantes (privado: `content/anunciantes.json`): páginas, enlaces, vencimiento, vistas/clics y tasa; páginas de publicidad sin anunciante |
+| `/admin/cupones` | `app/admin/cupones` (`PanelCupones.tsx`; lógica `lib/cupones-acambago.ts`) | Cupones del ecommerce AcambaGo, leídos de su Supabase y actualizados en vivo (solo lectura). Conexión en `.env.local`; aviso en vivo con `Doc/acambago-cupones-en-vivo.sql` |
+| `/cupones` | `app/cupones` (`ListaCupones.tsx`) | Pública: todos los cupones vigentes de AcambaGo con buscador y filtro por negocio (se rehace cada 5 minutos) |
+| `/api/cupones/estado` | `app/api/cupones/estado/route.ts` | Pública: estado actual de los cupones de AcambaGo de una página (vigente, vencido…) y, si ya no sirve, otro vigente del mismo negocio; guardado 5 minutos |
+| `/api/admin/cupones` | `app/api/admin/cupones/route.ts` | Cupones de AcambaGo para elegir en el editor (solo panel local) |
 | `/admin/anunciantes/[id]/reporte` | `app/admin/anunciantes/[id]/reporte` | Reporte imprimible / PDF para mandar al anunciante (sin el menú del panel) |
 | `/api/admin/rapido` | `app/api/admin/rapido/route.ts` | Ediciones y títulos de páginas para el buscador rápido del panel (Ctrl+K, `BuscadorRapido.tsx`) |
 | `/admin/calendario` | `app/admin/calendario/page.tsx` | Calendario de publicación: el mes, si cada semana tiene edición y las próximas 8 semanas |
@@ -110,6 +115,10 @@
 | `SeguirLeyendo.tsx`, `RegistrarLectura.tsx` + `lib/lectura.ts` | «Seguir leyendo»: última página, solo en el navegador del lector |
 | `EdicionesRelacionadas.tsx` | Otras ediciones al terminar una (por temas en común) |
 | `SaltarContenido.tsx` | Enlace «Saltar al contenido» (teclado y lectores de pantalla) |
+| `CuponAcambaGo.tsx` | Cupón real de AcambaGo en la página: tarjeta, estado en vivo, ventana con QR y código |
+| `admin/SelectorCupones.tsx`, `admin/InspectorCupon.tsx` | Cajón «Cupones» del editor y panel del cupón seleccionado |
+| `lib/cupon-estado.ts`, `lib/qr.ts` | Reglas del estado del cupón (sin Supabase) y dibujo del QR en SVG |
+| `lib/cupones-publicos.ts` | Lecturas del sitio publicado (solo servidor): estado y sustituto de los cupones de una página, y lista de vigentes para `/cupones` |
 | `lib/imagen.ts` | Tamaños adaptados de las fotos (`srcset` con `/_next/image`) y foto a precargar |
 | `PortadaMini.tsx`, `Ticker.tsx`, `Bloques.tsx`, `Placeholder.tsx` | Portadas pequeñas, cinta y bloques de las plantillas clásicas |
 | `CarruselEdiciones.tsx` | Carrusel «cover flow» de las ediciones anteriores en celular (portada central grande, laterales giradas, puntos) |

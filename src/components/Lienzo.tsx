@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import ComparadorImagen from "@/components/ComparadorImagen";
+import CuponAcambaGo from "@/components/CuponAcambaGo";
 import EnlaceMedido from "@/components/EnlaceMedido";
 import RevelarAlTocar from "@/components/RevelarAlTocar";
 import {
@@ -365,6 +366,9 @@ export function ElementoVista({
     );
   } else if (el.tipo === "icono") {
     contenido = <IconoSvg icono={el.icono} color={el.color} trazo={el.trazo} alt={el.alt} />;
+  } else if (el.tipo === "cupon") {
+    // Cupón real de AcambaGo (componente de cliente: pide su estado y abre la ventana con el QR).
+    contenido = <CuponAcambaGo el={el} edicionId={edicionId} editor={!!editor} miniatura={miniatura} />;
   } else {
     contenido = (
       <div
@@ -458,7 +462,8 @@ export function ElementoVista({
 
   // En el sitio: el elemento puede ser un enlace a otra página o a una dirección externa.
   // En miniaturas no hay enlaces: la miniatura suele ir dentro de otro enlace y un <a> dentro de un <a> es HTML inválido.
-  if (el.enlace !== undefined && edicionId && !miniatura) {
+  // El cupón ya es un botón (abre su ventana): no se envuelve en otro enlace.
+  if (el.enlace !== undefined && edicionId && !miniatura && el.tipo !== "cupon") {
     const externo = typeof el.enlace === "string" && !el.enlace.startsWith("/") && !/^(mailto|tel):/i.test(el.enlace);
     const href = typeof el.enlace === "string" ? el.enlace : `/ediciones/${edicionId}/${el.enlace}`;
     const props = externo ? { target: "_blank", rel: "noopener noreferrer" } : {};
@@ -606,7 +611,7 @@ export function LienzoApilado({
       // Fotos y formas medianas (un tercio de la hoja o más) ocupan toda la columna: con menos ancho quedaban a medias,
       // pegadas a un lado y desalineadas con el texto. Solo los elementos pequeños (logos, iconos) conservan su tamaño.
       // Las fotos apaisadas (cubrir, al menos 1.4 de ancho por alto) también van a todo el ancho aunque midan menos de un tercio.
-      ancho: logo ? 58 : el.tipo === "texto" || rel >= 0.3 || (el.tipo === "imagen" && el.ajuste === "cubrir" && el.w / el.h >= 1.4) ? 100 : Math.min(100, Math.max(18, rel * 170)),
+      ancho: logo ? 58 : el.tipo === "texto" || el.tipo === "cupon" || rel >= 0.3 || (el.tipo === "imagen" && el.ajuste === "cubrir" && el.w / el.h >= 1.4) ? 100 : Math.min(100, Math.max(18, rel * 170)),
       alinear: logo ? "center" : centro < 0.38 ? "start" : centro > 0.62 ? "end" : "center",
       margenSuperior: primero ? 0 : (el.espacioMovil ?? Math.min(56, Math.max(14, hueco * 0.55))),
       altoFijo: linea ? Math.max(2, el.h) : undefined,

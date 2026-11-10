@@ -70,6 +70,18 @@ export function revisarDatos(paginas: Pagina[], fechaEdicion?: string, opciones:
       });
     }
 
+    // Cupones de AcambaGo: con la fecha guardada se sabe si ya vencieron (o vencerán antes de que salga la edición).
+    // AcambaGo da por vencido el cupón desde la medianoche (UTC) del día que marca, así que ese día ya no sirve.
+    for (const e of elementos) {
+      if (e.tipo !== "cupon" || e.oculto || !e.datos.vence) continue;
+      const dia = e.datos.vence.slice(0, 10);
+      const nombre = `«${e.datos.titulo}» (${e.datos.negocio || e.datos.codigo})`;
+      if (dia <= lectura)
+        avisos.push({ pagina: n, nivel: "error", tipo: "Cupón vencido", elemento: e.id, texto: `El cupón ${nombre} vence el ${dia}${lectura > hoyIso ? ", antes de que salga la edición" : ""}: en el sitio saldrá como «Ya no disponible». Cámbialo o quítalo.` });
+      else if (dias(lectura, dia) <= 7)
+        avisos.push({ pagina: n, nivel: "aviso", tipo: "Cupón por vencer", elemento: e.id, texto: `El cupón ${nombre} vence el ${dia}, ${dias(lectura, dia)} día(s) después de que se lea la edición. Revisa si conviene uno con más vigencia.` });
+    }
+
     const botonesSinEnlace = elementos.filter((e) => e.tipo === "texto" && e.boton && (e.enlace === undefined || e.enlace === ""));
     if (botonesSinEnlace.length) {
       const t = botonesSinEnlace[0];

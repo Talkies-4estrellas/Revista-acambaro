@@ -57,9 +57,10 @@ function buscarEnlace(edicionId: string, elementoId: string, url: string) {
   if (!ed) return null;
   for (let i = 0; i < ed.paginas.length; i++) {
     const p = ed.paginas[i];
-    const el = p.elementos?.find((x) => x.id === elementoId && typeof x.enlace === "string" && x.enlace === url);
+    // Un cupón de AcambaGo cuenta cuándo lo abren («cupon:abrir») y cuándo copian el código («cupon:copiar»).
+    const el = p.elementos?.find((x) => x.id === elementoId && (x.tipo === "cupon" ? /^cupon:(abrir|copiar|guardar)$/.test(url) : typeof x.enlace === "string" && x.enlace === url));
     if (el) {
-      const etiqueta = el.tipo === "imagen" ? (el.alt ?? "") : el.tipo === "texto" ? el.texto : el.tipo === "icono" ? (el.alt ?? el.icono) : el.tipo === "forma" ? "Cuadro o forma" : "";
+      const etiqueta = el.tipo === "cupon" ? `Cupón ${el.datos.codigo} · ${el.datos.negocio} (${url === "cupon:copiar" ? "copió el código" : url === "cupon:guardar" ? "fue a guardarlo en AcambaGo" : "lo abrió"})` : el.tipo === "imagen" ? (el.alt ?? "") : el.tipo === "texto" ? el.texto : el.tipo === "icono" ? (el.alt ?? el.icono) : el.tipo === "forma" ? "Cuadro o forma" : "";
       return { pagina: i + 1, etiqueta: etiqueta.replace(/\s+/g, " ").trim().slice(0, 80), anuncio: p.seccion === "Publicidad" };
     }
   }
@@ -69,7 +70,7 @@ function buscarEnlace(edicionId: string, elementoId: string, url: string) {
 /** Devuelve false si el clic no corresponde a un enlace externo real o es un repetido reciente. */
 export async function registrarClic(edicion: unknown, elemento: unknown, url: unknown, visitante: string): Promise<boolean> {
   if (typeof edicion !== "string" || typeof elemento !== "string" || typeof url !== "string") return false;
-  if (edicion.length > 40 || elemento.length > 60 || url.length > 2000 || !/^(https?:\/\/|mailto:|tel:|\/(?!\/))/i.test(url)) return false;
+  if (edicion.length > 40 || elemento.length > 60 || url.length > 2000 || !/^(https?:\/\/|mailto:|tel:|\/(?!\/)|cupon:(abrir|copiar|guardar)$)/i.test(url)) return false;
   const hallado = buscarEnlace(edicion, elemento, url);
   if (!hallado) return false;
 

@@ -6,7 +6,7 @@ import { CATALOGO } from "@/lib/catalogo-iconos";
 import type { Elemento, Pagina } from "@/lib/esquema";
 import { btnCls } from "./campos";
 
-const GLIFO: Record<Elemento["tipo"], string> = { texto: "T", imagen: "▣", video: "▶", icono: "✦", forma: "■" };
+const GLIFO: Record<Elemento["tipo"], string> = { texto: "T", imagen: "▣", video: "▶", icono: "✦", forma: "■", cupon: "%" };
 
 function etiqueta(e: Elemento): string {
   switch (e.tipo) {
@@ -20,6 +20,8 @@ function etiqueta(e: Elemento): string {
       return CATALOGO[e.icono]?.nombre ?? e.icono;
     case "forma":
       return e.h <= 14 ? "Línea" : "Forma";
+    case "cupon":
+      return `Cupón: ${e.datos.titulo}`.slice(0, 34);
   }
 }
 

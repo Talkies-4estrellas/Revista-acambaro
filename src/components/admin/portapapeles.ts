@@ -8,7 +8,7 @@ import type { Elemento } from "@/lib/esquema";
 
 export const MARCA_PORTAPAPELES = "revista-acambaro/elementos";
 const MAX_ELEMENTOS = 200;
-const TIPOS = ["texto", "imagen", "video", "forma", "icono"];
+const TIPOS = ["texto", "imagen", "video", "forma", "icono", "cupon"];
 
 export type Carga = {
   marca: typeof MARCA_PORTAPAPELES;
@@ -53,6 +53,7 @@ export function desdeTexto(texto: string): Carga | null {
         if ((o.w as number) <= 0 || (o.h as number) <= 0) return false;
         if (o.tipo === "icono" && !(typeof o.icono === "string" && o.icono in CATALOGO)) return false;
         if (o.tipo === "texto" && typeof o.texto !== "string") return false;
+        if (o.tipo === "cupon" && !(typeof o.cupon === "string" && o.datos && typeof o.datos === "object")) return false;
         return true;
       })
       .slice(0, MAX_ELEMENTOS);

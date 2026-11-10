@@ -108,6 +108,16 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          <Link href="/cupones" className="group mt-3 flex items-center gap-3 rounded-xl border border-ink/15 p-3 transition-colors hover:border-terracota">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#067556]/10">
+              <IconoSvg icono="ticket" color="#067556" trazo={1.7} className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="font-display block text-lg font-bold group-hover:underline">Cupones</span>
+              <span className="font-sans block text-sm text-ink-soft">Descuentos vigentes en negocios de Acámbaro</span>
+            </span>
+            <span aria-hidden className="kicker text-terracota">Ver →</span>
+          </Link>
         </section>
 
         <section aria-label="Cómo se lee" className="border-y-4 border-double border-ink bg-paper-deep/50">

@@ -11,6 +11,7 @@ import {
   type ElementoGuardado,
   elementoFormaMolde,
   elementoIcono,
+  elementoCupon,
   elementoLogo,
   elementoMarco,
   elementoNuevo,
@@ -35,6 +36,8 @@ import QuitarFondo from "./QuitarFondo";
 import PlantillasModal, { type ModoAplicar } from "./PlantillasModal";
 import BarraContextual from "./BarraContextual";
 import BibliotecaLienzo, { type ModoBiblioteca } from "./BibliotecaLienzo";
+import type { CuponElegible } from "./SelectorCupones";
+import { ETIQUETA_ESTADO } from "@/lib/cupon-estado";
 import { DESPUES_DEFECTO, fotogramas, fotogramasSalida, opcionesAnimacion, opcionesSalida, pruebaBucle, pruebaHover, type Bucle, type Efecto, type Hover } from "@/lib/animaciones";
 import { CATALOGO } from "@/lib/catalogo-iconos";
 import { mapaAnclas } from "@/lib/referencias";
@@ -673,6 +676,19 @@ export default function EditorLienzo({
 
   const agregarBoton = (id: string, cx?: number, cy?: number) => {
     const el = elementoBoton(id, cx, cy);
+    aplicar([...getEls(), el]);
+    setSel([el.id!]);
+  };
+
+  /** Pone un cupón de AcambaGo en la hoja o, si se está reemplazando, cambia el del cupón seleccionado (conserva tamaño, lugar y estilo). */
+  const ponerCupon = (c: CuponElegible) => {
+    if (c.estado !== "vigente") avisar(`Ojo: ese cupón está «${ETIQUETA_ESTADO[c.estado]}» en AcambaGo; en el sitio saldrá como «Ya no disponible».`);
+    if (biblioteca?.reemplazar && unico?.tipo === "cupon") {
+      cambiar({ cupon: c.id, datos: c.datos } as Partial<Elemento>);
+      setBiblioteca((b) => (b ? { ...b, reemplazar: false } : b));
+      return;
+    }
+    const el = elementoCupon(c.id, c.datos);
     aplicar([...getEls(), el]);
     setSel([el.id!]);
   };
@@ -1881,6 +1897,7 @@ export default function EditorLienzo({
       if (uno.src && !uno.comparar) items.push({ texto: "Recortar o acercar", onClick: () => setRecortando(uno.id!) });
       if (uno.src) items.push({ texto: "Quitar fondo…", onClick: () => setQuitandoFondo(uno.id!) });
     }
+    if (uno?.tipo === "cupon") items.push({ texto: "Cambiar cupón…", icono: "⇄", onClick: () => setBiblioteca({ modo: "cupones", reemplazar: true }) });
     if (uno?.tipo === "icono") items.push({ texto: "Cambiar figura o icono…", icono: "⇄", onClick: () => setBiblioteca({ modo: uno.icono.startsWith("fig-") ? "figuras" : "iconos", reemplazar: true }) });
     if (items.length) items.push({ separador: true });
     items.push(
@@ -2099,7 +2116,7 @@ export default function EditorLienzo({
               ) : (
               <BibliotecaLienzo
                 modo={biblioteca.modo}
-                reemplazando={!!biblioteca.reemplazar && (unico?.tipo === "icono" || unico?.tipo === "imagen")}
+                reemplazando={!!biblioteca.reemplazar && (unico?.tipo === "icono" || unico?.tipo === "imagen" || unico?.tipo === "cupon")}
                 hayMoldeable={!!unico && (unico.tipo === "imagen" || unico.tipo === "video" || unico.tipo === "forma")}
                 onIcono={(id) => {
                   if (biblioteca.reemplazar && unico?.tipo === "icono") {
@@ -2111,6 +2128,7 @@ export default function EditorLienzo({
                 onLogo={(id) => agregarLogo(id)}
                 onBoton={(id) => agregarBoton(id)}
                 onBloque={(id) => agregarBloque(id)}
+                onCupon={ponerCupon}
                 onPreset={(id) => agregar(id)}
                 mios={mios}
                 edicionId={edicionId ?? ""}
@@ -2631,6 +2649,7 @@ export default function EditorLienzo({
               quitarFondo: unico.tipo === "imagen" && unico.src ? () => setQuitandoFondo(unico.id!) : undefined,
               probarMovimiento: (forzar) => probarMovimiento(unico.id!, forzar),
               cambiarIcono: unico.tipo === "icono" ? () => setBiblioteca({ modo: unico.icono.startsWith("fig-") ? "figuras" : "iconos", reemplazar: true }) : undefined,
+              cambiarCupon: unico.tipo === "cupon" ? () => setBiblioteca({ modo: "cupones", reemplazar: true }) : undefined,
               seleccionarGrupo:
                 unico.grupo && elementos.filter((e) => e.grupo === unico.grupo).length > 1
                   ? () => setSel(expandir([unico.id!]))

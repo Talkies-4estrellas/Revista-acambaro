@@ -63,6 +63,7 @@ const MENU: Grupo[] = [
       { texto: "Páginas sin anunciante", href: "/admin/anunciantes#sin-anunciante" },
     ],
   },
+  { clave: "cupones", texto: "Cupones AcambaGo", icono: "ticket", href: "/admin/cupones" },
   {
     clave: "medios",
     texto: "Medios",
@@ -116,7 +117,7 @@ const avisarPanel = (href: string) => {
   if (frag === "nueva" || frag === "resumen") window.dispatchEvent(new CustomEvent("acomdi:panel", { detail: frag }));
 };
 
-const TITULOS: Record<string, string> = { "/admin": "Ediciones", "/admin/clics": "Estadísticas", "/admin/newsletter": "Newsletter", "/admin/anunciantes": "Anunciantes", "/admin/medios": "Medios", "/admin/papelera": "Papelera", "/admin/calendario": "Calendario", "/admin/ajustes": "Ajustes" };
+const TITULOS: Record<string, string> = { "/admin": "Ediciones", "/admin/clics": "Estadísticas", "/admin/newsletter": "Newsletter", "/admin/anunciantes": "Anunciantes", "/admin/cupones": "Cupones de AcambaGo", "/admin/medios": "Medios", "/admin/papelera": "Papelera", "/admin/calendario": "Calendario", "/admin/ajustes": "Ajustes" };
 /** Grupos que el usuario abrió o cerró a mano (se recuerda en el navegador). Sin elegir, solo está abierto el de la página actual. */
 /** Engrane (tampoco está en el catálogo de iconos). Trazo de Lucide (ISC). */
 function IconoAjustes({ className = "" }: { className?: string }) {

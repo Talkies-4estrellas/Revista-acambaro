@@ -224,6 +224,22 @@ datos de contacto con iconos), **Datos y citas** (cifra grande, testimonio), **E
 sección). Clic para ponerlo al centro de la hoja o arrástralo a donde lo quieras. Salen **agrupados** (se mueven juntos; doble clic entra a una pieza, y el
 botón de agrupar del panel los separa). Cambia los textos de guía y suelta tus fotos sobre los marcadores de color; los botones traen su efecto y piden enlace.
 
+## Cupones de AcambaGo
+
+Son **cupones reales** del ecommerce AcambaGo, no dibujos (el bloque «Cupón de descuento» de *Bloques listos* sigue siendo un dibujo de muestra).
+**Elementos → Cupones** lista los cupones de su base; clic para ponerlo en la hoja. Sus textos (descuento, título, negocio, código, vencimiento) **salen del
+cupón y no se escriben a mano**; en el panel de la derecha solo se elige el color de la franja y si se ve el QR en la hoja. Ahí mismo dice cómo está ahora en
+AcambaGo (vigente, vencido, agotado…), avisa si cambió desde que lo pusiste (con **Actualizar datos**) y permite **Cambiar cupón…** (también en el clic derecho).
+
+En el sitio, el lector toca el cupón y se abre una ventana con el **QR grande**, el código con **Copiar**, las condiciones y un enlace al negocio en AcambaGo.
+El QR es el mismo que genera AcambaGo: el negocio lo escanea con su **Escáner QR** y el canje se cuenta allá (el lector no necesita cuenta).
+Al abrir la página se consulta el estado actual: si ya venció, se agotó o lo desactivaron, se muestra **otra promoción vigente del mismo negocio** (con la etiqueta «Otra promoción»); si el negocio no tiene ninguna, sale **«Ya no disponible»** y sin QR. El cambio automático se apaga por cupón en su panel (*Si deja de servir, mostrar otra promoción…*).
+
+En la ventana del cupón, **«Guárdalo en tu cuenta de AcambaGo»** lleva al lector a AcambaGo (`/cupon/<código>?origen=revista`): si tiene sesión, el cupón se guarda en su cuenta con su **QR personal** (un uso por persona); si no, ahí mismo entra o crea su cuenta. La revista no tiene cuentas.
+
+La página pública **`/cupones`** reúne sola todos los cupones vigentes de AcambaGo (con buscador y filtro por negocio); se llega desde el menú «Secciones» y desde el inicio. Se actualiza cada 5 minutos.
+El **Revisor** avisa si un cupón vence antes de que salga la edición (o en los 7 días siguientes). Los clics («lo abrió», «copió el código», «fue a guardarlo en AcambaGo») se cuentan en Estadísticas.
+
 ## Filtros y decoración de imágenes
 
 En el panel **Imagen**: **Filtro de color** (blanco y negro, sepia, cálido, frío, más brillante, más oscura, más contraste, desenfocada), **Capa encima**

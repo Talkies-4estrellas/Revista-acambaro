@@ -164,8 +164,17 @@ function checkNum(v: unknown, ctx: string, campo: string, min = -Infinity, max =
 function checkElemento(e: unknown, ctx: string, total: number) {
   if (!isObj(e) || typeof e.tipo !== "string") fail(ctx, 'cada elemento necesita un "tipo"');
   const c = `${ctx} (elemento "${e.tipo}")`;
-  if (!["texto", "imagen", "video", "forma", "icono"].includes(e.tipo))
-    fail(c, 'el tipo debe ser "texto", "imagen", "video", "forma" o "icono"');
+  if (!["texto", "imagen", "video", "forma", "icono", "cupon"].includes(e.tipo))
+    fail(c, 'el tipo debe ser "texto", "imagen", "video", "forma", "icono" o "cupon"');
+  if (e.tipo === "cupon") {
+    // Cupón de AcambaGo: su id y la «foto» de sus datos (ver DatosCupon en lib/esquema.ts).
+    if (typeof e.cupon !== "string" || !/^[0-9a-f-]{36}$/i.test(e.cupon)) fail(c, '"cupon" debe ser el id del cupón en AcambaGo');
+    const d = e.datos;
+    if (!isObj(d) || typeof d.titulo !== "string" || typeof d.codigo !== "string" || typeof d.qr !== "string" || typeof d.valor !== "number" || !["percent", "fixed"].includes(d.tipo as string))
+      fail(c, '"datos" del cupón incompletos (titulo, codigo, qr, valor y tipo)');
+    if (e.qr !== undefined && typeof e.qr !== "boolean") fail(c, '"qr" debe ser verdadero o falso');
+    if (e.sustituir !== undefined && typeof e.sustituir !== "boolean") fail(c, '"sustituir" debe ser verdadero o falso');
+  }
   if (e.tipo === "icono" && !(typeof e.icono === "string" && e.icono in CATALOGO))
     fail(c, `"icono" vale "${String(e.icono)}", que no está en el catálogo (lib/iconos-datos.ts)`);
   checkEnum(e.molde, MOLDES_IDS, c, "molde");
